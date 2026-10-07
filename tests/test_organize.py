@@ -179,3 +179,76 @@ def test_saida_de_terminal_sem_acento(repo, capsys):
     saida = capsys.readouterr().out
     assert saida.isascii()
     assert "Manifest NAO gravado" in saida
+
+
+# ------------------------------------------------------------------------- --verificar
+def reescrever_manifest(repo, mudancas):
+    """Simula um manifest versionado editado. mudancas: {id: {coluna: valor}}."""
+    m = manifest(repo)
+    for i, colunas in mudancas.items():
+        m[i].update(colunas)
+    od.escrever_manifest([m[i] for i in sorted(m)], repo / "data" / "manifests" / "bracol.csv")
+
+
+def test_verificar_confere_sem_alterar_nada(repo):
+    gerar(repo)
+    arquivo_manifest = repo / "data" / "manifests" / "bracol.csv"
+    arquivo_relatorio = repo / "data" / "reports" / "integridade_bracol.md"
+    antes = arquivo_manifest.read_bytes(), arquivo_relatorio.read_bytes()
+    assert gerar(repo, verificar=True) == 0
+    assert (arquivo_manifest.read_bytes(), arquivo_relatorio.read_bytes()) == antes
+
+
+def test_verificar_acusa_manifest_editado_e_nao_o_corrige(repo):
+    gerar(repo)
+    reescrever_manifest(repo, {1: {"severity": "1"}})
+    assert gerar(repo, verificar=True) == 1
+    assert "coluna severity diverge do manifest versionado: ids 1" in relatorio(repo)
+    assert manifest(repo)[1]["severity"] == "1"  # o --verificar nunca grava o manifest
+
+
+def test_verificar_acusa_imagem_trocada(repo):
+    gerar(repo)
+    salvar_imagem(pasta_imagens(repo) / "2.jpg", semente=99)
+    assert gerar(repo, verificar=True) == 1
+    assert "coluna sha256 diverge do manifest versionado: ids 2" in relatorio(repo)
+    assert "coluna phash diverge do manifest versionado: ids 2" in relatorio(repo)
+
+
+def test_verificar_tolera_poucos_bits_de_diferenca_no_phash(repo):
+    gerar(repo)
+    original = manifest(repo)[1]["phash"]
+    poucos = f"{int(original, 16) ^ 0b111:064x}"  # 3 bits: outro decodificador JPEG, por exemplo
+    reescrever_manifest(repo, {1: {"phash": poucos}})
+    assert gerar(repo, verificar=True) == 0
+    muitos = f"{int(original, 16) ^ ((1 << 20) - 1):064x}"  # 20 bits: acima da tolerância
+    reescrever_manifest(repo, {1: {"phash": muitos}})
+    assert gerar(repo, verificar=True) == 1
+
+
+def test_verificar_sem_manifest_e_erro_fatal(repo):
+    with pytest.raises(od.ErroFatal, match="rode sem --verificar"):
+        gerar(repo, verificar=True)
+
+
+def test_verificar_e_refazer_divisao_nao_combinam():
+    with pytest.raises(SystemExit):
+        od.main(["--verificar", "--refazer-divisao"])
+
+
+# ------------------------------------------------------------------------ ler_manifest
+def test_ler_manifest_devolve_elegiveis_com_tipos_fixos(repo):
+    gerar(repo)
+    caminho = repo / "data" / "manifests" / "bracol.csv"
+    elegiveis = bracol.ler_manifest(caminho)
+    assert sorted(elegiveis["id"]) == [1, 2, 3, 4, 5]
+    assert elegiveis["id"].dtype == "int64" and elegiveis["severity"].dtype == "int64"
+    assert elegiveis["classe"].map(bracol.CLASSES.index).between(0, 4).all()
+    todas = bracol.ler_manifest(caminho, incluir_excluidas=True)
+    assert len(todas) == 7
+    assert todas.loc[todas["id"] == 6, "classe"].item() == ""  # classe 5: texto vazio, não NaN
+    assert todas.loc[todas["id"] == 7, "largura"].isna().all()  # sem imagem
+    for split in bracol.SPLITS:
+        assert set(bracol.ler_manifest(caminho, split=split)["split"]) <= {split}
+    with pytest.raises(ValueError, match="split desconhecido"):
+        bracol.ler_manifest(caminho, split="validacao")

@@ -10,11 +10,13 @@ no documento da Frente 8.
 
 Uso (de qualquer pasta):
     python data/organize_dataset.py                     gera o manifest e o relatório
+    python data/organize_dataset.py --verificar         confere dados x manifest, sem alterá-lo
     python data/organize_dataset.py --entrada PASTA     usa outra cópia do BRACOL
     python data/organize_dataset.py --refazer-divisao   ignora a divisão do manifest anterior
 
 Ao rodar de novo, a divisão já gravada no manifest é mantida e só as imagens novas são
 distribuídas (divisão estável). Com qualquer erro, o manifest não é gravado, só o relatório.
+O código de saída é 0 sem erros e 1 com erros.
 A saída de terminal fica sem acento (terminal do Windows); os arquivos gravados são UTF-8.
 """
 import argparse
@@ -162,12 +164,12 @@ def ler_manifest_anterior(caminho: Path) -> dict[int, dict]:
 
 
 # --------------------------------------------------------------------------- manifest
-def montar_manifest(linhas, imagens, raiz, seed, anterior, refazer_divisao, ausentes_esperados,
-                    com_erro, oc):
+def montar_manifest(linhas, imagens, raiz, seed, fixos, ausentes_esperados, com_erro, oc):
     """Linhas do manifest (uma por id do csv, em ordem de id), com grupos e divisão.
 
-    Devolve as linhas e {"mantidas": n, "novas": n}, as atribuições de split mantidas do
-    manifest anterior e as feitas agora.
+    fixos: {id: split} de uma divisão anterior, que é mantida (divisão estável).
+    Devolve as linhas e {"mantidas": n, "novas": n}, as atribuições de split mantidas e as
+    feitas agora.
     """
     ids_csv = {linha["id"] for linha in linhas}
     for i in sorted(set(imagens) - ids_csv - com_erro):
@@ -198,9 +200,6 @@ def montar_manifest(linhas, imagens, raiz, seed, anterior, refazer_divisao, ause
         })
 
     elegiveis = [linha for linha in manifest if not linha["excluida"]]
-    fixos = {}
-    if not refazer_divisao:
-        fixos = {i: linha["split"] for i, linha in anterior.items() if linha.get("split")}
     try:
         divisao = bracol.dividir(elegiveis, seed=seed, fixos=fixos)
     except ValueError as e:
@@ -208,7 +207,6 @@ def montar_manifest(linhas, imagens, raiz, seed, anterior, refazer_divisao, ause
         divisao = {}
     for linha in manifest:
         linha["split"] = divisao.get(linha["id"], "")
-    _comparar_com_anterior(manifest, anterior, fixos, oc)
 
     por_grupo = {}
     for linha in manifest:
@@ -222,8 +220,44 @@ def montar_manifest(linhas, imagens, raiz, seed, anterior, refazer_divisao, ause
     return manifest, {"mantidas": mantidas, "novas": len(divisao) - mantidas}
 
 
+def conferir_com_versionado(manifest, versionado, oc):
+    """Modo --verificar: o manifest recalculado precisa bater com o versionado. O SHA-256 e as
+    outras colunas são comparados exatamente; o pHash, com tolerância de TOLERANCIA_PHASH bits
+    (outro decodificador JPEG pode mudar alguns bits)."""
+    colunas = list(next(iter(versionado.values())))
+    if colunas != bracol.COLUNAS_MANIFEST:
+        oc.erros.append(
+            f"colunas do manifest versionado: {colunas}; esperado: {bracol.COLUNAS_MANIFEST}"
+        )
+        return
+    atuais = {linha["id"]: linha for linha in manifest}
+    so_no_versionado = sorted(set(versionado) - set(atuais))
+    so_nos_dados = sorted(set(atuais) - set(versionado))
+    if so_no_versionado:
+        oc.erros.append(
+            f"ids no manifest versionado que não estão nos dados: {_faixas(so_no_versionado)}"
+        )
+    if so_nos_dados:
+        oc.erros.append(f"ids nos dados que faltam no manifest versionado: {_faixas(so_nos_dados)}")
+    divergentes = {}
+    for i in sorted(set(atuais) & set(versionado)):
+        for coluna in bracol.COLUNAS_MANIFEST:
+            atual, gravado = str(atuais[i][coluna]), versionado[i][coluna]
+            if coluna == "phash" and atual and gravado:
+                confere = bracol.distancia_hamming(atual, gravado) <= bracol.TOLERANCIA_PHASH
+            else:
+                confere = atual == gravado
+            if not confere:
+                divergentes.setdefault(coluna, []).append(i)
+    for coluna in bracol.COLUNAS_MANIFEST:
+        if coluna in divergentes:
+            ids = _faixas(divergentes[coluna])
+            oc.erros.append(f"coluna {coluna} diverge do manifest versionado: ids {ids}")
+
+
 def _comparar_com_anterior(manifest, anterior, fixos, oc):
-    """Avisos do que mudou em relação ao manifest anterior (rótulos, imagens, splits)."""
+    """Modo gerar: avisos do que mudou em relação ao manifest anterior (rótulos, imagens,
+    splits descartados)."""
     rotulo_mudou, imagem_mudou = [], []
     for linha in manifest:
         antes = anterior.get(linha["id"])
@@ -280,10 +314,10 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
 
     r += ["## Resultado", ""]
     if oc.erros:
-        r += [f"**ERRO:** {len(oc.erros)} problema(s); o manifest **não** foi gravado.", ""]
+        r += [f"**ERRO:** {len(oc.erros)} problema(s); o manifest **não** foi alterado.", ""]
         r += [f"- {erro}" for erro in oc.erros] + [""]
     else:
-        r += ["**OK:** nenhum erro; manifest gravado.", ""]
+        r += ["**OK:** nenhum erro; o manifest corresponde aos dados.", ""]
     r += [f"Avisos: {len(oc.avisos) or 'nenhum'}.", ""]
     if oc.avisos:
         r += [f"- {aviso}" for aviso in oc.avisos] + [""]
@@ -426,24 +460,39 @@ def _faixas(ids) -> str:
 
 # ----------------------------------------------------------------------------- execução
 def gerar(entrada: Path, manifest: Path, relatorio: Path, seed: int = bracol.SEED_PADRAO,
-          refazer_divisao: bool = False, raiz: Path = bracol.RAIZ_REPO,
+          refazer_divisao: bool = False, verificar: bool = False, raiz: Path = bracol.RAIZ_REPO,
           ausentes_esperados=bracol.IDS_AUSENTES_ESPERADOS) -> int:
-    """Gera o manifest e o relatório. Devolve o código de saída: 0 sem erros; 1 com erros, e
-    nesse caso o manifest não é gravado (só o relatório)."""
+    """Gera o manifest (ou, com verificar=True, só o confere) e grava o relatório.
+
+    Devolve o código de saída: 0 sem erros, 1 com erros. Com erros, e sempre no modo
+    verificar, o manifest não é alterado: só o relatório é gravado.
+    """
+    if verificar and refazer_divisao:
+        raise ErroFatal("--verificar e --refazer-divisao não podem ser usados juntos")
     raiz, entrada = raiz.resolve(), entrada.resolve()
     manifest, relatorio = manifest.resolve(), relatorio.resolve()
     arquivo_csv, pasta_imagens = localizar_entrada(entrada)
     if not arquivo_csv.is_relative_to(raiz):
         raise ErroFatal(f"a entrada precisa ficar dentro do repositório ({raiz}): {entrada}")
+    anterior = ler_manifest_anterior(manifest)
+    if verificar and not anterior:
+        raise ErroFatal(f"manifest não encontrado: {manifest}; rode sem --verificar para gerá-lo")
+    _dizer("Modo: " + ("verificação (o manifest não é alterado)" if verificar else "gerar"))
     _dizer(f"Entrada: {_exibir(arquivo_csv.parent, raiz)}")
 
     oc = Ocorrencias()
     linhas, csv_com_erro = ler_csv(arquivo_csv, oc)
     imagens, ilegiveis = inspecionar_imagens(pasta_imagens, oc)
+    fixos = {}
+    if not refazer_divisao:
+        fixos = {i: linha["split"] for i, linha in anterior.items() if linha.get("split")}
     linhas_manifest, divisao = montar_manifest(
-        linhas, imagens, raiz, seed, ler_manifest_anterior(manifest), refazer_divisao,
-        ausentes_esperados, csv_com_erro | ilegiveis, oc,
+        linhas, imagens, raiz, seed, fixos, ausentes_esperados, csv_com_erro | ilegiveis, oc
     )
+    if verificar:
+        conferir_com_versionado(linhas_manifest, anterior, oc)
+    else:
+        _comparar_com_anterior(linhas_manifest, anterior, fixos, oc)
     presentes = [linha for linha in linhas_manifest if linha["presente"]]
     ctx = {
         "entrada": _exibir(arquivo_csv.parent, raiz),
@@ -457,7 +506,7 @@ def gerar(entrada: Path, manifest: Path, relatorio: Path, seed: int = bracol.SEE
     }
     relatorio.parent.mkdir(parents=True, exist_ok=True)
     relatorio.write_text(gerar_relatorio(linhas_manifest, ctx, oc), encoding="utf-8", newline="\n")
-    if not oc.erros:
+    if not oc.erros and not verificar:
         escrever_manifest(linhas_manifest, manifest)
 
     elegiveis = Counter(linha["split"] for linha in linhas_manifest if not linha["excluida"])
@@ -476,11 +525,15 @@ def gerar(entrada: Path, manifest: Path, relatorio: Path, seed: int = bracol.SEE
     if len(oc.erros) > 10:
         _dizer(f"  ... e mais {len(oc.erros) - 10} (ver o relatório)")
     _dizer(f"Relatório: {_exibir(relatorio, raiz)}")
-    if oc.erros:
+    if oc.erros and verificar:
+        _dizer("Manifest NÃO confere com os dados: veja os erros acima e no relatório.")
+    elif oc.erros:
         _dizer("Manifest NÃO gravado: corrija os erros e rode de novo.")
-        return 1
-    _dizer(f"Manifest: {_exibir(manifest, raiz)} ({len(linhas_manifest)} linhas)")
-    return 0
+    elif verificar:
+        _dizer(f"Manifest confere com os dados: {_exibir(manifest, raiz)}")
+    else:
+        _dizer(f"Manifest: {_exibir(manifest, raiz)} ({len(linhas_manifest)} linhas)")
+    return 1 if oc.erros else 0
 
 
 def _exibir(caminho: Path, raiz: Path) -> str:
@@ -507,11 +560,15 @@ def main(argv=None) -> int:
                     help="relatorio de integridade (padrao: data/reports/integridade_bracol.md)")
     ap.add_argument("--seed", type=int, default=bracol.SEED_PADRAO,
                     help=f"semente da divisao (padrao: {bracol.SEED_PADRAO})")
-    ap.add_argument("--refazer-divisao", action="store_true",
-                    help="ignora a divisao do manifest anterior e distribui tudo de novo")
+    modo = ap.add_mutually_exclusive_group()
+    modo.add_argument("--verificar", action="store_true",
+                      help="so confere dados x manifest: grava o relatorio, nunca o manifest")
+    modo.add_argument("--refazer-divisao", action="store_true",
+                      help="ignora a divisao do manifest anterior e distribui tudo de novo")
     args = ap.parse_args(argv)
     try:
-        return gerar(args.entrada, args.manifest, args.relatorio, args.seed, args.refazer_divisao)
+        return gerar(args.entrada, args.manifest, args.relatorio, args.seed,
+                     refazer_divisao=args.refazer_divisao, verificar=args.verificar)
     except ErroFatal as e:
         _dizer(f"ERRO: {e}")
         return 1

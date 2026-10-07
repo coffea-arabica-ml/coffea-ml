@@ -81,6 +81,9 @@ COLUNAS_MANIFEST = [
 # ficam a 48 ou mais. Recorte, rotação e nova foto da mesma folha não são detectados.
 PHASH_TAMANHO = 16
 LIMIAR_QUASE_DUPLICATA = 24
+# Diferença aceita no --verificar entre o pHash gravado e o recalculado: decodificadores JPEG
+# de outra plataforma podem mudar alguns bits. Fica bem abaixo do limiar de quase-duplicata.
+TOLERANCIA_PHASH = 8
 
 SPLITS = ("treino", "val", "teste")
 PROPORCOES = {"treino": 70, "val": 15, "teste": 15}  # em %, somam 100
@@ -115,7 +118,39 @@ def motivos_exclusao(ps: int, presente: bool) -> list[str]:
     return motivos
 
 
+# --------------------------------------------------------------------------- leitura
+def ler_manifest(
+    caminho=MANIFEST_BRACOL, split: str | None = None, incluir_excluidas: bool = False
+):
+    """Manifest como pandas.DataFrame, com tipos fixos e texto vazio como "" (não NaN).
+
+    Por padrão devolve só as linhas elegíveis (excluida == 0); `split` filtra treino, val ou
+    teste. O rótulo de classe para o modelo é CLASSES.index(classe), nunca predominant_stress.
+    """
+    import pandas as pd  # só quem lê o manifest precisa do pandas
+
+    df = pd.read_csv(caminho, dtype=str, keep_default_na=False)
+    if list(df.columns) != COLUNAS_MANIFEST:
+        raise ValueError(f"colunas inesperadas em {caminho}: {list(df.columns)}")
+    for coluna in ["id", "presente", *COLUNAS_CSV[1:], "excluida"]:
+        df[coluna] = df[coluna].astype("int64")
+    for coluna in ["largura", "altura"]:  # vazias nas linhas sem imagem
+        df[coluna] = pd.to_numeric(df[coluna].mask(df[coluna] == "")).astype("Int64")
+    if not incluir_excluidas:
+        df = df[df["excluida"] == 0]
+    if split is not None:
+        if split not in SPLITS:
+            raise ValueError(f"split desconhecido: {split!r} (esperado um de {SPLITS})")
+        df = df[df["split"] == split]
+    return df.reset_index(drop=True)
+
+
 # ----------------------------------------------------------------------- agrupamento
+def distancia_hamming(a: str, b: str) -> int:
+    """Número de bits diferentes entre dois hashes em hexadecimal."""
+    return (int(a, 16) ^ int(b, 16)).bit_count()
+
+
 def agrupar_por_hash(
     itens, limiar: int = LIMIAR_QUASE_DUPLICATA, fonte: str = "bracol"
 ) -> dict[int, str]:

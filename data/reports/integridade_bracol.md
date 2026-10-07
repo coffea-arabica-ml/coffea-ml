@@ -8,7 +8,7 @@ Gerado por `python data/organize_dataset.py`. Não editar à mão: rode o script
 
 ## Resultado
 
-**OK:** nenhum erro; manifest gravado.
+**OK:** nenhum erro; o manifest corresponde aos dados.
 
 Avisos: nenhum.
 

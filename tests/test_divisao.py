@@ -149,6 +149,12 @@ def item(i, phash, sha256=None):
     return {"id": i, "sha256": sha256 or f"sha-{i}", "phash": f"{phash:064x}"}
 
 
+def test_distancia_hamming():
+    outro = inverte(BASE, 7, a_partir_do_bit=33)
+    assert bracol.distancia_hamming(f"{BASE:064x}", f"{outro:064x}") == 7
+    assert bracol.distancia_hamming("ff", "00") == 8
+
+
 def test_hashes_distantes_ficam_em_grupos_unitarios():
     rng = random.Random(7)
     itens = [item(i, rng.getrandbits(256)) for i in range(1, 51)]

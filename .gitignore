@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Dados: nao versionar (ver data/README.md)
+data/raw/
+data/processed/
+*.zip

@@ -1,5 +1,5 @@
 """
-EDA do BRACOL (cópia parcial): gera as figuras em data/reports/figures/ e o resumo legível
+EDA do BRACOL: gera as figuras em data/reports/figures/ e o resumo legível
 data/reports/eda_bracol.md, com figuras, tabelas e comentários.
 
 Uso (de qualquer pasta):
@@ -123,10 +123,14 @@ def medir_brilho_e_cor(df, raiz=bracol.RAIZ_REPO, largura: int = 256) -> pd.Data
     return pd.DataFrame(medidas)
 
 
-def distancias_ao_vizinho(df) -> pd.Series:
-    """Distância de pHash (bits) de cada imagem presente até a mais parecida, indexada por id."""
-    presentes = df[df["presente"] == 1][["id", "phash"]].to_dict("records")
-    return pd.Series(bracol.distancias_ao_vizinho(presentes), name="distancia").sort_index()
+def distancias_ao_vizinho(df) -> pd.DataFrame:
+    """Distância (bits) de cada imagem presente até a mais parecida, pelos dois pHash: colunas
+    "quadro" e "folha", indexadas por id."""
+    presentes = df[df["presente"] == 1][["id", "phash", "phash_folha"]].to_dict("records")
+    return pd.DataFrame({
+        "quadro": bracol.distancias_ao_vizinho(presentes, chave="phash"),
+        "folha": bracol.distancias_ao_vizinho(presentes, chave="phash_folha"),
+    }).sort_index()
 
 
 # ---------------------------------------------------------------------------- tabelas
@@ -224,35 +228,48 @@ def _tinta_sobre(cor) -> str:
 
 
 def figura_classes(df) -> Figure:
-    """Barras por classe: imagens com e sem imagem na cópia recuperada."""
+    """Barras por classe. Se faltam imagens, mostra também as que faltam e a perda."""
     t = tabela_classes(df)
+    faltam = t["sem_imagem"].sum() > 0
+    titulo = ("Classes no dataset.csv completo e na cópia recuperada" if faltam
+              else "Imagens por classe")
     with _estilo():
-        fig = _figura(9, 3.4, "Classes no dataset.csv completo e na cópia recuperada")
+        fig = _figura(9, 3.4, titulo)
         ax = fig.add_subplot()
         y = np.arange(len(t))[::-1]
         ax.barh(y, t["com_imagem"], height=0.6, color=AZUL, edgecolor=SUPERFICIE,
                 linewidth=1.5, label="com imagem")
-        ax.barh(y, t["sem_imagem"], left=t["com_imagem"], height=0.6, color=CINZA_AUSENTE,
-                edgecolor=SUPERFICIE, linewidth=1.5, label="sem imagem (zip truncado)")
+        if faltam:
+            ax.barh(y, t["sem_imagem"], left=t["com_imagem"], height=0.6, color=CINZA_AUSENTE,
+                    edgecolor=SUPERFICIE, linewidth=1.5, label="sem imagem")
+        total = t["no_csv"].sum()
         for yi, linha in zip(y, t.itertuples()):
-            texto = (f"{fmt.n(linha.com_imagem)} de {fmt.n(linha.no_csv)} "
-                     f"(perda de {fmt.decimal(linha.perda_pct)}%)")
+            if faltam:
+                texto = (f"{fmt.n(linha.com_imagem)} de {fmt.n(linha.no_csv)} "
+                         f"(perda de {fmt.decimal(linha.perda_pct)}%)")
+            else:
+                texto = f"{fmt.n(linha.no_csv)} ({fmt.pct(linha.no_csv, total)})"
             ax.text(linha.no_csv + t["no_csv"].max() * 0.015, yi, texto, va="center",
                     color=TINTA_2)
         ax.set_yticks(y, t.index)
-        ax.set_xlim(0, t["no_csv"].max() * 1.5)
+        ax.set_xlim(0, t["no_csv"].max() * (1.5 if faltam else 1.25))
         ax.set_xlabel("imagens")
         ax.grid(axis="x")
         ax.set_axisbelow(True)
         ax.spines["left"].set_visible(False)
-        ax.legend(loc="lower right")
+        if faltam:
+            ax.legend(loc="lower right")
     return fig
 
 
 def figura_ausentes_por_id(df) -> Figure:
-    """Uma faixa por classe: cada id do csv é um traço, na cor da classe se tem imagem."""
+    """Uma faixa por classe: cada id do csv é um traço na cor da classe (cinza claro se a
+    imagem falta). Mostra que as classes aparecem em blocos de ids."""
+    faltam = (df["presente"] == 0).any()
+    titulo = ("Ids do dataset.csv por classe, com e sem imagem" if faltam
+              else "Classes ao longo dos ids do dataset.csv")
     with _estilo():
-        fig = _figura(11, 3.3, "Ids do dataset.csv por classe, com e sem imagem")
+        fig = _figura(11, 3.3, titulo)
         ax = fig.add_subplot()
         for a, b in fmt.intervalos(df.loc[df["presente"] == 0, "id"]):
             ax.axvspan(a - 0.5, b + 0.5, color=FUNDO_AUSENTE, linewidth=0, zorder=0)
@@ -266,10 +283,11 @@ def figura_ausentes_por_id(df) -> Figure:
         ax.set_xlim(0, int(df["id"].max()) + 1)
         ax.set_xlabel("id no dataset.csv")
         ax.spines["left"].set_visible(False)
-        fig.legend(handles=[
-            Line2D([], [], color=TINTA_2, linewidth=3, label="com imagem (na cor da classe)"),
-            Line2D([], [], color=CINZA_AUSENTE, linewidth=3, label="sem imagem"),
-        ], loc="outside upper right", ncols=2)
+        if faltam:
+            fig.legend(handles=[
+                Line2D([], [], color=TINTA_2, linewidth=3, label="com imagem (na cor da classe)"),
+                Line2D([], [], color=CINZA_AUSENTE, linewidth=3, label="sem imagem"),
+            ], loc="outside upper right", ncols=2)
     return fig
 
 
@@ -362,25 +380,29 @@ def _miniatura(caminho, largura: int = 300):
 
 
 def figura_vizinho_mais_proximo(distancias) -> Figure:
-    """Histograma da distância de pHash de cada imagem até a mais parecida, com o limiar."""
-    limiar = bracol.LIMIAR_QUASE_DUPLICATA
-    topo = int(distancias.max()) + 4 if len(distancias) else 2 * limiar
+    """Histogramas da distância de cada imagem até a mais parecida, um por pHash (quadro
+    inteiro e recorte da folha), cada um com o seu limiar de agrupamento."""
+    paineis = (("quadro", "pHash do quadro inteiro", bracol.LIMIAR_QUASE_DUPLICATA),
+               ("folha", "pHash do recorte da folha", bracol.LIMIAR_QUASE_DUPLICATA_FOLHA))
+    topo = int(distancias.to_numpy().max()) + 4 if len(distancias) else 64
     with _estilo():
-        fig = _figura(8.5, 3.4, "Distância de pHash de cada imagem até a mais parecida")
-        ax = fig.add_subplot()
-        ax.hist(distancias, bins=np.arange(-1, topo + 2, 2), color=AZUL, edgecolor=SUPERFICIE,
-                linewidth=1)
-        ax.axvline(limiar, color=TINTA, linewidth=1.2)
-        ax.text(limiar + 1.5, 0.96, f"limiar de quase-duplicata: {limiar} bits",
-                transform=ax.get_xaxis_transform(), va="top", color=TINTA)
-        ax.set_xlim(0, topo + 1)
-        ax.set_xlabel(f"bits diferentes (de {bracol.PHASH_TAMANHO ** 2})")
-        ax.set_ylabel("imagens")
-        ax.grid(axis="y")
-        ax.set_axisbelow(True)
-        if len(distancias):
-            ax.set_title(f"mais próxima: {int(distancias.min())} bits; mediana: "
-                         f"{fmt.decimal(distancias.median(), 0)} bits", loc="left")
+        fig = _figura(12, 3.6, "Distância de cada imagem até a mais parecida (pHash de 256 bits)")
+        eixos = fig.subplots(1, 2, sharey=True)
+        for ax, (coluna, nome, limiar) in zip(eixos, paineis):
+            valores = distancias[coluna]
+            ax.hist(valores, bins=np.arange(-1, topo + 2, 2), color=AZUL, edgecolor=SUPERFICIE,
+                    linewidth=1)
+            ax.axvline(limiar, color=TINTA, linewidth=1.2)
+            ax.text(limiar + 1.5, 0.96, f"limiar: {limiar} bits",
+                    transform=ax.get_xaxis_transform(), va="top", color=TINTA)
+            ax.set_xlim(0, topo + 1)
+            ax.set_xlabel(f"bits diferentes (de {bracol.PHASH_TAMANHO ** 2})")
+            ax.grid(axis="y")
+            ax.set_axisbelow(True)
+            if len(valores):
+                ax.set_title(f"{nome}: mais próxima a {int(valores.min())} bits, mediana "
+                             f"{fmt.decimal(valores.median(), 0)}", loc="left")
+        eixos[0].set_ylabel("imagens")
     return fig
 
 
@@ -462,7 +484,8 @@ def figura_brilho_e_cor(medidas, df) -> Figure:
                        color=TINTA)
         tom.grid(axis="y")
         tom.set_axisbelow(True)
-        tom.set_xlabel("id no dataset.csv (faixas cinza: ids sem imagem)")
+        tom.set_xlabel("id no dataset.csv (faixas cinza: ids sem imagem)" if ausentes
+                       else "id no dataset.csv")
         tom.set_xlim(0, int(df["id"].max()) + 1)
     return fig
 
@@ -473,7 +496,7 @@ def resumo(df, medidas, distancias) -> str:
     presentes = df[df["presente"] == 1]
     elegiveis = df[df["excluida"] == 0]
     classe5 = df[df["rotulo"] == "classe 5"]
-    r = ["# EDA do BRACOL (cópia parcial)", ""]
+    r = ["# EDA do BRACOL", ""]
     r += ["Gerado por `python data/eda_bracol.py` a partir de `data/manifests/bracol.csv`. Não "
           "editar à mão: rode o script de novo. O notebook `notebooks/01_eda.ipynb` mostra as "
           "mesmas tabelas e figuras; as figuras ficam em `data/reports/figures/` para a "
@@ -481,10 +504,15 @@ def resumo(df, medidas, distancias) -> str:
     if len(presentes) < len(df):
         r += [f"> **Cópia PARCIAL do BRACOL:** {fmt.n(len(presentes))} de {fmt.n(len(df))} "
               "imagens. Resultados com ela não são comparáveis com Esgario et al. (2020).", ">"]
+    else:
+        r += [f"> **Cópia completa do BRACOL:** {fmt.n(len(presentes))} imagens. Sem a classe 5 "
+              f"são {fmt.n(len(elegiveis))}, as mesmas imagens que os autores usaram, mas a "
+              f"divisão é outra (seed {bracol.SEED_PADRAO}): comparar com Esgario et al. (2020) "
+              "só com essa ressalva.", ">"]
     r += [f"> **Ressalva:** {bracol.RESSALVA_PHOMA_CERCOSPORA}", ">",
-          f"> **Classe 5** (`predominant_stress = 5`, significado desconhecido): "
+          f"> **Classe 5** (`predominant_stress = 5`, \"undetermined\" no leaf/legend.txt): "
           f"{fmt.n(len(classe5))} linhas, {fmt.n(int(classe5['presente'].sum()))} com imagem. "
-          "Fica fora de classificação, severidade e multirrótulo até a resposta dos autores.", ""]
+          "Fica fora de classificação, severidade e multirrótulo.", ""]
     resolucoes = presentes.groupby(["largura", "altura"]).size()
     if len(resolucoes) == 1:
         (largura, altura), _ = next(iter(resolucoes.items()))
@@ -495,7 +523,7 @@ def resumo(df, medidas, distancias) -> str:
         r += [f"Resoluções: {lista}.", ""]
 
     r += _secao_classes(df)
-    r += _secao_ausentes(df)
+    r += _secao_ids(df)
     r += _secao_severidade(df, elegiveis)
     r += _secao_estresses(df, elegiveis)
     r += ["## 5. Exemplos por classe", "",
@@ -511,14 +539,13 @@ def resumo(df, medidas, distancias) -> str:
 
 def _secao_classes(df):
     t = tabela_classes(df)
-    r = ["## 1. Classes e o efeito dos ausentes", "",
-         "![Classes no dataset.csv completo e na cópia recuperada](figures/01_classes.png)", ""]
-    r += fmt.tabela(["classe", "no csv", "com imagem", "sem imagem", "perda"], [
-        [l.Index, fmt.n(l.no_csv), fmt.n(l.com_imagem), fmt.n(l.sem_imagem),
-         f"{fmt.decimal(l.perda_pct)}%"] for l in t.itertuples()
-    ]) + [""]
-    classes = t.loc[bracol.CLASSES].sort_values("perda_pct", ascending=False, kind="stable")
-    if classes["sem_imagem"].sum():
+    r = ["## 1. Classes", "", "![Imagens por classe](figures/01_classes.png)", ""]
+    if t["sem_imagem"].sum():
+        r += fmt.tabela(["classe", "no csv", "com imagem", "sem imagem", "perda"], [
+            [l.Index, fmt.n(l.no_csv), fmt.n(l.com_imagem), fmt.n(l.sem_imagem),
+             f"{fmt.decimal(l.perda_pct)}%"] for l in t.itertuples()
+        ]) + [""]
+        classes = t.loc[bracol.CLASSES].sort_values("perda_pct", ascending=False, kind="stable")
         mais, segunda, menos = classes.index[0], classes.index[1], classes.index[-1]
         perda = classes["perda_pct"].map(fmt.decimal)
         antes = fmt.pct(t.at[mais, "no_csv"], t["no_csv"].sum())
@@ -526,20 +553,39 @@ def _secao_classes(df):
         r += [f"A perda não é uniforme: {mais} perdeu {perda[mais]}% e {segunda}, "
               f"{perda[segunda]}%; {menos} perdeu só {perda[menos]}%. Com isso, {mais} passa de "
               f"{antes} das linhas do csv para {depois} das imagens presentes.", ""]
+        return r
+    total = int(t["no_csv"].sum())
+    r += fmt.tabela(["classe", "imagens", "% do total"],
+                    [[l.Index, fmt.n(l.no_csv), fmt.pct(l.no_csv, total)] for l in t.itertuples()])
+    classes = t.loc[bracol.CLASSES].sort_values("no_csv", ascending=False, kind="stable")
+    maior, menor = classes.index[0], classes.index[-1]
+    razao = classes.at[maior, "no_csv"] / classes.at[menor, "no_csv"]
+    r += ["", f"A maior classe é {maior} ({fmt.n(classes.at[maior, 'no_csv'])} imagens) e a menor, "
+          f"{menor} ({fmt.n(classes.at[menor, 'no_csv'])}): razão de {fmt.decimal(razao)} para 1. "
+          f"A classe 5 ({fmt.n(t.at['classe 5', 'no_csv'])} imagens) fica fora.", ""]
     return r
 
 
-def _secao_ausentes(df):
-    r = ["## 2. Onde estão os ausentes", "",
-         "![Ids do dataset.csv por classe, com e sem imagem](figures/02_ausentes_por_id.png)", ""]
+def _secao_ids(df):
+    r = ["## 2. Classes ao longo dos ids", "",
+         "![Classes ao longo dos ids do dataset.csv](figures/02_ausentes_por_id.png)", ""]
     ausentes = df.loc[df["presente"] == 0, "id"]
     if len(ausentes):
         r += [f"Os ids sem imagem formam as faixas {fmt.faixas(ausentes)}. A causa é o truncamento "
               "do zip publicado, que guarda as imagens em ordem alfabética do nome (ver "
               "`data/README.md`). Como as classes aparecem em blocos de ids no csv, perder faixas "
               "de ids vira perder classes de forma desigual.", ""]
-    else:
-        r += ["Nenhum id sem imagem.", ""]
+    blocos = []  # [primeiro id, último id, rótulo] de cada sequência de ids da mesma classe
+    for i, rotulo in df.sort_values("id")[["id", "rotulo"]].itertuples(index=False):
+        if blocos and blocos[-1][2] == rotulo and blocos[-1][1] == i - 1:
+            blocos[-1][1] = i
+        else:
+            blocos.append([i, i, rotulo])
+    maiores = sorted(blocos, key=lambda b: (b[0] - b[1], b[0]))[:3]
+    lista = "; ".join(f"{a}-{b} ({rotulo}, {fmt.n(b - a + 1)} ids)" for a, b, rotulo in maiores)
+    r += [f"As classes aparecem em blocos de ids seguidos: as três sequências mais longas da mesma "
+          f"classe são {lista}. Se cada bloco corresponder a uma sessão de foto, classe e sessão "
+          "se confundem (ver a seção 8).", ""]
     return r
 
 
@@ -582,20 +628,38 @@ def _secao_estresses(df, elegiveis):
 
 
 def _secao_duplicatas(presentes, distancias):
-    limiar = bracol.LIMIAR_QUASE_DUPLICATA
     exatas = int(presentes["sha256"].duplicated(keep=False).sum())
-    r = ["## 6. Duplicatas e quase-duplicatas", "",
-         "![Distância de pHash até a imagem mais parecida](figures/06_vizinho_mais_proximo.png)",
+    grupos = sorted(ids for ids in presentes.groupby("grupo")["id"].apply(sorted) if len(ids) > 1)
+    r = ["## 6. Duplicatas e folhas repetidas", "",
+         "![Distância de cada imagem até a mais parecida](figures/06_vizinho_mais_proximo.png)",
          ""]
     if len(distancias):
-        perto = int((distancias <= limiar).sum())
-        quantas = "Nenhuma imagem fica" if perto == 0 else f"{fmt.n(perto)} imagem(ns) ficam"
-        r += [f"Para cada imagem, a distância de pHash ({bracol.PHASH_TAMANHO ** 2} bits) até a "
-              f"imagem mais parecida. {quantas} a {limiar} bits ou menos de outra (o limiar de "
-              f"quase-duplicata); a menor distância é {int(distancias.min())} bits e a mediana, "
-              f"{fmt.decimal(distancias.median(), 0)} bits. Imagens com SHA-256 repetido: "
-              f"{fmt.n(exatas)}. O pHash pega a mesma foto re-salva, redimensionada ou com outro "
-              "brilho; não pega a mesma folha fotografada de novo.", ""]
+        r += [f"Para cada imagem, a distância até a mais parecida por dois pHash de "
+              f"{bracol.PHASH_TAMANHO ** 2} bits: o do quadro inteiro e o do recorte da folha. A "
+              f"mais próxima fica a {int(distancias['quadro'].min())} bits no quadro (mediana "
+              f"{fmt.decimal(distancias['quadro'].median(), 0)}) e a "
+              f"{int(distancias['folha'].min())} bits na folha (mediana "
+              f"{fmt.decimal(distancias['folha'].median(), 0)}). Imagens com SHA-256 repetido: "
+              f"{fmt.n(exatas)}.", ""]
+    descricao = "; ".join("/".join(str(i) for i in ids) for ids in grupos)
+    r += [f"Grupos com mais de uma imagem: {fmt.n(len(grupos))}"
+          + (f" ({descricao})" if grupos else "") + ". Uma imagem entra no grupo de outra se o "
+          f"SHA-256 for igual, se o pHash do quadro ficar a até {bracol.LIMIAR_QUASE_DUPLICATA} "
+          f"bits, se o da folha ficar a até {bracol.LIMIAR_QUASE_DUPLICATA_FOLHA} bits, ou se o "
+          "par estiver na lista de folhas repetidas conferidas visualmente em 07/10/2026; um grupo "
+          "nunca se divide entre splits. A tabela de cada par, com os rótulos e as duas "
+          "distâncias, está em `data/reports/integridade_bracol.md`.", ""]
+    if len(presentes) > 1:
+        itens = presentes[["id", "phash", "phash_folha"]].to_dict("records")
+        grupo_de = dict(zip(presentes["id"], presentes["grupo"]))
+        perto = {chave: bracol.pares_mais_proximos(itens, k=1, chave=chave, grupos=grupo_de)
+                 for chave in ("phash", "phash_folha")}
+        if perto["phash"] and perto["phash_folha"]:
+            (dq, aq, bq), (dfo, af, bf) = perto["phash"][0], perto["phash_folha"][0]
+            r += [f"O pHash do quadro pega a mesma foto re-salva, redimensionada ou com outro "
+                  "brilho, mas o fundo e a luz pesam muito nele; o da folha pega boa parte das "
+                  "fotos repetidas da mesma folha. Os pares não agrupados mais próximos ficam a "
+                  f"{dq} bits no quadro ({aq}/{bq}) e a {dfo} bits na folha ({af}/{bf}).", ""]
     return r
 
 

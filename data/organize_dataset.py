@@ -25,7 +25,6 @@ import hashlib
 import io
 import re
 import sys
-import unicodedata
 from collections import Counter
 from pathlib import Path
 
@@ -33,6 +32,7 @@ import imagehash
 from PIL import Image
 
 import bracol
+import formatacao as fmt
 
 RELATORIO_PADRAO = bracol.PASTA_REPORTS / "integridade_bracol.md"
 NOME_IMAGEM = re.compile(r"^(\d+)\.jpg$", re.IGNORECASE)
@@ -131,7 +131,7 @@ def inspecionar_imagens(pasta: Path, oc: Ocorrencias) -> tuple[dict[int, dict], 
             oc.erros.append(f"mais de um arquivo para o id {int(nome.group(1))}: {p.name}")
         else:
             arquivos[int(nome.group(1))] = p
-    _dizer(f"Abrindo {len(arquivos)} imagens (decodificação completa, SHA-256 e pHash)...")
+    fmt.dizer(f"Abrindo {len(arquivos)} imagens (decodificação completa, SHA-256 e pHash)...")
     imagens, ilegiveis = {}, set()
     for n, (i, p) in enumerate(sorted(arquivos.items()), start=1):
         dados = p.read_bytes()
@@ -151,7 +151,7 @@ def inspecionar_imagens(pasta: Path, oc: Ocorrencias) -> tuple[dict[int, dict], 
             oc.erros.append(f"imagem ilegível: {p.name} ({type(e).__name__}: {e})")
             ilegiveis.add(i)
         if n % 250 == 0:
-            _dizer(f"  ...{n}/{len(arquivos)}")
+            fmt.dizer(f"  ...{n}/{len(arquivos)}")
     return imagens, ilegiveis
 
 
@@ -176,7 +176,7 @@ def montar_manifest(linhas, imagens, raiz, seed, fixos, ausentes_esperados, com_
         oc.erros.append(f"imagem sem linha no dataset.csv: {imagens[i]['arquivo'].name}")
     inesperados = sorted(ids_csv - set(imagens) - com_erro - set(ausentes_esperados))
     if inesperados:
-        oc.erros.append(f"imagens ausentes fora da lista esperada: ids {_faixas(inesperados)}")
+        oc.erros.append(f"imagens ausentes fora da lista esperada: ids {fmt.faixas(inesperados)}")
 
     presentes = [{"id": i, **imagens[i]} for i in sorted(ids_csv & set(imagens))]
     grupos = bracol.agrupar_por_hash(presentes)
@@ -234,11 +234,11 @@ def conferir_com_versionado(manifest, versionado, oc):
     so_no_versionado = sorted(set(versionado) - set(atuais))
     so_nos_dados = sorted(set(atuais) - set(versionado))
     if so_no_versionado:
-        oc.erros.append(
-            f"ids no manifest versionado que não estão nos dados: {_faixas(so_no_versionado)}"
-        )
+        ids = fmt.faixas(so_no_versionado)
+        oc.erros.append(f"ids no manifest versionado que não estão nos dados: {ids}")
     if so_nos_dados:
-        oc.erros.append(f"ids nos dados que faltam no manifest versionado: {_faixas(so_nos_dados)}")
+        ids = fmt.faixas(so_nos_dados)
+        oc.erros.append(f"ids nos dados que faltam no manifest versionado: {ids}")
     divergentes = {}
     for i in sorted(set(atuais) & set(versionado)):
         for coluna in bracol.COLUNAS_MANIFEST:
@@ -251,7 +251,7 @@ def conferir_com_versionado(manifest, versionado, oc):
                 divergentes.setdefault(coluna, []).append(i)
     for coluna in bracol.COLUNAS_MANIFEST:
         if coluna in divergentes:
-            ids = _faixas(divergentes[coluna])
+            ids = fmt.faixas(divergentes[coluna])
             oc.erros.append(f"coluna {coluna} diverge do manifest versionado: ids {ids}")
 
 
@@ -268,17 +268,16 @@ def _comparar_com_anterior(manifest, anterior, fixos, oc):
         if linha["sha256"] and antes.get("sha256") and linha["sha256"] != antes["sha256"]:
             imagem_mudou.append(linha["id"])
     if rotulo_mudou:
-        oc.avisos.append(f"rótulos diferentes do manifest anterior: ids {_faixas(rotulo_mudou)}")
+        oc.avisos.append(f"rótulos diferentes do manifest anterior: ids {fmt.faixas(rotulo_mudou)}")
     if imagem_mudou:
-        oc.avisos.append(
-            f"imagens diferentes do manifest anterior (SHA-256 mudou): ids {_faixas(imagem_mudou)}"
-        )
+        ids = fmt.faixas(imagem_mudou)
+        oc.avisos.append(f"imagens diferentes do manifest anterior (SHA-256 mudou): ids {ids}")
     com_split = {linha["id"] for linha in manifest if linha["split"]}
     descartados = sorted(set(fixos) - com_split)
     if descartados:
         oc.avisos.append(
             "atribuições de split descartadas (deixaram de ser elegíveis): "
-            f"ids {_faixas(descartados)}"
+            f"ids {fmt.faixas(descartados)}"
         )
 
 
@@ -304,12 +303,12 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
           ""]
     if ausentes:
         r += [
-            f"> **Cópia PARCIAL do BRACOL:** {_n(len(presentes))} de {_n(len(linhas))} imagens. "
-            "Resultados com ela não são comparáveis com Esgario et al. (2020).",
+            f"> **Cópia PARCIAL do BRACOL:** {fmt.n(len(presentes))} de {fmt.n(len(linhas))} "
+            "imagens. Resultados com ela não são comparáveis com Esgario et al. (2020).",
             ">",
         ]
     else:
-        r += [f"> **Cópia completa do BRACOL:** {_n(len(presentes))} imagens.", ">"]
+        r += [f"> **Cópia completa do BRACOL:** {fmt.n(len(presentes))} imagens.", ">"]
     r += [f"> **Ressalva:** {bracol.RESSALVA_PHOMA_CERCOSPORA}", ""]
 
     r += ["## Resultado", ""]
@@ -327,9 +326,9 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
     else:
         divisao = "estável: imagens que já tinham split no manifest anterior ficam onde estavam"
     r += ["## Parâmetros", ""]
-    r += _tabela(["item", "valor"], [
+    r += fmt.tabela(["item", "valor"], [
         ["entrada", f"`{ctx['entrada']}`"],
-        ["dataset.csv", f"{_n(len(linhas))} linhas, SHA-256 `{ctx['csv_sha256']}`"],
+        ["dataset.csv", f"{fmt.n(len(linhas))} linhas, SHA-256 `{ctx['csv_sha256']}`"],
         ["manifest", f"`{ctx['manifest']}`"],
         ["proporções", ", ".join(f"{s} {p}%" for s, p in bracol.PROPORCOES.items())],
         ["seed", ctx["seed"]],
@@ -339,32 +338,33 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
     ], alinhar="ll") + [""]
 
     r += ["## CSV x arquivos", ""]
-    r += _tabela(["", "quantidade"], [
-        ["linhas no dataset.csv", _n(len(linhas))],
-        ["imagens `<id>.jpg` lidas", _n(len(ctx["imagens"]))],
-        ["imagens sem linha no csv", _n(len(ctx["imagens"]) - len(presentes))],
-        ["ids sem imagem", _n(len(ausentes))],
-        ["ids sem imagem, esperados (truncamento do zip)", _n(len(ausentes) - len(inesperados))],
-        ["ids sem imagem, inesperados", _n(len(inesperados))],
+    r += fmt.tabela(["", "quantidade"], [
+        ["linhas no dataset.csv", fmt.n(len(linhas))],
+        ["imagens `<id>.jpg` lidas", fmt.n(len(ctx["imagens"]))],
+        ["imagens sem linha no csv", fmt.n(len(ctx["imagens"]) - len(presentes))],
+        ["ids sem imagem", fmt.n(len(ausentes))],
+        ["ids sem imagem, esperados (truncamento do zip)", fmt.n(len(ausentes) - len(inesperados))],
+        ["ids sem imagem, inesperados", fmt.n(len(inesperados))],
     ]) + [""]
     if ausentes:
-        r += [f"Ids sem imagem: {_faixas(ausentes)}.", ""]
+        r += [f"Ids sem imagem: {fmt.faixas(ausentes)}.", ""]
     tabela = []
     for classe in [*bracol.CLASSES, ""]:
         da_classe = [linha for linha in linhas if linha["classe"] == classe]
         sem = sum(1 for linha in da_classe if not linha["presente"])
-        tabela.append([classe or "(classe 5)", _n(len(da_classe)), _n(len(da_classe) - sem),
-                       _n(sem), _pct(sem, len(da_classe))])
-    tabela.append(["**total**", _n(len(linhas)), _n(len(presentes)), _n(len(ausentes)),
-                   _pct(len(ausentes), len(linhas))])
-    r += _tabela(["classe", "no csv", "com imagem", "sem imagem", "perda"], tabela) + [""]
+        tabela.append([classe or "(classe 5)", fmt.n(len(da_classe)), fmt.n(len(da_classe) - sem),
+                       fmt.n(sem), fmt.pct(sem, len(da_classe))])
+    tabela.append(["**total**", fmt.n(len(linhas)), fmt.n(len(presentes)), fmt.n(len(ausentes)),
+                   fmt.pct(len(ausentes), len(linhas))])
+    r += fmt.tabela(["classe", "no csv", "com imagem", "sem imagem", "perda"], tabela) + [""]
 
     r += ["## Imagens", ""]
     tipos = Counter(
         (d["formato"], d["modo"], f"{d['largura']}x{d['altura']}") for d in ctx["imagens"].values()
     )
-    r += _tabela(["formato", "modo", "resolução", "imagens"],
-                 [[*tipo, _n(q)] for tipo, q in sorted(tipos.items())], alinhar="lllr") + [""]
+    linhas_tipos = [[*tipo, fmt.n(q)] for tipo, q in sorted(tipos.items())]
+    r += fmt.tabela(["formato", "modo", "resolução", "imagens"], linhas_tipos, alinhar="lllr")
+    r += [""]
     r += ["As imagens desta tabela abriram e decodificaram por completo; as ilegíveis aparecem "
           "nos erros.", ""]
 
@@ -373,24 +373,26 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
     por_grupo = Counter(linha["grupo"] for linha in presentes)
     grupos = sorted((g for g, q in por_grupo.items() if q > 1), key=lambda g: int(g.split("-")[1]))
     r += [
-        f"- Duplicatas exatas (mesmo SHA-256): {_n(exatas)} grupo(s).",
+        f"- Duplicatas exatas (mesmo SHA-256): {fmt.n(exatas)} grupo(s).",
         f"- Grupos com mais de uma imagem (SHA-256 igual ou pHash a até "
-        f"{bracol.LIMIAR_QUASE_DUPLICATA} bits): {_n(len(grupos))}.",
+        f"{bracol.LIMIAR_QUASE_DUPLICATA} bits): {fmt.n(len(grupos))}.",
     ]
     for g in grupos:
         membros = ", ".join(str(linha["id"]) for linha in presentes if linha["grupo"] == g)
         r.append(f"  - `{g}`: ids {membros}")
     r += ["", "Pares mais próximos pelo pHash (para conferir o limiar):", ""]
     nome = {linha["id"]: linha["classe"] or "(classe 5)" for linha in linhas}
-    r += _tabela(["id A", "id B", "distância (bits)", "classe A", "classe B"],
-                 [[a, b, d, nome[a], nome[b]] for d, a, b in ctx["pares"]], alinhar="rrrll") + [""]
+    linhas_pares = [[a, b, d, nome[a], nome[b]] for d, a, b in ctx["pares"]]
+    r += fmt.tabela(["id A", "id B", "distância (bits)", "classe A", "classe B"], linhas_pares,
+                    alinhar="rrrll")
+    r += [""]
 
     r += ["## Exclusões", ""]
     motivos = Counter(linha["motivo_exclusao"] for linha in linhas if linha["excluida"])
-    r += _tabela(["motivo", "linhas"], [
-        *([f"`{m}`", _n(q)] for m, q in sorted(motivos.items())),
-        ["**total excluídas**", _n(sum(motivos.values()))],
-        ["**elegíveis**", _n(len(elegiveis))],
+    r += fmt.tabela(["motivo", "linhas"], [
+        *([f"`{m}`", fmt.n(q)] for m, q in sorted(motivos.items())),
+        ["**total excluídas**", fmt.n(sum(motivos.values()))],
+        ["**elegíveis**", fmt.n(len(elegiveis))],
     ]) + [""]
 
     classe5 = [linha for linha in linhas if linha["predominant_stress"] == bracol.PS_DESCONHECIDO]
@@ -399,14 +401,15 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
     r += ["## Classe 5 (predominant_stress = 5)", ""]
     r += ["Significado desconhecido (os autores foram consultados): fica fora de classificação, "
           "severidade e multirrótulo até a resposta. Não atribuir classe por palpite.", ""]
-    r += [f"Linhas: {_n(len(classe5))}, {_n(len(com_imagem))} com imagem "
+    r += [f"Linhas: {fmt.n(len(classe5))}, {fmt.n(len(com_imagem))} com imagem "
           f"(sem imagem: {', '.join(sem_imagem) or 'nenhuma'}).", ""]
     combinacoes = Counter(
         "+".join(c for c in bracol.PS_PARA_COLUNA.values() if linha[c]) or "(nenhum)"
         for linha in com_imagem
     )
-    r += _tabela(["estresses marcados (com imagem)", "imagens"],
-                 [[c, _n(q)] for c, q in sorted(combinacoes.items(), key=lambda x: (-x[1], x[0]))])
+    ordem = sorted(combinacoes.items(), key=lambda x: (-x[1], x[0]))
+    r += fmt.tabela(["estresses marcados (com imagem)", "imagens"],
+                    [[c, fmt.n(q)] for c, q in ordem])
     r += [""]
 
     r += ["## Divisão", ""]
@@ -414,48 +417,18 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
     tabela = []
     for classe in bracol.CLASSES:
         valores = [por_classe[classe, s] for s in bracol.SPLITS]
-        tabela.append([classe, *map(_n, valores), _n(sum(valores))])
+        tabela.append([classe, *map(fmt.n, valores), fmt.n(sum(valores))])
     totais = Counter(linha["split"] for linha in elegiveis)
-    tabela.append(["**total**", *(_n(totais[s]) for s in bracol.SPLITS), _n(len(elegiveis))])
-    r += _tabela(["classe", *bracol.SPLITS, "total"], tabela) + [""]
+    tabela.append(["**total**", *(fmt.n(totais[s]) for s in bracol.SPLITS), fmt.n(len(elegiveis))])
+    r += fmt.tabela(["classe", *bracol.SPLITS, "total"], tabela) + [""]
     por_severidade = Counter((linha["severity"], linha["split"]) for linha in elegiveis)
     tabela = []
     for nivel, descricao in bracol.SEVERIDADES.items():
         valores = [por_severidade[nivel, s] for s in bracol.SPLITS]
-        tabela.append([f"{nivel}: {descricao}", *map(_n, valores),
-                       _pct(por_severidade[nivel, "teste"], sum(valores))])
-    r += _tabela(["severidade", *bracol.SPLITS, "% no teste"], tabela)
+        tabela.append([f"{nivel}: {descricao}", *map(fmt.n, valores),
+                       fmt.pct(por_severidade[nivel, "teste"], sum(valores))])
+    r += fmt.tabela(["severidade", *bracol.SPLITS, "% no teste"], tabela)
     return "\n".join(r) + "\n"
-
-
-def _tabela(cabecalho, linhas, alinhar=None) -> list[str]:
-    """Tabela markdown. `alinhar` tem uma letra por coluna (l ou r); o padrão é a primeira à
-    esquerda e as outras à direita."""
-    alinhar = alinhar or "l" + "r" * (len(cabecalho) - 1)
-    saida = ["| " + " | ".join(cabecalho) + " |",
-             "|" + "|".join("---" if a == "l" else "---:" for a in alinhar) + "|"]
-    return saida + ["| " + " | ".join(str(c) for c in linha) + " |" for linha in linhas]
-
-
-def _n(valor: int) -> str:
-    """Inteiro com ponto de milhar: 1747 -> 1.747."""
-    return f"{valor:,}".replace(",", ".")
-
-
-def _pct(parte: int, total: int) -> str:
-    """Percentual com vírgula decimal: 14,8%."""
-    return f"{100 * parte / total:.1f}%".replace(".", ",") if total else "-"
-
-
-def _faixas(ids) -> str:
-    """Ids em faixas: [7, 8, 9, 69, 70] -> '7-9, 69-70'."""
-    faixas = []
-    for i in sorted(ids):
-        if faixas and i == faixas[-1][1] + 1:
-            faixas[-1][1] = i
-        else:
-            faixas.append([i, i])
-    return ", ".join(f"{a}-{b}" if a != b else str(a) for a, b in faixas)
 
 
 # ----------------------------------------------------------------------------- execução
@@ -477,8 +450,8 @@ def gerar(entrada: Path, manifest: Path, relatorio: Path, seed: int = bracol.SEE
     anterior = ler_manifest_anterior(manifest)
     if verificar and not anterior:
         raise ErroFatal(f"manifest não encontrado: {manifest}; rode sem --verificar para gerá-lo")
-    _dizer("Modo: " + ("verificação (o manifest não é alterado)" if verificar else "gerar"))
-    _dizer(f"Entrada: {_exibir(arquivo_csv.parent, raiz)}")
+    fmt.dizer("Modo: " + ("verificação (o manifest não é alterado)" if verificar else "gerar"))
+    fmt.dizer(f"Entrada: {_exibir(arquivo_csv.parent, raiz)}")
 
     oc = Ocorrencias()
     linhas, csv_com_erro = ler_csv(arquivo_csv, oc)
@@ -511,41 +484,34 @@ def gerar(entrada: Path, manifest: Path, relatorio: Path, seed: int = bracol.SEE
 
     elegiveis = Counter(linha["split"] for linha in linhas_manifest if not linha["excluida"])
     grupos = Counter(linha["grupo"] for linha in presentes)
-    _dizer("")
-    _dizer(f"Imagens: {len(presentes)} com imagem de {len(linhas_manifest)} linhas do csv "
+    fmt.dizer("")
+    fmt.dizer(f"Imagens: {len(presentes)} com imagem de {len(linhas_manifest)} linhas do csv "
            f"({len(linhas_manifest) - len(presentes)} sem imagem)")
-    _dizer(f"Grupos com mais de uma imagem: {sum(1 for q in grupos.values() if q > 1)} | "
+    fmt.dizer(f"Grupos com mais de uma imagem: {sum(1 for q in grupos.values() if q > 1)} | "
            f"par mais próximo: {ctx['pares'][0][0] if ctx['pares'] else '-'} bits")
-    _dizer(f"Elegíveis: {sum(elegiveis.values())} | treino {elegiveis['treino']} | "
+    fmt.dizer(f"Elegíveis: {sum(elegiveis.values())} | treino {elegiveis['treino']} | "
            f"val {elegiveis['val']} | teste {elegiveis['teste']} | "
            f"divisão: {divisao['mantidas']} mantidas, {divisao['novas']} novas")
-    _dizer(f"Erros: {len(oc.erros)} | avisos: {len(oc.avisos)}")
+    fmt.dizer(f"Erros: {len(oc.erros)} | avisos: {len(oc.avisos)}")
     for erro in oc.erros[:10]:
-        _dizer(f"  ERRO: {erro}")
+        fmt.dizer(f"  ERRO: {erro}")
     if len(oc.erros) > 10:
-        _dizer(f"  ... e mais {len(oc.erros) - 10} (ver o relatório)")
-    _dizer(f"Relatório: {_exibir(relatorio, raiz)}")
+        fmt.dizer(f"  ... e mais {len(oc.erros) - 10} (ver o relatório)")
+    fmt.dizer(f"Relatório: {_exibir(relatorio, raiz)}")
     if oc.erros and verificar:
-        _dizer("Manifest NÃO confere com os dados: veja os erros acima e no relatório.")
+        fmt.dizer("Manifest NÃO confere com os dados: veja os erros acima e no relatório.")
     elif oc.erros:
-        _dizer("Manifest NÃO gravado: corrija os erros e rode de novo.")
+        fmt.dizer("Manifest NÃO gravado: corrija os erros e rode de novo.")
     elif verificar:
-        _dizer(f"Manifest confere com os dados: {_exibir(manifest, raiz)}")
+        fmt.dizer(f"Manifest confere com os dados: {_exibir(manifest, raiz)}")
     else:
-        _dizer(f"Manifest: {_exibir(manifest, raiz)} ({len(linhas_manifest)} linhas)")
+        fmt.dizer(f"Manifest: {_exibir(manifest, raiz)} ({len(linhas_manifest)} linhas)")
     return 1 if oc.erros else 0
 
 
 def _exibir(caminho: Path, raiz: Path) -> str:
     """Caminho relativo à raiz do repo em formato POSIX (absoluto, se estiver fora dela)."""
     return caminho.relative_to(raiz).as_posix() if caminho.is_relative_to(raiz) else str(caminho)
-
-
-def _dizer(texto: str = "") -> None:
-    """Mensagem de terminal só em ASCII. Os acentos saem porque, no Windows, a saída
-    redirecionada vai em cp1252 e os acentos viram lixo."""
-    sem_acento = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode("ascii")
-    print(sem_acento, flush=True)
 
 
 def main(argv=None) -> int:
@@ -570,7 +536,7 @@ def main(argv=None) -> int:
         return gerar(args.entrada, args.manifest, args.relatorio, args.seed,
                      refazer_divisao=args.refazer_divisao, verificar=args.verificar)
     except ErroFatal as e:
-        _dizer(f"ERRO: {e}")
+        fmt.dizer(f"ERRO: {e}")
         return 1
 
 

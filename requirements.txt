@@ -25,3 +25,6 @@ tqdm==4.70.0
 
 # Notebooks
 jupyter==1.1.1
+
+# Testes
+pytest==9.1.1

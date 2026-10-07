@@ -7,10 +7,10 @@ TODO (Frente 8): implementar a leitura das anotações originais do BRACOL
 e a divisão estratificada por classe.
 """
 
+from bracol import CLASSES  # fonte única das classes: data/bracol.py
+
 RAW_DIR = "data/raw"
 PROCESSED_DIR = "data/processed"
-
-CLASSES = ["saudavel", "ferrugem", "bicho_mineiro", "phoma", "cercosporiose"]
 
 
 def organizar():

@@ -5,7 +5,9 @@ regras de exclusão e caminhos padrão.
 É o único lugar onde essas definições ficam. organize_dataset.py, eda_bracol.py, os testes
 e a Frente 9 importam daqui (com a pasta data/ no sys.path: `import bracol`).
 
-O BRACOL usado aqui é PARCIAL: 1.401 de 1.747 imagens (ver data/README.md).
+O BRACOL usado aqui é a cópia completa (coffee-datasets.zip, recebida dos autores em
+07/10/2026): 1.747 imagens de folha. A cópia parcial anterior continua em
+data/raw/bracol/bracol_recuperado/, obsoleta (ver data/README.md).
 """
 import hashlib
 from collections import Counter
@@ -16,6 +18,7 @@ import numpy as np
 # ------------------------------------------------------------------------ caminhos
 RAIZ_REPO = Path(__file__).resolve().parents[1]
 PASTA_RAW_BRACOL = RAIZ_REPO / "data" / "raw" / "bracol"
+PASTA_BRACOL = PASTA_RAW_BRACOL / "bracol_completo"  # entrada padrão: a cópia completa
 MANIFEST_BRACOL = RAIZ_REPO / "data" / "manifests" / "bracol.csv"
 PASTA_REPORTS = RAIZ_REPO / "data" / "reports"
 
@@ -33,9 +36,10 @@ PS_PARA_CLASSE = {
     4: "cercosporiose",
 }
 
-# Código 5: significado desconhecido (62 linhas no csv completo). Os autores foram
-# consultados; até a resposta, essas linhas ficam fora de todas as tarefas.
-PS_DESCONHECIDO = 5
+# Código 5: "undetermined" no leaf/legend.txt dos autores, isto é, estresse predominante
+# indeterminado (62 linhas). Fica fora de todas as tarefas; os autores também tiraram essas
+# linhas do dataset.csv que usaram nos experimentos (1.685 imagens).
+PS_INDETERMINADO = 5
 
 # Coluna binária que precisa estar marcada quando o estresse é o predominante.
 PS_PARA_COLUNA = {1: "miner", 2: "rust", 3: "phoma", 4: "cercospora"}
@@ -60,10 +64,10 @@ SEVERIDADES = {
 MOTIVO_AUSENTE = "imagem_ausente"
 MOTIVO_CLASSE_5 = "predominant_stress_5"
 
-# Ids sem imagem na cópia recuperada. O zip publicado (DOI 10.17632/yy2k5y8mxg.1) não tem
-# índice central, guarda as entradas em ordem alfabética do nome e termina no meio de
-# 688.jpg: faltam exatamente os ids cujo nome vem depois de "688" nessa ordem.
-IDS_AUSENTES_ESPERADOS = frozenset([*range(7, 10), *range(69, 100), *range(688, 1000)])
+# Ids sem imagem esperados na entrada: nenhum, porque a cópia completa tem todas as imagens.
+# A cópia parcial anterior (zip do Mendeley truncado no meio de 688.jpg) não tinha os ids 7-9,
+# 69-99 e 688-999 e por isso hoje dá erro se usada como entrada (ver data/README.md).
+IDS_AUSENTES_ESPERADOS = frozenset()
 
 # ------------------------------------------------------------------------ manifest
 # As colunas que vêm do dataset.csv original mantêm o nome em inglês (rastreabilidade).
@@ -71,19 +75,40 @@ COLUNAS_CSV = ["id", "predominant_stress", "miner", "rust", "phoma", "cercospora
 COLUNAS_MANIFEST = [
     "fonte", "id", "caminho", "presente", "classe",
     "predominant_stress", "miner", "rust", "phoma", "cercospora", "severity",
-    "largura", "altura", "sha256", "phash", "grupo", "split", "excluida", "motivo_exclusao",
+    "largura", "altura", "sha256", "phash", "phash_folha", "grupo", "split", "excluida",
+    "motivo_exclusao",
 ]
 
 # ---------------------------------------------------------------- hashes e divisão
-# pHash de 256 bits: imagehash.phash(img, hash_size=PHASH_TAMANHO). O padrão de 64 bits não
-# serve aqui: folhas diferentes (137 e 1510) ficam a 2 bits. Medido no BRACOL com 256 bits:
-# re-salvar, redimensionar ou mudar o brilho em 15% muda no máximo 18 bits; folhas distintas
-# ficam a 48 ou mais. Recorte, rotação e nova foto da mesma folha não são detectados.
+# Dois pHash de 256 bits (imagehash.phash, hash_size=PHASH_TAMANHO); o padrão de 64 bits não
+# serve aqui (folhas diferentes, 137 e 1510, ficam a 2 bits).
+# - phash: o quadro inteiro. Re-salvar, redimensionar ou mudar o brilho em 15% muda no máximo
+#   18 bits, mas o fundo e a luz dominam: a mesma folha fotografada de novo fica a 28-104 bits.
+# - phash_folha: o recorte da folha (caixa envolvente do que não é fundo, em 512x256).
+# Calibração (07/10/2026), em bits no recorte da folha: pares da mesma folha a 0, 18, 30, 32,
+# 32, 36, 42 e 50 (469/471); folhas distintas a partir de 50 (134/160). O limiar da folha fica
+# no meio entre 42 e 50, e o par 469/471 entra pela lista PARES_MESMA_FOLHA.
 PHASH_TAMANHO = 16
-LIMIAR_QUASE_DUPLICATA = 24
-# Diferença aceita no --verificar entre o pHash gravado e o recalculado: decodificadores JPEG
-# de outra plataforma podem mudar alguns bits. Fica bem abaixo do limiar de quase-duplicata.
+LIMIAR_QUASE_DUPLICATA = 32  # quadro inteiro: par distinto mais próximo a 48; 758/759 a 28
+LIMIAR_QUASE_DUPLICATA_FOLHA = 46  # recorte da folha: par distinto mais próximo a 50
+# Pares da mesma folha (mesmos rótulos), conferidos visualmente em 07/10/2026. Ficam sempre no
+# mesmo grupo, mesmo que os hashes mudem alguns bits em outra plataforma.
+PARES_MESMA_FOLHA = (
+    (469, 471), (758, 759), (760, 764), (813, 1022),
+    (1295, 1296), (1352, 1356), (1692, 1694), (1715, 1722),
+)
+# Folhas escuras parecidas, sem veredito: só aparecem no relatório, para conferir.
+PARES_PARA_CONFERIR = ((953, 959), (986, 987))
+# Diferença aceita no --verificar entre um pHash gravado e o recalculado: decodificadores JPEG
+# de outra plataforma podem mudar alguns bits. Fica bem abaixo dos limiares acima.
 TOLERANCIA_PHASH = 8
+
+# Histórico da divisão, impresso no relatório de integridade (o resto do relatório não tem data).
+HISTORICO_DIVISAO = (
+    ("07/10/2026", "divisão refeita do zero (--refazer-divisao) ao adotar a cópia completa do "
+     "BRACOL: nenhum modelo tinha sido treinado, e manter a divisão anterior deixaria partido o "
+     "par 469/471, a mesma folha fotografada duas vezes. Daqui em diante a divisão é estável."),
+)
 
 SPLITS = ("treino", "val", "teste")
 PROPORCOES = {"treino": 70, "val": 15, "teste": 15}  # em %, somam 100
@@ -94,10 +119,10 @@ _DESEMPATE = ("teste", "val", "treino")  # ordem fixa quando cotas ou déficits 
 def classe_do_projeto(ps: int) -> str | None:
     """Classe do projeto para um código predominant_stress (inteiro de 0 a 5).
 
-    Devolve None para o código 5 (significado desconhecido) e levanta ValueError para
-    qualquer outro valor.
+    Devolve None para o código 5 (indeterminado) e levanta ValueError para qualquer outro
+    valor.
     """
-    if ps == PS_DESCONHECIDO:
+    if ps == PS_INDETERMINADO:
         return None
     if ps not in PS_PARA_CLASSE:
         raise ValueError(f"predominant_stress inválido: {ps!r} (esperado inteiro de 0 a 5)")
@@ -152,18 +177,26 @@ def distancia_hamming(a: str, b: str) -> int:
 
 
 def agrupar_por_hash(
-    itens, limiar: int = LIMIAR_QUASE_DUPLICATA, fonte: str = "bracol"
+    itens,
+    limiar: int = LIMIAR_QUASE_DUPLICATA,
+    limiar_folha: int = LIMIAR_QUASE_DUPLICATA_FOLHA,
+    pares_manuais=PARES_MESMA_FOLHA,
+    fonte: str = "bracol",
 ) -> dict[int, str]:
-    """Junta no mesmo grupo as duplicatas exatas (sha256 igual) e as quase-duplicatas
-    (pHash a no máximo `limiar` bits), de forma transitiva.
+    """Junta no mesmo grupo, de forma transitiva, as imagens com SHA-256 igual, com pHash do
+    quadro a no máximo `limiar` bits, com pHash da folha a no máximo `limiar_folha` bits, ou
+    que formem um dos `pares_manuais`.
 
-    itens: dicts com "id", "sha256" e "phash" (hex) das imagens presentes.
-    Devolve {id: grupo}, com grupo = "<fonte>-<menor id do grupo>".
+    itens: dicts com "id", "sha256", "phash" e, se houver, "phash_folha" (hex) das imagens
+    presentes. Devolve {id: grupo}, com grupo = "<fonte>-<menor id do grupo>".
     """
     itens = sorted(itens, key=lambda item: item["id"])
     for item in itens:
         if not item["sha256"] or not item["phash"]:
             raise ValueError(f"id {item['id']} sem sha256 ou phash")
+    folhas = [item.get("phash_folha") for item in itens]
+    if any(folhas) and not all(folhas):
+        raise ValueError("phash_folha precisa existir em todas as imagens ou em nenhuma")
     if not itens:
         return {}
 
@@ -185,6 +218,13 @@ def agrupar_por_hash(
         unir(i, primeiro_com_sha.setdefault(item["sha256"], i))
     for i, j in _pares_ate(_matriz_de_bits([item["phash"] for item in itens]), limiar):
         unir(i, j)
+    if all(folhas):
+        for i, j in _pares_ate(_matriz_de_bits(folhas), limiar_folha):
+            unir(i, j)
+    posicao = {item["id"]: i for i, item in enumerate(itens)}
+    for a, b in pares_manuais:
+        if a in posicao and b in posicao:
+            unir(posicao[a], posicao[b])
     return {item["id"]: f"{fonte}-{itens[raiz(i)]['id']}" for i, item in enumerate(itens)}
 
 
@@ -199,36 +239,47 @@ def _matriz_de_bits(hashes_hex):
     return np.frombuffer(dados, dtype=">u8").astype(np.uint64).reshape(len(hashes_hex), -1)
 
 
-def pares_mais_proximos(itens, k: int = 10, bloco=None) -> list[tuple[int, int, int]]:
-    """Os k pares de imagens com menor distância de pHash, para conferir o limiar no relatório.
+def pares_mais_proximos(
+    itens, k: int = 10, chave: str = "phash", grupos=None, bloco=None
+) -> list[tuple[int, int, int]]:
+    """Os k pares de imagens com menor distância no hash `chave` ("phash" ou "phash_folha"),
+    para conferir os limiares no relatório.
 
-    itens: dicts com "id" e "phash". Devolve [(distância, id_a, id_b)], com id_a < id_b, em
-    ordem crescente de distância (empate: menores ids primeiro).
+    itens: dicts com "id" e o hash. grupos: {id: grupo}; se dado, os pares do mesmo grupo ficam
+    de fora (sobram os mais próximos NÃO agrupados). Devolve [(distância, id_a, id_b)], com
+    id_a < id_b, em ordem crescente de distância (empate: menores ids primeiro).
     """
     itens = sorted(itens, key=lambda item: item["id"])
     if len(itens) < 2:
         return []
-    matriz = _matriz_de_bits([item["phash"] for item in itens])
+    limite = k
+    if grupos:  # busca a mais o número de pares dentro de grupos, que serão descartados
+        tamanhos = Counter(grupos[item["id"]] for item in itens)
+        limite += sum(q * (q - 1) // 2 for q in tamanhos.values())
+    matriz = _matriz_de_bits([item[chave] for item in itens])
     n = len(itens)
     melhores = []
     for inicio, dist in _blocos_de_distancia(matriz, bloco):
         ii, jj = np.nonzero(np.arange(n)[None, :] > np.arange(inicio, inicio + len(dist))[:, None])
         d = dist[ii, jj]
-        ordem = np.lexsort((jj, ii, d))[:k]  # por distância, depois i, depois j
+        ordem = np.lexsort((jj, ii, d))[:limite]  # por distância, depois i, depois j
         do_bloco = zip(d[ordem].tolist(), (ii[ordem] + inicio).tolist(), jj[ordem].tolist())
-        melhores = sorted([*melhores, *do_bloco])[:k]
-    return [(d, itens[i]["id"], itens[j]["id"]) for d, i, j in melhores]
+        melhores = sorted([*melhores, *do_bloco])[:limite]
+    pares = [(d, itens[i]["id"], itens[j]["id"]) for d, i, j in melhores]
+    if grupos:
+        pares = [(d, a, b) for d, a, b in pares if grupos[a] != grupos[b]]
+    return pares[:k]
 
 
-def distancias_ao_vizinho(itens, bloco=None) -> dict[int, int]:
-    """Distância de pHash de cada imagem até a mais parecida das outras: {id: bits}.
+def distancias_ao_vizinho(itens, chave: str = "phash", bloco=None) -> dict[int, int]:
+    """Distância de cada imagem até a mais parecida das outras no hash `chave`: {id: bits}.
 
-    itens: dicts com "id" e "phash".
+    itens: dicts com "id" e o hash.
     """
     itens = sorted(itens, key=lambda item: item["id"])
     if len(itens) < 2:
         return {}
-    matriz = _matriz_de_bits([item["phash"] for item in itens])
+    matriz = _matriz_de_bits([item[chave] for item in itens])
     resultado = {}
     for inicio, dist in _blocos_de_distancia(matriz, bloco):
         linhas = np.arange(len(dist))

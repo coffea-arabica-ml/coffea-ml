@@ -29,6 +29,7 @@ from collections import Counter
 from pathlib import Path
 
 import imagehash
+import numpy as np
 from PIL import Image
 
 import bracol
@@ -131,7 +132,7 @@ def inspecionar_imagens(pasta: Path, oc: Ocorrencias) -> tuple[dict[int, dict], 
             oc.erros.append(f"mais de um arquivo para o id {int(nome.group(1))}: {p.name}")
         else:
             arquivos[int(nome.group(1))] = p
-    fmt.dizer(f"Abrindo {len(arquivos)} imagens (decodificação completa, SHA-256 e pHash)...")
+    fmt.dizer(f"Abrindo {len(arquivos)} imagens (decodificação completa, SHA-256 e dois pHash)...")
     imagens, ilegiveis = {}, set()
     for n, (i, p) in enumerate(sorted(arquivos.items()), start=1):
         dados = p.read_bytes()
@@ -144,6 +145,7 @@ def inspecionar_imagens(pasta: Path, oc: Ocorrencias) -> tuple[dict[int, dict], 
                     "altura": im.height,
                     "sha256": hashlib.sha256(dados).hexdigest(),
                     "phash": str(imagehash.phash(im, hash_size=bracol.PHASH_TAMANHO)),
+                    "phash_folha": phash_da_folha(im),
                     "formato": im.format,
                     "modo": im.mode,
                 }
@@ -153,6 +155,41 @@ def inspecionar_imagens(pasta: Path, oc: Ocorrencias) -> tuple[dict[int, dict], 
         if n % 250 == 0:
             fmt.dizer(f"  ...{n}/{len(arquivos)}")
     return imagens, ilegiveis
+
+
+def phash_da_folha(im) -> str:
+    """pHash de 256 bits do recorte da folha (caixa envolvente do que não é fundo).
+
+    O fundo do BRACOL é claro e pouco saturado. Numa cópia reduzida a 1/4, o limiar de Otsu
+    sobre a saturação (HSV) separa a folha; a caixa usa os quantis de 0,2% e 99,8% dos pixels
+    da folha, para ignorar sujeirinhas. A região da imagem original vai para 512x256. Sem pixel
+    acima do limiar (imagem lisa), usa a imagem inteira.
+    """
+    original = im.convert("RGB")
+    reduzida = original.reduce(4)
+    saturacao = np.asarray(reduzida.convert("HSV"))[:, :, 1]
+    ys, xs = np.nonzero(saturacao > _otsu(saturacao))
+    caixa = None
+    if len(xs):
+        k = original.width / reduzida.width
+        x0, x1 = np.quantile(xs, [0.002, 0.998])
+        y0, y1 = np.quantile(ys, [0.002, 0.998])
+        caixa = (int(x0 * k), int(y0 * k), int(np.ceil((x1 + 1) * k)), int(np.ceil((y1 + 1) * k)))
+    folha = original.crop(caixa) if caixa else original
+    folha = folha.resize((512, 256), Image.Resampling.LANCZOS)
+    return str(imagehash.phash(folha, hash_size=bracol.PHASH_TAMANHO))
+
+
+def _otsu(valores) -> int:
+    """Limiar de Otsu (0 a 255) de uma matriz uint8: maximiza a variância entre as classes."""
+    histograma = np.bincount(valores.ravel(), minlength=256).astype(float)
+    niveis = np.arange(256)
+    peso_fundo = np.cumsum(histograma)
+    peso_frente = histograma.sum() - peso_fundo
+    soma_fundo = np.cumsum(niveis * histograma)
+    media_fundo = soma_fundo / np.maximum(peso_fundo, 1)
+    media_frente = (soma_fundo[-1] - soma_fundo) / np.maximum(peso_frente, 1)
+    return int(np.argmax(peso_fundo * peso_frente * (media_fundo - media_frente) ** 2))
 
 
 def ler_manifest_anterior(caminho: Path) -> dict[int, dict]:
@@ -192,7 +229,8 @@ def montar_manifest(linhas, imagens, raiz, seed, fixos, ausentes_esperados, com_
             "presente": int(imagem is not None),
             "classe": bracol.classe_do_projeto(ps) or "",
             **{coluna: linha[coluna] for coluna in bracol.COLUNAS_CSV[1:]},
-            **{c: imagem[c] if imagem else "" for c in ("largura", "altura", "sha256", "phash")},
+            **{c: imagem[c] if imagem else ""
+               for c in ("largura", "altura", "sha256", "phash", "phash_folha")},
             "grupo": grupos.get(i, ""),
             "split": "",
             "excluida": int(bool(motivos)),
@@ -222,8 +260,8 @@ def montar_manifest(linhas, imagens, raiz, seed, fixos, ausentes_esperados, com_
 
 def conferir_com_versionado(manifest, versionado, oc):
     """Modo --verificar: o manifest recalculado precisa bater com o versionado. O SHA-256 e as
-    outras colunas são comparados exatamente; o pHash, com tolerância de TOLERANCIA_PHASH bits
-    (outro decodificador JPEG pode mudar alguns bits)."""
+    outras colunas são comparados exatamente; os dois pHash, com tolerância de TOLERANCIA_PHASH
+    bits (outro decodificador JPEG pode mudar alguns bits)."""
     colunas = list(next(iter(versionado.values())))
     if colunas != bracol.COLUNAS_MANIFEST:
         oc.erros.append(
@@ -243,7 +281,7 @@ def conferir_com_versionado(manifest, versionado, oc):
     for i in sorted(set(atuais) & set(versionado)):
         for coluna in bracol.COLUNAS_MANIFEST:
             atual, gravado = str(atuais[i][coluna]), versionado[i][coluna]
-            if coluna == "phash" and atual and gravado:
+            if coluna in ("phash", "phash_folha") and atual and gravado:
                 confere = bracol.distancia_hamming(atual, gravado) <= bracol.TOLERANCIA_PHASH
             else:
                 confere = atual == gravado
@@ -333,8 +371,12 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
         ["proporções", ", ".join(f"{s} {p}%" for s, p in bracol.PROPORCOES.items())],
         ["seed", ctx["seed"]],
         ["divisão", divisao],
-        ["pHash", f"{bracol.PHASH_TAMANHO ** 2} bits (`hash_size={bracol.PHASH_TAMANHO}`); "
-                  f"quase-duplicata a até {bracol.LIMIAR_QUASE_DUPLICATA} bits"],
+        ["pHash do quadro", f"{bracol.PHASH_TAMANHO ** 2} bits; agrupa a até "
+                            f"{bracol.LIMIAR_QUASE_DUPLICATA} bits"],
+        ["pHash da folha", f"{bracol.PHASH_TAMANHO ** 2} bits, recorte da folha em 512x256; "
+                           f"agrupa a até {bracol.LIMIAR_QUASE_DUPLICATA_FOLHA} bits"],
+        ["folhas repetidas", f"{len(bracol.PARES_MESMA_FOLHA)} pares conferidos visualmente em "
+                             "07/10/2026 (`PARES_MESMA_FOLHA`), sempre agrupados"],
     ], alinhar="ll") + [""]
 
     r += ["## CSV x arquivos", ""]
@@ -343,7 +385,7 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
         ["imagens `<id>.jpg` lidas", fmt.n(len(ctx["imagens"]))],
         ["imagens sem linha no csv", fmt.n(len(ctx["imagens"]) - len(presentes))],
         ["ids sem imagem", fmt.n(len(ausentes))],
-        ["ids sem imagem, esperados (truncamento do zip)", fmt.n(len(ausentes) - len(inesperados))],
+        ["ids sem imagem, esperados", fmt.n(len(ausentes) - len(inesperados))],
         ["ids sem imagem, inesperados", fmt.n(len(inesperados))],
     ]) + [""]
     if ausentes:
@@ -368,24 +410,7 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
     r += ["As imagens desta tabela abriram e decodificaram por completo; as ilegíveis aparecem "
           "nos erros.", ""]
 
-    r += ["## Duplicatas", ""]
-    exatas = sum(1 for q in Counter(linha["sha256"] for linha in presentes).values() if q > 1)
-    por_grupo = Counter(linha["grupo"] for linha in presentes)
-    grupos = sorted((g for g, q in por_grupo.items() if q > 1), key=lambda g: int(g.split("-")[1]))
-    r += [
-        f"- Duplicatas exatas (mesmo SHA-256): {fmt.n(exatas)} grupo(s).",
-        f"- Grupos com mais de uma imagem (SHA-256 igual ou pHash a até "
-        f"{bracol.LIMIAR_QUASE_DUPLICATA} bits): {fmt.n(len(grupos))}.",
-    ]
-    for g in grupos:
-        membros = ", ".join(str(linha["id"]) for linha in presentes if linha["grupo"] == g)
-        r.append(f"  - `{g}`: ids {membros}")
-    r += ["", "Pares mais próximos pelo pHash (para conferir o limiar):", ""]
-    nome = {linha["id"]: linha["classe"] or "(classe 5)" for linha in linhas}
-    linhas_pares = [[a, b, d, nome[a], nome[b]] for d, a, b in ctx["pares"]]
-    r += fmt.tabela(["id A", "id B", "distância (bits)", "classe A", "classe B"], linhas_pares,
-                    alinhar="rrrll")
-    r += [""]
+    r += _secao_duplicatas(linhas, ctx)
 
     r += ["## Exclusões", ""]
     motivos = Counter(linha["motivo_exclusao"] for linha in linhas if linha["excluida"])
@@ -395,12 +420,13 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
         ["**elegíveis**", fmt.n(len(elegiveis))],
     ]) + [""]
 
-    classe5 = [linha for linha in linhas if linha["predominant_stress"] == bracol.PS_DESCONHECIDO]
+    classe5 = [linha for linha in linhas if linha["predominant_stress"] == bracol.PS_INDETERMINADO]
     com_imagem = [linha for linha in classe5 if linha["presente"]]
     sem_imagem = [str(linha["id"]) for linha in classe5 if not linha["presente"]]
     r += ["## Classe 5 (predominant_stress = 5)", ""]
-    r += ["Significado desconhecido (os autores foram consultados): fica fora de classificação, "
-          "severidade e multirrótulo até a resposta. Não atribuir classe por palpite.", ""]
+    r += ["Indeterminada (`5 - undetermined` no leaf/legend.txt dos autores): fica fora de "
+          "classificação, severidade e multirrótulo, como os autores também fizeram no dataset.csv "
+          "dos experimentos deles. Não atribuir classe por palpite.", ""]
     r += [f"Linhas: {fmt.n(len(classe5))}, {fmt.n(len(com_imagem))} com imagem "
           f"(sem imagem: {', '.join(sem_imagem) or 'nenhuma'}).", ""]
     combinacoes = Counter(
@@ -427,8 +453,74 @@ def gerar_relatorio(linhas: list[dict], ctx: dict, oc: Ocorrencias) -> str:
         valores = [por_severidade[nivel, s] for s in bracol.SPLITS]
         tabela.append([f"{nivel}: {descricao}", *map(fmt.n, valores),
                        fmt.pct(por_severidade[nivel, "teste"], sum(valores))])
-    r += fmt.tabela(["severidade", *bracol.SPLITS, "% no teste"], tabela)
+    r += fmt.tabela(["severidade", *bracol.SPLITS, "% no teste"], tabela) + [""]
+    r += ["Histórico da divisão:", ""]
+    r += [f"- {data}: {texto}" for data, texto in bracol.HISTORICO_DIVISAO]
     return "\n".join(r) + "\n"
+
+
+def _secao_duplicatas(linhas, ctx) -> list[str]:
+    """Seção do relatório com os grupos de duplicatas e folhas repetidas e os pares a conferir."""
+    por_id = {linha["id"]: linha for linha in linhas}
+    presentes = [linha for linha in linhas if linha["presente"]]
+    exatas = sum(1 for q in Counter(linha["sha256"] for linha in presentes).values() if q > 1)
+    por_grupo = Counter(linha["grupo"] for linha in presentes)
+    grupos = sorted((g for g, q in por_grupo.items() if q > 1), key=lambda g: int(g.split("-")[1]))
+    r = ["## Duplicatas e folhas repetidas", ""]
+    r += [f"Uma imagem entra no grupo de outra (de forma transitiva) se o SHA-256 for igual, se o "
+          f"pHash do quadro ficar a até {bracol.LIMIAR_QUASE_DUPLICATA} bits, se o pHash da folha "
+          f"ficar a até {bracol.LIMIAR_QUASE_DUPLICATA_FOLHA} bits, ou se o par estiver na "
+          "lista de folhas repetidas conferidas visualmente em 07/10/2026 (`PARES_MESMA_FOLHA`). "
+          "Um grupo "
+          "nunca se divide entre splits.", ""]
+    r += [f"- Duplicatas exatas (mesmo SHA-256): {fmt.n(exatas)} grupo(s).",
+          f"- Grupos com mais de uma imagem: {fmt.n(len(grupos))}.", ""]
+    if grupos:
+        linhas_grupos = []
+        for g in grupos:
+            membros = sorted(linha["id"] for linha in presentes if linha["grupo"] == g)
+            for k, a in enumerate(membros):
+                for b in membros[k + 1:]:
+                    linhas_grupos.append([f"`{g}`", *_descrever_par(por_id[a], por_id[b])])
+        r += fmt.tabela(["grupo", "ids", "classe e severidade", "split", "quadro (bits)",
+                         "folha (bits)", "critério"], linhas_grupos, alinhar="llllrrl") + [""]
+    nome = {linha["id"]: linha["classe"] or "(classe 5)" for linha in linhas}
+    for titulo, pares in (("pHash do quadro", ctx["pares_quadro"]),
+                          ("pHash da folha", ctx["pares_folha"])):
+        r += [f"Os 10 pares mais próximos NÃO agrupados, pelo {titulo}:", ""]
+        r += fmt.tabela(["id A", "id B", "distância (bits)", "classe A", "classe B"],
+                        [[a, b, d, nome[a], nome[b]] for d, a, b in pares], alinhar="rrrll") + [""]
+    conferir = [(a, b) for a, b in bracol.PARES_PARA_CONFERIR
+                if por_id.get(a, {}).get("presente") and por_id.get(b, {}).get("presente")]
+    if conferir:
+        r += ["Pares para conferir (folhas escuras parecidas, sem veredito):", ""]
+        r += fmt.tabela(["ids", "classe e severidade", "split", "quadro (bits)", "folha (bits)",
+                         "critério"],
+                        [_descrever_par(por_id[a], por_id[b]) for a, b in conferir],
+                        alinhar="lllrrl") + [""]
+    return r
+
+
+def _descrever_par(a: dict, b: dict) -> list:
+    """Ids, rótulos, splits, distâncias nos dois hashes e critério de agrupamento de um par."""
+    def rotulo(linha):
+        return f"{linha['classe'] or '(classe 5)'}, severidade {linha['severity']}"
+
+    def split(linha):
+        return linha["split"] or "(excluída)"
+
+    quadro = bracol.distancia_hamming(a["phash"], b["phash"])
+    folha = bracol.distancia_hamming(a["phash_folha"], b["phash_folha"])
+    criterios = [nome for nome, vale in (
+        ("SHA-256", a["sha256"] == b["sha256"]),
+        ("quadro", quadro <= bracol.LIMIAR_QUASE_DUPLICATA),
+        ("folha", folha <= bracol.LIMIAR_QUASE_DUPLICATA_FOLHA),
+        ("lista", (a["id"], b["id"]) in bracol.PARES_MESMA_FOLHA),
+    ) if vale]
+    rotulos = rotulo(a) if rotulo(a) == rotulo(b) else f"{rotulo(a)} / {rotulo(b)}"
+    splits = split(a) if split(a) == split(b) else f"{split(a)} / {split(b)}"
+    agrupado = " + ".join(criterios) or ("transitivo" if a["grupo"] == b["grupo"] else "nenhum")
+    return [f"{a['id']} / {b['id']}", rotulos, splits, quadro, folha, agrupado]
 
 
 # ----------------------------------------------------------------------------- execução
@@ -467,6 +559,7 @@ def gerar(entrada: Path, manifest: Path, relatorio: Path, seed: int = bracol.SEE
     else:
         _comparar_com_anterior(linhas_manifest, anterior, fixos, oc)
     presentes = [linha for linha in linhas_manifest if linha["presente"]]
+    grupo_de = {linha["id"]: linha["grupo"] for linha in presentes}
     ctx = {
         "entrada": _exibir(arquivo_csv.parent, raiz),
         "csv_sha256": hashlib.sha256(arquivo_csv.read_bytes()).hexdigest(),
@@ -474,7 +567,8 @@ def gerar(entrada: Path, manifest: Path, relatorio: Path, seed: int = bracol.SEE
         "seed": seed,
         "refazer_divisao": refazer_divisao,
         "imagens": imagens,
-        "pares": bracol.pares_mais_proximos(presentes),
+        "pares_quadro": bracol.pares_mais_proximos(presentes, chave="phash", grupos=grupo_de),
+        "pares_folha": bracol.pares_mais_proximos(presentes, chave="phash_folha", grupos=grupo_de),
         "ausentes_esperados": set(ausentes_esperados),
     }
     relatorio.parent.mkdir(parents=True, exist_ok=True)
@@ -483,15 +577,18 @@ def gerar(entrada: Path, manifest: Path, relatorio: Path, seed: int = bracol.SEE
         escrever_manifest(linhas_manifest, manifest)
 
     elegiveis = Counter(linha["split"] for linha in linhas_manifest if not linha["excluida"])
-    grupos = Counter(linha["grupo"] for linha in presentes)
+    grupos = Counter(grupo_de.values())
+    mais_perto = {chave: ctx[chave][0][0] if ctx[chave] else "-"
+                  for chave in ("pares_quadro", "pares_folha")}
     fmt.dizer("")
     fmt.dizer(f"Imagens: {len(presentes)} com imagem de {len(linhas_manifest)} linhas do csv "
-           f"({len(linhas_manifest) - len(presentes)} sem imagem)")
+              f"({len(linhas_manifest) - len(presentes)} sem imagem)")
     fmt.dizer(f"Grupos com mais de uma imagem: {sum(1 for q in grupos.values() if q > 1)} | "
-           f"par mais próximo: {ctx['pares'][0][0] if ctx['pares'] else '-'} bits")
+              f"par não agrupado mais próximo: quadro {mais_perto['pares_quadro']} bits, "
+              f"folha {mais_perto['pares_folha']} bits")
     fmt.dizer(f"Elegíveis: {sum(elegiveis.values())} | treino {elegiveis['treino']} | "
-           f"val {elegiveis['val']} | teste {elegiveis['teste']} | "
-           f"divisão: {divisao['mantidas']} mantidas, {divisao['novas']} novas")
+              f"val {elegiveis['val']} | teste {elegiveis['teste']} | "
+              f"divisão: {divisao['mantidas']} mantidas, {divisao['novas']} novas")
     fmt.dizer(f"Erros: {len(oc.erros)} | avisos: {len(oc.avisos)}")
     for erro in oc.erros[:10]:
         fmt.dizer(f"  ERRO: {erro}")
@@ -518,8 +615,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
         description="Gera o manifest do BRACOL e o relatorio de integridade (ver data/README.md)."
     )
-    ap.add_argument("--entrada", type=Path, default=bracol.PASTA_RAW_BRACOL,
-                    help="pasta com a copia do BRACOL (padrao: data/raw/bracol)")
+    ap.add_argument("--entrada", type=Path, default=bracol.PASTA_BRACOL,
+                    help="pasta com a copia do BRACOL (padrao: data/raw/bracol/bracol_completo)")
     ap.add_argument("--manifest", type=Path, default=bracol.MANIFEST_BRACOL,
                     help="arquivo do manifest (padrao: data/manifests/bracol.csv)")
     ap.add_argument("--relatorio", type=Path, default=RELATORIO_PADRAO,

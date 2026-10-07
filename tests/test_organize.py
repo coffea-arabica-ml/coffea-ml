@@ -88,7 +88,7 @@ def test_linhas_elegiveis_tem_classe_split_e_hashes(repo):
         assert (m[i]["excluida"], m[i]["motivo_exclusao"]) == ("0", "")
     assert m[1]["caminho"] == "data/raw/bracol/copia/leaf/images/1.jpg"
     assert (m[1]["largura"], m[1]["altura"]) == ("64", "32")
-    assert len(m[1]["sha256"]) == 64 and len(m[1]["phash"]) == 64
+    assert len(m[1]["sha256"]) == 64 and len(m[1]["phash"]) == 64 and len(m[1]["phash_folha"]) == 64
     assert m[1]["grupo"] == "bracol-1"
 
 
@@ -215,15 +215,17 @@ def test_verificar_acusa_imagem_trocada(repo):
     assert "coluna phash diverge do manifest versionado: ids 2" in relatorio(repo)
 
 
-def test_verificar_tolera_poucos_bits_de_diferenca_no_phash(repo):
+@pytest.mark.parametrize("coluna", ["phash", "phash_folha"])
+def test_verificar_tolera_poucos_bits_de_diferenca_nos_dois_phash(repo, coluna):
     gerar(repo)
-    original = manifest(repo)[1]["phash"]
+    original = manifest(repo)[1][coluna]
     poucos = f"{int(original, 16) ^ 0b111:064x}"  # 3 bits: outro decodificador JPEG, por exemplo
-    reescrever_manifest(repo, {1: {"phash": poucos}})
+    reescrever_manifest(repo, {1: {coluna: poucos}})
     assert gerar(repo, verificar=True) == 0
     muitos = f"{int(original, 16) ^ ((1 << 20) - 1):064x}"  # 20 bits: acima da tolerância
-    reescrever_manifest(repo, {1: {"phash": muitos}})
+    reescrever_manifest(repo, {1: {coluna: muitos}})
     assert gerar(repo, verificar=True) == 1
+    assert f"coluna {coluna} diverge do manifest versionado: ids 1" in relatorio(repo)
 
 
 def test_verificar_sem_manifest_e_erro_fatal(repo):

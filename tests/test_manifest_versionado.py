@@ -1,7 +1,8 @@
 """Invariantes do manifest versionado (data/manifests/bracol.csv).
 
 Não precisam das imagens: rodam em qualquer máquina com o repositório. Os números fixos abaixo
-são os do subconjunto PARCIAL; se chegar a cópia completa do BRACOL, atualize-os de propósito.
+são os da cópia completa do BRACOL, adotada em 07/10/2026; mudar qualquer um deles exige uma
+decisão explícita e um commit próprio.
 """
 import csv
 import hashlib
@@ -35,19 +36,37 @@ def test_uma_linha_por_id_do_csv_original(linhas):
             assert caminho.parts[:3] == ("data", "raw", "bracol")
 
 
-def test_contagens_do_subconjunto_parcial(linhas):
+def test_contagens_da_copia_completa(linhas):
+    # Trocado de propósito em 07/10/2026; na cópia parcial eram 1.401 imagens
+    # (142, 253, 465, 346, 136 e 59).
     presentes = [linha for linha in linhas if linha["presente"] == "1"]
-    assert len(presentes) == 1401
+    assert len(presentes) == 1747
     assert Counter(linha["classe"] or "classe_5" for linha in presentes) == {
-        "saudavel": 142,
-        "bicho_mineiro": 253,
-        "ferrugem": 465,
-        "phoma": 346,
-        "cercosporiose": 136,
-        "classe_5": 59,
+        "saudavel": 272,
+        "bicho_mineiro": 387,
+        "ferrugem": 531,
+        "phoma": 348,
+        "cercosporiose": 147,
+        "classe_5": 62,
     }
     ausentes = {int(linha["id"]) for linha in linhas if linha["presente"] == "0"}
-    assert ausentes == bracol.IDS_AUSENTES_ESPERADOS
+    assert ausentes == bracol.IDS_AUSENTES_ESPERADOS == frozenset()
+
+
+def test_grupos_sao_exatamente_as_folhas_repetidas_conferidas(linhas):
+    # Grupos com mais de uma imagem = os 8 pares de PARES_MESMA_FOLHA (conferidos visualmente em
+    # 07/10/2026). Um grupo novo, ou um par que deixe de se agrupar, tem de ser revisto à mão.
+    membros = {}
+    for linha in linhas:
+        if linha["grupo"]:
+            membros.setdefault(linha["grupo"], set()).add(int(linha["id"]))
+    grupos = {frozenset(ids) for ids in membros.values() if len(ids) > 1}
+    assert grupos == {frozenset(par) for par in bracol.PARES_MESMA_FOLHA}
+
+
+def test_folhas_repetidas_ficam_no_mesmo_split(linhas):
+    split = {int(linha["id"]): linha["split"] for linha in linhas}
+    assert all(split[a] == split[b] for a, b in bracol.PARES_MESMA_FOLHA)
 
 
 def test_classe_e_motivos_seguem_as_regras(linhas):
@@ -89,19 +108,23 @@ def test_proporcoes_por_classe(linhas):
 
 def test_divisao_fixada_por_hash(linhas):
     # Fixa a divisão vigente: linhas elegíveis em ordem de id, no formato "id:split" unidas por
-    # ";", sem espaços e sem quebra de linha no fim. O valor foi calculado de forma independente
-    # a partir do dataset.csv original e de bracol.dividir com seed 42. Ao chegar a cópia
-    # completa do BRACOL, ele muda de propósito: a troca deve ser feita de forma explícita.
+    # ";", sem espaços e sem quebra de linha no fim.
+    # Trocado de propósito em 07/10/2026: cópia completa, divisão refeita do zero (seed 42) com
+    # os grupos das folhas repetidas (ver HISTORICO_DIVISAO). O valor foi calculado de forma
+    # independente a partir do dataset.csv e de bracol.dividir com esses 7 grupos de elegíveis.
+    # O valor anterior, da cópia parcial, era
+    # c3703a39d085a803b6188a10a45d35d5c650b89fdeaf10f02906f8ff0cc1ae00.
     texto = ";".join(
         f"{linha['id']}:{linha['split']}"
         for linha in sorted(linhas, key=lambda linha: int(linha["id"]))
         if linha["motivo_exclusao"] == ""
     )
-    esperado = "c3703a39d085a803b6188a10a45d35d5c650b89fdeaf10f02906f8ff0cc1ae00"
+    esperado = "ecc98bfc9827448747f7451814904d5d9f26fdfc264b3f6ca69e6b37df989baa"
     assert hashlib.sha256(texto.encode("utf-8")).hexdigest() == esperado
 
 
 def test_ler_manifest_no_manifest_versionado():
-    assert len(bracol.ler_manifest()) == 1342
-    assert len(bracol.ler_manifest(split="teste")) == 202
+    # Trocado de propósito em 07/10/2026; na cópia parcial eram 1.342 elegíveis e 202 no teste.
+    assert len(bracol.ler_manifest()) == 1685
+    assert len(bracol.ler_manifest(split="teste")) == 253
     assert len(bracol.ler_manifest(incluir_excluidas=True)) == 1747

@@ -27,18 +27,25 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 
 ## Dados (detalhes em `data/README.md`)
 
-- O BRACOL é PARCIAL: 1.401 de 1.747 imagens (faltam os ids 7-9, 69-99 e 688-999).
-  Resultados com ele não são comparáveis com Esgario et al. (2020).
+- O BRACOL é a cópia completa (`data/raw/bracol/bracol_completo/`, recebida dos autores em
+  07/10/2026): 1.747 imagens. A cópia parcial em `data/raw/bracol/bracol_recuperado/` é
+  obsoleta: não apagar e não usar.
+- Sem a classe 5 são as mesmas 1.685 imagens que os autores usaram, mas a divisão é outra
+  (seed 42): comparar com Esgario et al. (2020) só com essa ressalva.
 - `data/manifests/bracol.csv` é a fonte única da verdade (uma linha por id do csv original).
   Não editar à mão: regenerar com `data/organize_dataset.py`.
-- `predominant_stress = 5` tem significado desconhecido: fica excluída de classificação,
-  severidade e multirrótulo até resposta dos autores. Nunca atribuir classe por palpite.
+- `predominant_stress = 5` é "undetermined" (leaf/legend.txt): fica excluída de classificação,
+  severidade e multirrótulo. Nunca atribuir classe por palpite.
+- Duplicatas e folhas fotografadas de novo ficam no mesmo grupo, e um grupo nunca se divide
+  entre splits: SHA-256 igual, pHash do quadro a até 32 bits, pHash da folha a até 46 bits ou
+  `PARES_MESMA_FOLHA` (8 pares conferidos visualmente em 07/10/2026).
 - A correspondência das colunas phoma/cercospora com o artigo não está confirmada; a ressalva
   fica só em `RESSALVA_PHOMA_CERCOSPORA` (`data/bracol.py`).
 - A ordem de `CLASSES` segue o RF01. O índice de uma classe é `CLASSES.index(nome)`, nunca o
   código `predominant_stress`.
 - A divisão treino/val/teste é estável: nenhuma imagem muda de split sem `--refazer-divisao` e
-  decisão explícita do usuário.
+  decisão explícita do usuário. Ela foi refeita do zero uma vez, em 07/10/2026, ao adotar a
+  cópia completa (motivo em `HISTORICO_DIVISAO`, `data/bracol.py`).
 - Teste: só BRACOL, nunca aumentado. Augmentation (Albumentations) só no treino, em memória.
 - JMuBEN/JMuBEN2: só treino auxiliar, nunca teste. BRACOT: futuro (detecção por folha, RF09).
 

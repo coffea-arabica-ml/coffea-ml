@@ -28,7 +28,7 @@ def test_indice_da_classe_nao_e_o_codigo_original():
 
 
 def test_codigo_5_nao_tem_classe():
-    assert bracol.classe_do_projeto(bracol.PS_DESCONHECIDO) is None
+    assert bracol.classe_do_projeto(bracol.PS_INDETERMINADO) is None
 
 
 @pytest.mark.parametrize("ps", [-1, 6, 7, "1", None])
@@ -56,11 +56,10 @@ def test_motivos_de_exclusao_validam_o_codigo():
         bracol.motivos_exclusao(9, True)
 
 
-def test_ids_ausentes_esperados():
-    ausentes = bracol.IDS_AUSENTES_ESPERADOS
-    assert len(ausentes) == 346
-    # Causa: o zip termina em 688.jpg e guarda as entradas em ordem alfabética do nome.
-    assert ausentes == {i for i in range(1, 1748) if str(i) >= "688"}
+def test_copia_completa_nao_tem_ausentes_esperados():
+    # Mudança intencional em 07/10/2026: a cópia completa tem todas as imagens. A cópia parcial
+    # não tinha os 346 ids que vinham depois de "688" na ordem alfabética do zip truncado.
+    assert bracol.IDS_AUSENTES_ESPERADOS == frozenset()
 
 
 def test_caminhos_partem_da_raiz_do_repo():

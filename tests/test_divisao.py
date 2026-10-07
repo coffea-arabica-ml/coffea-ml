@@ -6,13 +6,14 @@ import pytest
 
 import bracol
 
-# Imagens elegíveis por classe no subconjunto atual do BRACOL.
+# Imagens elegíveis por classe na cópia completa do BRACOL. Trocado de propósito em 07/10/2026;
+# na cópia parcial eram 142, 253, 465, 346 e 136.
 CONTAGENS_BRACOL = {
-    "saudavel": 142,
-    "bicho_mineiro": 253,
-    "ferrugem": 465,
-    "phoma": 346,
-    "cercosporiose": 136,
+    "saudavel": 272,
+    "bicho_mineiro": 387,
+    "ferrugem": 531,
+    "phoma": 348,
+    "cercosporiose": 147,
 }
 
 
@@ -35,12 +36,12 @@ def contagem(divisao, itens):
 def test_cotas_no_tamanho_do_bracol():
     itens = itens_sinteticos(CONTAGENS_BRACOL)
     c = contagem(bracol.dividir(itens), itens)
-    esperado = {  # treino, val, teste (tabela da decisão D2 do plano)
-        "saudavel": (100, 21, 21),
-        "bicho_mineiro": (177, 38, 38),
-        "ferrugem": (325, 70, 70),
-        "phoma": (242, 52, 52),
-        "cercosporiose": (95, 20, 21),
+    esperado = {  # treino, val, teste na cópia completa (antes: 100/21/21, 177/38/38, ...)
+        "saudavel": (190, 41, 41),
+        "bicho_mineiro": (271, 58, 58),
+        "ferrugem": (372, 79, 80),
+        "phoma": (244, 52, 52),
+        "cercosporiose": (103, 22, 22),
     }
     for classe, cotas in esperado.items():
         assert (c[classe, "treino"], c[classe, "val"], c[classe, "teste"]) == cotas
@@ -144,9 +145,13 @@ def inverte(valor, n, a_partir_do_bit=0):
     return valor ^ (((1 << n) - 1) << a_partir_do_bit)
 
 
-def item(i, phash, sha256=None):
-    """Imagem falsa com pHash de 256 bits (64 hex, formato do imagehash com hash_size=16)."""
-    return {"id": i, "sha256": sha256 or f"sha-{i}", "phash": f"{phash:064x}"}
+def item(i, phash, sha256=None, folha=None):
+    """Imagem falsa com pHash de 256 bits (64 hex, formato do imagehash com hash_size=16) e,
+    se dado, pHash da folha."""
+    falsa = {"id": i, "sha256": sha256 or f"sha-{i}", "phash": f"{phash:064x}"}
+    if folha is not None:
+        falsa["phash_folha"] = f"{folha:064x}"
+    return falsa
 
 
 def test_distancia_hamming():
@@ -165,10 +170,37 @@ def test_quase_duplicata_junta_ate_o_limiar():
     limiar = bracol.LIMIAR_QUASE_DUPLICATA
     itens = [
         item(10, BASE),
-        item(11, inverte(BASE, limiar)),  # a 24 bits do 10: mesmo grupo
-        item(12, inverte(BASE, limiar + 1, a_partir_do_bit=128)),  # a 25 do 10 e a 49 do 11
+        item(11, inverte(BASE, limiar)),  # no limiar do 10: mesmo grupo
+        item(12, inverte(BASE, limiar + 1, a_partir_do_bit=128)),  # 1 bit acima, longe do 11
     ]
     assert bracol.agrupar_por_hash(itens) == {10: "bracol-10", 11: "bracol-10", 12: "bracol-12"}
+
+
+def test_folha_parecida_junta_mesmo_com_quadro_distante():
+    # A mesma folha fotografada de novo: o quadro muda muito (fundo, luz), o recorte não.
+    limiar = bracol.LIMIAR_QUASE_DUPLICATA_FOLHA
+    oposto = BASE ^ ((1 << 256) - 1)  # quadros a 256 bits um do outro
+    folha = random.Random(2).getrandbits(256)
+    itens = [
+        item(30, BASE, folha=folha),
+        item(31, oposto, folha=inverte(folha, limiar)),  # folha no limiar: mesmo grupo
+        item(32, inverte(BASE, 128), folha=inverte(folha, limiar + 1, a_partir_do_bit=128)),
+    ]
+    assert bracol.agrupar_por_hash(itens) == {30: "bracol-30", 31: "bracol-30", 32: "bracol-32"}
+
+
+def test_par_da_lista_manual_junta_mesmo_com_hashes_distantes():
+    oposto = BASE ^ ((1 << 256) - 1)
+    itens = [item(469, BASE, folha=BASE), item(471, oposto, folha=oposto)]
+    assert bracol.agrupar_por_hash(itens) == {469: "bracol-469", 471: "bracol-469"}
+    sem_lista = bracol.agrupar_por_hash(itens, pares_manuais=())
+    assert sem_lista == {469: "bracol-469", 471: "bracol-471"}
+
+
+def test_phash_folha_em_so_parte_das_imagens_levanta_erro():
+    itens = [item(1, BASE, folha=BASE), item(2, BASE ^ 1)]
+    with pytest.raises(ValueError, match="phash_folha"):
+        bracol.agrupar_por_hash(itens)
 
 
 def test_agrupamento_e_transitivo_e_usa_o_menor_id():
@@ -205,6 +237,17 @@ def test_pares_mais_proximos_em_ordem_e_entre_blocos():
     muitos = [item(i, rng.getrandbits(256)) for i in range(1, 41)]
     em_blocos = bracol.pares_mais_proximos(muitos, k=5, bloco=3)
     assert em_blocos == bracol.pares_mais_proximos(muitos, k=5)
+
+
+def test_pares_mais_proximos_sem_os_agrupados_e_pelo_hash_escolhido():
+    itens = [
+        item(1, BASE, folha=BASE),
+        item(2, inverte(BASE, 5), folha=inverte(BASE, 70)),  # quadro a 5 do 1; folha a 70
+        item(3, inverte(BASE, 9, a_partir_do_bit=50), folha=inverte(BASE, 3, a_partir_do_bit=200)),
+    ]
+    grupos = {1: "g-1", 2: "g-1", 3: "g-3"}  # 1 e 2 no mesmo grupo
+    assert bracol.pares_mais_proximos(itens, k=1, grupos=grupos) == [(9, 1, 3)]
+    assert bracol.pares_mais_proximos(itens, k=1, chave="phash_folha") == [(3, 1, 3)]
 
 
 def test_distancias_ao_vizinho_mais_proximo():

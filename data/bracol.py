@@ -220,6 +220,24 @@ def pares_mais_proximos(itens, k: int = 10, bloco=None) -> list[tuple[int, int, 
     return [(d, itens[i]["id"], itens[j]["id"]) for d, i, j in melhores]
 
 
+def distancias_ao_vizinho(itens, bloco=None) -> dict[int, int]:
+    """Distância de pHash de cada imagem até a mais parecida das outras: {id: bits}.
+
+    itens: dicts com "id" e "phash".
+    """
+    itens = sorted(itens, key=lambda item: item["id"])
+    if len(itens) < 2:
+        return {}
+    matriz = _matriz_de_bits([item["phash"] for item in itens])
+    resultado = {}
+    for inicio, dist in _blocos_de_distancia(matriz, bloco):
+        linhas = np.arange(len(dist))
+        dist[linhas, linhas + inicio] = np.iinfo(dist.dtype).max  # ignora a própria imagem
+        for r, d in enumerate(dist.min(axis=1).tolist()):
+            resultado[itens[inicio + r]["id"]] = d
+    return resultado
+
+
 def _blocos_de_distancia(matriz, bloco=None):
     """Distâncias de Hamming (linhas do bloco x todas as linhas), bloco a bloco, para não
     montar a matriz N x N inteira de uma vez (escala para fontes grandes)."""

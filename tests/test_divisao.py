@@ -207,6 +207,18 @@ def test_pares_mais_proximos_em_ordem_e_entre_blocos():
     assert em_blocos == bracol.pares_mais_proximos(muitos, k=5)
 
 
+def test_distancias_ao_vizinho_mais_proximo():
+    itens = [
+        item(1, BASE),
+        item(2, inverte(BASE, 5)),  # a 5 bits do 1
+        item(3, inverte(BASE, 9, a_partir_do_bit=50)),  # a 9 do 1 e a 14 do 2
+    ]
+    assert bracol.distancias_ao_vizinho(itens) == {1: 5, 2: 5, 3: 9}
+    rng = random.Random(6)
+    muitos = [item(i, rng.getrandbits(256)) for i in range(1, 31)]
+    assert bracol.distancias_ao_vizinho(muitos, bloco=4) == bracol.distancias_ao_vizinho(muitos)
+
+
 def test_calculo_em_blocos_da_o_mesmo_resultado():
     rng = random.Random(3)
     hashes = [f"{rng.getrandbits(64):016x}" for _ in range(40)]  # 64 bits: muitos pares próximos

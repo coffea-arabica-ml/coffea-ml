@@ -4,6 +4,7 @@ Não precisam das imagens: rodam em qualquer máquina com o repositório. Os nú
 são os do subconjunto PARCIAL; se chegar a cópia completa do BRACOL, atualize-os de propósito.
 """
 import csv
+import hashlib
 from collections import Counter
 from pathlib import PurePosixPath
 
@@ -84,6 +85,20 @@ def test_proporcoes_por_classe(linhas):
         n = sum(contagem[classe, s] for s in bracol.SPLITS)
         for split, pct in bracol.PROPORCOES.items():
             assert abs(contagem[classe, split] - n * pct / 100) <= 1
+
+
+def test_divisao_fixada_por_hash(linhas):
+    # Fixa a divisão vigente: linhas elegíveis em ordem de id, no formato "id:split" unidas por
+    # ";", sem espaços e sem quebra de linha no fim. O valor foi calculado de forma independente
+    # a partir do dataset.csv original e de bracol.dividir com seed 42. Ao chegar a cópia
+    # completa do BRACOL, ele muda de propósito: a troca deve ser feita de forma explícita.
+    texto = ";".join(
+        f"{linha['id']}:{linha['split']}"
+        for linha in sorted(linhas, key=lambda linha: int(linha["id"]))
+        if linha["motivo_exclusao"] == ""
+    )
+    esperado = "c3703a39d085a803b6188a10a45d35d5c650b89fdeaf10f02906f8ff0cc1ae00"
+    assert hashlib.sha256(texto.encode("utf-8")).hexdigest() == esperado
 
 
 def test_ler_manifest_no_manifest_versionado():

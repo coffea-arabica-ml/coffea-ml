@@ -37,6 +37,9 @@ PS_PARA_CLASSE = {
 # consultados; até a resposta, essas linhas ficam fora de todas as tarefas.
 PS_DESCONHECIDO = 5
 
+# Coluna binária que precisa estar marcada quando o estresse é o predominante.
+PS_PARA_COLUNA = {1: "miner", 2: "rust", 3: "phoma", 4: "cercospora"}
+
 RESSALVA_PHOMA_CERCOSPORA = (
     "A correspondência das colunas 'phoma' e 'cercospora' do dataset.csv (códigos 3 e 4 de "
     "predominant_stress) com as classes 'brown leaf spot' e 'cercospora leaf spot' de "
@@ -61,6 +64,15 @@ MOTIVO_CLASSE_5 = "predominant_stress_5"
 # índice central, guarda as entradas em ordem alfabética do nome e termina no meio de
 # 688.jpg: faltam exatamente os ids cujo nome vem depois de "688" nessa ordem.
 IDS_AUSENTES_ESPERADOS = frozenset([*range(7, 10), *range(69, 100), *range(688, 1000)])
+
+# ------------------------------------------------------------------------ manifest
+# As colunas que vêm do dataset.csv original mantêm o nome em inglês (rastreabilidade).
+COLUNAS_CSV = ["id", "predominant_stress", "miner", "rust", "phoma", "cercospora", "severity"]
+COLUNAS_MANIFEST = [
+    "fonte", "id", "caminho", "presente", "classe",
+    "predominant_stress", "miner", "rust", "phoma", "cercospora", "severity",
+    "largura", "altura", "sha256", "phash", "grupo", "split", "excluida", "motivo_exclusao",
+]
 
 # ---------------------------------------------------------------- hashes e divisão
 # pHash de 256 bits: imagehash.phash(img, hash_size=PHASH_TAMANHO). O padrão de 64 bits não
@@ -152,14 +164,40 @@ def _matriz_de_bits(hashes_hex):
     return np.frombuffer(dados, dtype=">u8").astype(np.uint64).reshape(len(hashes_hex), -1)
 
 
-def _pares_ate(matriz, limiar, bloco=None):
-    """Pares (i, j), com i < j, a distância de Hamming <= limiar. Calcula em blocos de linhas
-    para não montar a matriz N x N inteira de uma vez (escala para fontes grandes)."""
+def pares_mais_proximos(itens, k: int = 10, bloco=None) -> list[tuple[int, int, int]]:
+    """Os k pares de imagens com menor distância de pHash, para conferir o limiar no relatório.
+
+    itens: dicts com "id" e "phash". Devolve [(distância, id_a, id_b)], com id_a < id_b, em
+    ordem crescente de distância (empate: menores ids primeiro).
+    """
+    itens = sorted(itens, key=lambda item: item["id"])
+    if len(itens) < 2:
+        return []
+    matriz = _matriz_de_bits([item["phash"] for item in itens])
+    n = len(itens)
+    melhores = []
+    for inicio, dist in _blocos_de_distancia(matriz, bloco):
+        ii, jj = np.nonzero(np.arange(n)[None, :] > np.arange(inicio, inicio + len(dist))[:, None])
+        d = dist[ii, jj]
+        ordem = np.lexsort((jj, ii, d))[:k]  # por distância, depois i, depois j
+        do_bloco = zip(d[ordem].tolist(), (ii[ordem] + inicio).tolist(), jj[ordem].tolist())
+        melhores = sorted([*melhores, *do_bloco])[:k]
+    return [(d, itens[i]["id"], itens[j]["id"]) for d, i, j in melhores]
+
+
+def _blocos_de_distancia(matriz, bloco=None):
+    """Distâncias de Hamming (linhas do bloco x todas as linhas), bloco a bloco, para não
+    montar a matriz N x N inteira de uma vez (escala para fontes grandes)."""
     n, palavras = matriz.shape
     bloco = bloco or max(1, (1 << 20) // (n * palavras))
     for inicio in range(0, n, bloco):
         xor = matriz[inicio:inicio + bloco, None, :] ^ matriz[None, :, :]
-        dist = np.bitwise_count(xor).sum(axis=2)
+        yield inicio, np.bitwise_count(xor).sum(axis=2)
+
+
+def _pares_ate(matriz, limiar, bloco=None):
+    """Pares (i, j), com i < j, a distância de Hamming <= limiar."""
+    for inicio, dist in _blocos_de_distancia(matriz, bloco):
         for i, j in zip(*np.nonzero(dist <= limiar)):
             i += inicio
             if i < j:

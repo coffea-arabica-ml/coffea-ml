@@ -13,8 +13,9 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   e parar até o usuário mandar seguir.
 - Nunca apagar nem modificar `data/raw/`. Imagens do dataset nunca entram no git, exceto o
   mosaico derivado da EDA em `data/reports/figures/`, com crédito CC BY 4.0.
-- Português do Brasil em textos, comentários e mensagens. Na saída do terminal, nada de setas,
-  emojis ou outros símbolos especiais (o terminal é Windows).
+- Português do Brasil em textos, comentários e mensagens. A saída de terminal dos scripts fica
+  sem acento, setas, emojis ou outros símbolos especiais: no Windows, a saída redirecionada sai
+  em cp1252 e os acentos viram lixo. Arquivos gravados (relatórios, README) são UTF-8 com acento.
 - Python 3.12+ e `pathlib`; caminhos resolvidos a partir de `__file__`, para os scripts rodarem
   de qualquer pasta. Nada que dependa de um shell específico.
 - Sem DVC, Hydra ou frameworks de pipeline. Dependência nova: perguntar antes.

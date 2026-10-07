@@ -187,6 +187,20 @@ def test_hashes_de_tamanhos_diferentes_levantam_erro():
         bracol.agrupar_por_hash(itens)
 
 
+def test_pares_mais_proximos_em_ordem_e_entre_blocos():
+    itens = [
+        item(1, BASE),
+        item(2, inverte(BASE, 5)),  # a 5 bits do 1
+        item(3, inverte(BASE, 9, a_partir_do_bit=50)),  # a 9 do 1 e a 14 do 2
+        item(4, BASE ^ ((1 << 256) - 1)),  # longe de todos
+    ]
+    assert bracol.pares_mais_proximos(itens, k=2) == [(5, 1, 2), (9, 1, 3)]
+    rng = random.Random(4)
+    muitos = [item(i, rng.getrandbits(256)) for i in range(1, 41)]
+    em_blocos = bracol.pares_mais_proximos(muitos, k=5, bloco=3)
+    assert em_blocos == bracol.pares_mais_proximos(muitos, k=5)
+
+
 def test_calculo_em_blocos_da_o_mesmo_resultado():
     rng = random.Random(3)
     hashes = [f"{rng.getrandbits(64):016x}" for _ in range(40)]  # 64 bits: muitos pares próximos

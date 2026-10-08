@@ -97,7 +97,9 @@ PARES_MESMA_FOLHA = (
     (469, 471), (758, 759), (760, 764), (813, 1022),
     (1295, 1296), (1352, 1356), (1692, 1694), (1715, 1722),
 )
-# Folhas escuras parecidas, sem veredito: só aparecem no relatório, para conferir.
+# Pares de folhas escuras parecidas, conferidos visualmente em 07/10/2026, em cópias reduzidas:
+# pareceram folhas diferentes e ficam fora dos grupos; continuam listados no relatório para nova
+# conferência nos originais.
 PARES_PARA_CONFERIR = ((953, 959), (986, 987))
 # Diferença aceita no --verificar entre um pHash gravado e o recalculado: decodificadores JPEG
 # de outra plataforma podem mudar alguns bits. Fica bem abaixo dos limiares acima.

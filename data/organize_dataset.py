@@ -493,7 +493,9 @@ def _secao_duplicatas(linhas, ctx) -> list[str]:
     conferir = [(a, b) for a, b in bracol.PARES_PARA_CONFERIR
                 if por_id.get(a, {}).get("presente") and por_id.get(b, {}).get("presente")]
     if conferir:
-        r += ["Pares para conferir (folhas escuras parecidas, sem veredito):", ""]
+        r += ["Pares para conferir (folhas escuras parecidas), conferidos visualmente em "
+              "07/10/2026, em cópias reduzidas: pareceram folhas diferentes e ficam fora dos "
+              "grupos; continuam listados no relatório para nova conferência nos originais.", ""]
         r += fmt.tabela(["ids", "classe e severidade", "split", "quadro (bits)", "folha (bits)",
                          "critério"],
                         [_descrever_par(por_id[a], por_id[b]) for a, b in conferir],

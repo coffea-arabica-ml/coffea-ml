@@ -136,7 +136,7 @@ Os 8 grupos atuais são:
 - 758/759, 1352/1356, 1692/1694, 760/764, 469/471 e 1295/1296;
 - 1715/1722 (classe 5).
 
-Todos foram conferidos visualmente em 07/10/2026. Os pares 953/959 e 986/987 (folhas escuras parecidas) também foram conferidos visualmente e ficaram fora dos grupos; o relatório de integridade os mostra na tabela de pares para conferir. A calibração dos dois limiares está comentada em `data/bracol.py`.
+Todos foram conferidos visualmente em 07/10/2026. Os pares 953/959 e 986/987 (folhas escuras parecidas) foram conferidos visualmente em 07/10/2026, em cópias reduzidas: pareceram folhas diferentes e ficam fora dos grupos; continuam listados no relatório para nova conferência nos originais. A calibração dos dois limiares está comentada em `data/bracol.py`.
 
 **Divisão.** Proporção 70/15/15, estratificada por classe e espalhada pelos níveis de severidade,
 com seed 42.

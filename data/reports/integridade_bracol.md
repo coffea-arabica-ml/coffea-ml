@@ -103,7 +103,7 @@ Os 10 pares mais próximos NÃO agrupados, pelo pHash da folha:
 | 140 | 879 | 58 | ferrugem | saudavel |
 | 626 | 941 | 58 | saudavel | saudavel |
 
-Pares para conferir (folhas escuras parecidas, sem veredito):
+Pares para conferir (folhas escuras parecidas), conferidos visualmente em 07/10/2026, em cópias reduzidas: pareceram folhas diferentes e ficam fora dos grupos; continuam listados no relatório para nova conferência nos originais.
 
 | ids | classe e severidade | split | quadro (bits) | folha (bits) | critério |
 |---|---|---|---:|---:|---|

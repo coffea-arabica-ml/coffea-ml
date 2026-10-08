@@ -221,3 +221,5 @@ __marimo__/
 data/raw/
 data/processed/
 *.zip
+# Relatorios das ferramentas de zip: gerados ao lado dos scripts, com caminhos da maquina
+data/tools/relatorio_*.txt

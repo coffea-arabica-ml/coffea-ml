@@ -53,7 +53,9 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 - Fontes de campo (decisão do gestor, 09/10/2026):
   - JMuBEN/JMuBEN2, e qualquer fonte auxiliar: só treino, nunca validação nem teste. Sem
     duplicatas (um representante por grupo) e com limite de imagens por classe. A fonte fica
-    marcada em toda linha do manifest, que não tem coluna de split.
+    marcada em toda linha do manifest, que não tem coluna de split. JMuBEN:
+    `data/manifests/jmuben.csv`, gerado por `data/jmuben.py`, uma linha por conteúdo distinto;
+    grupos pelo hash canônico a até 64 bits; teto em `CAP_POR_CLASSE`.
   - BRACOT: detecção e segmentação de folhas (RF09). A divisão dos autores (240 treino / 60
     teste) é a oficial. Não há classe de estresse por folha.
   - Teste de classificação e de severidade (RNF01): só BRACOL. Um teste de campo com rótulo de
@@ -66,6 +68,8 @@ pip install -r requirements.txt
 python data/organize_dataset.py              # gera o manifest e o relatório de integridade
 python data/organize_dataset.py --verificar  # confere dados x manifest sem mudar o manifest
 python data/eda_bracol.py                    # figuras em data/reports/figures/
+python data/jmuben.py                        # manifest e relatório do JMuBEN (fonte auxiliar)
+python data/jmuben.py --verificar            # confere dados x manifest do JMuBEN
 jupyter nbconvert --clear-output --inplace notebooks/01_eda.ipynb   # antes de commitar
 python -m pytest
 ```

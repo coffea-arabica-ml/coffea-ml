@@ -258,14 +258,17 @@ def montar_manifest(linhas, imagens, raiz, seed, fixos, ausentes_esperados, com_
     return manifest, {"mantidas": mantidas, "novas": len(divisao) - mantidas}
 
 
-def conferir_com_versionado(manifest, versionado, oc):
+def conferir_com_versionado(manifest, versionado, oc, colunas_esperadas=bracol.COLUNAS_MANIFEST,
+                            colunas_hash=("phash", "phash_folha")):
     """Modo --verificar: o manifest recalculado precisa bater com o versionado. O SHA-256 e as
-    outras colunas são comparados exatamente; os dois pHash, com tolerância de TOLERANCIA_PHASH
-    bits (outro decodificador JPEG pode mudar alguns bits)."""
+    outras colunas são comparados exatamente; as colunas de pHash (`colunas_hash`), com
+    tolerância de TOLERANCIA_PHASH bits (outro decodificador JPEG pode mudar alguns bits).
+
+    Os padrões são os do BRACOL; o jmuben.py passa as colunas do manifest dele."""
     colunas = list(next(iter(versionado.values())))
-    if colunas != bracol.COLUNAS_MANIFEST:
+    if colunas != colunas_esperadas:
         oc.erros.append(
-            f"colunas do manifest versionado: {colunas}; esperado: {bracol.COLUNAS_MANIFEST}"
+            f"colunas do manifest versionado: {colunas}; esperado: {colunas_esperadas}"
         )
         return
     atuais = {linha["id"]: linha for linha in manifest}
@@ -279,15 +282,15 @@ def conferir_com_versionado(manifest, versionado, oc):
         oc.erros.append(f"ids nos dados que faltam no manifest versionado: {ids}")
     divergentes = {}
     for i in sorted(set(atuais) & set(versionado)):
-        for coluna in bracol.COLUNAS_MANIFEST:
+        for coluna in colunas_esperadas:
             atual, gravado = str(atuais[i][coluna]), versionado[i][coluna]
-            if coluna in ("phash", "phash_folha") and atual and gravado:
+            if coluna in colunas_hash and atual and gravado:
                 confere = bracol.distancia_hamming(atual, gravado) <= bracol.TOLERANCIA_PHASH
             else:
                 confere = atual == gravado
             if not confere:
                 divergentes.setdefault(coluna, []).append(i)
-    for coluna in bracol.COLUNAS_MANIFEST:
+    for coluna in colunas_esperadas:
         if coluna in divergentes:
             ids = fmt.faixas(divergentes[coluna])
             oc.erros.append(f"coluna {coluna} diverge do manifest versionado: ids {ids}")
@@ -319,11 +322,13 @@ def _comparar_com_anterior(manifest, anterior, fixos, oc):
         )
 
 
-def escrever_manifest(linhas: list[dict], caminho: Path) -> None:
-    """Grava o manifest em UTF-8 sem BOM e com fim de linha LF (mesmos bytes em qualquer SO)."""
+def escrever_manifest(linhas: list[dict], caminho: Path, colunas=bracol.COLUNAS_MANIFEST) -> None:
+    """Grava o manifest em UTF-8 sem BOM e com fim de linha LF (mesmos bytes em qualquer SO).
+
+    As colunas padrão são as do BRACOL; o jmuben.py passa as do manifest dele."""
     caminho.parent.mkdir(parents=True, exist_ok=True)
     with open(caminho, "w", newline="", encoding="utf-8") as f:
-        escritor = csv.DictWriter(f, fieldnames=bracol.COLUNAS_MANIFEST, lineterminator="\n")
+        escritor = csv.DictWriter(f, fieldnames=colunas, lineterminator="\n")
         escritor.writeheader()
         escritor.writerows(linhas)
 

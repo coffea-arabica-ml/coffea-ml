@@ -196,6 +196,14 @@ def estado_git() -> tuple[str | None, bool | None]:
     return commit, bool(alteracoes.strip())
 
 
+def memoria_gpu_gb(dispositivo) -> float | None:
+    """Pico de memória da GPU reservada pelo PyTorch desde o último reset, em GB; None fora da
+    CUDA. O nvidia-smi mostra um pouco mais (o contexto da CUDA)."""
+    if dispositivo.type != "cuda":
+        return None
+    return torch.cuda.max_memory_reserved(dispositivo) / 2**30
+
+
 def versoes() -> dict:
     """Versões do ambiente, para o config.json."""
     import albumentations
@@ -324,16 +332,19 @@ def treinar(args, comando: str) -> int:
     situacao = f"limite de {args.epocas} épocas"
     for epoca in range(1, args.epocas + 1):
         inicio = time.perf_counter()
+        if dispositivo.type == "cuda":
+            torch.cuda.reset_peak_memory_stats(dispositivo)
         lr = otimizador.param_groups[0]["lr"]
         perdas_treino = treinar_epoca(modelo, loader_treino, otimizador, escalador, dispositivo,
                                       args.peso_sev, amp)
         aval = avaliar(modelo, loader_val, dispositivo, args.peso_sev, amp)
         agendador.step()
         segundos = time.perf_counter() - inicio
+        memoria_gpu = memoria_gpu_gb(dispositivo)
         m = metrics.calcular_metricas(aval["classe"], aval["classe_prevista"])
         ms = metrics.calcular_metricas_severidade(aval["severidade"], aval["severidade_prevista"])
         historico.append(linha_historico(epoca, lr, perdas_treino, aval["perdas"], m, ms,
-                                         segundos))
+                                         segundos, memoria_gpu))
         gravar_historico(historico, pasta / "historico.csv")
         melhorou = melhor is None or m["f1_macro"] > melhor["m"]["f1_macro"]
         if melhorou:
@@ -344,7 +355,7 @@ def treinar(args, comando: str) -> int:
         else:
             sem_melhora += 1
         fmt.dizer(_resumo_da_epoca(epoca, args.epocas, perdas_treino, aval["perdas"], m, ms,
-                                   segundos, melhorou))
+                                   segundos, memoria_gpu, melhorou))
         parar = sem_melhora >= args.paciencia
         if parar:
             situacao = (f"parada antecipada na época {epoca}: {args.paciencia} épocas sem "
@@ -361,7 +372,8 @@ def treinar(args, comando: str) -> int:
     fmt.dizer(f"Melhor época: {melhor['epoca']} de {len(historico)} | "
               f"F1 macro val {_pct(melhor['m']['f1_macro'])} | "
               f"acurácia val {_pct(melhor['m']['acuracia'])}")
-    fmt.dizer(f"Fim: {situacao} | tempo médio por época: {fmt.decimal(tempo_medio, 1)} s")
+    fmt.dizer(f"Fim: {situacao} | tempo médio por época: {fmt.decimal(tempo_medio, 1)} s"
+              + _pico_gpu(historico, " | pico de memória da GPU: {} GB"))
     arquivos = ", ".join(sorted(p.name for p in pasta.iterdir()))
     fmt.dizer(f"Arquivos em {_exibir(pasta)}: {arquivos}")
     return 0
@@ -510,8 +522,10 @@ def gravar_json(objeto, caminho: Path) -> None:
                        encoding="utf-8", newline="\n")
 
 
-def linha_historico(epoca, lr, perdas_treino, perdas_val, m, ms, segundos) -> dict:
-    """Uma linha do historico.csv: perdas, métricas da validação e tempo da época."""
+def linha_historico(epoca, lr, perdas_treino, perdas_val, m, ms, segundos,
+                    memoria_gpu=None) -> dict:
+    """Uma linha do historico.csv: perdas, métricas da validação, tempo da época e pico de
+    memória da GPU (vazio fora da CUDA)."""
     linha = {"epoca": epoca, "lr": lr}
     for conjunto, perdas in (("treino", perdas_treino), ("val", perdas_val)):
         linha.update(zip([f"perda_{conjunto}", f"perda_classe_{conjunto}",
@@ -519,7 +533,8 @@ def linha_historico(epoca, lr, perdas_treino, perdas_val, m, ms, segundos) -> di
     linha.update({"acuracia_val": m["acuracia"], "f1_macro_val": m["f1_macro"]})
     linha.update({f"recall_val_{c}": r for c, r in zip(m["classes"], m["recall"])})
     linha.update({"mae_sev_val": ms["mae"], "kappa_sev_val": ms["kappa_quadratico"],
-                  "tempo_s": round(segundos, 1)})
+                  "tempo_s": round(segundos, 1),
+                  "memoria_gpu_gb": None if memoria_gpu is None else round(memoria_gpu, 2)})
     return _arredondar(linha)
 
 
@@ -581,8 +596,9 @@ def relatorio_treino(config: dict, historico: list[dict], melhor: dict, situacao
         f"{dados.ROTACAO_MAX}° e brilho e contraste de até "
         f"±{fmt.decimal(100 * dados.BRILHO_CONTRASTE_MAX, 0)}%. A validação fica intacta.",
         f"- **Execução:** {config['dispositivo']}, {'com' if config['amp'] else 'sem'} AMP; "
-        f"{len(historico)} épocas rodadas, {fmt.decimal(tempo_medio, 1)} s por época em média; "
-        f"{situacao}.",
+        f"{len(historico)} épocas rodadas, {fmt.decimal(tempo_medio, 1)} s por época em média"
+        + _pico_gpu(historico, ", pico de {} GB de memória da GPU reservada pelo PyTorch")
+        + f"; {situacao}.",
         "",
         "## Dados", "",
     ]
@@ -659,14 +675,22 @@ def _nota_cercosporiose(n: int, onde: str) -> str:
             f"{fmt.decimal(100 / n, 1)} pontos de recall dessa classe, que por isso oscila muito.")
 
 
-def _resumo_da_epoca(epoca, epocas, perdas_treino, perdas_val, m, ms, segundos,
+def _resumo_da_epoca(epoca, epocas, perdas_treino, perdas_val, m, ms, segundos, memoria_gpu,
                      melhorou) -> str:
     return (f"Epoca {epoca}/{epocas} | perda treino {fmt.decimal(perdas_treino[0], 3)} "
             f"(classe {fmt.decimal(perdas_treino[1], 3)}, sev {fmt.decimal(perdas_treino[2], 3)}) "
             f"| perda val {fmt.decimal(perdas_val[0], 3)} | acc {_pct(m['acuracia'])} | "
             f"F1 macro {_pct(m['f1_macro'])} | MAE sev {_talvez(ms['mae'])} | "
             f"kappa {_talvez(ms['kappa_quadratico'])} | {fmt.decimal(segundos, 1)} s"
+            + ("" if memoria_gpu is None else f" | GPU {fmt.decimal(memoria_gpu, 1)} GB")
             + (" | melhor" if melhorou else ""))
+
+
+def _pico_gpu(historico: list[dict], texto: str) -> str:
+    """O maior pico de memória da GPU do histórico dentro do texto ("{}" vira o número), ou ""
+    fora da CUDA."""
+    picos = [h["memoria_gpu_gb"] for h in historico if h["memoria_gpu_gb"] is not None]
+    return texto.format(fmt.decimal(max(picos), 1)) if picos else ""
 
 
 def _fontes(resumo: dict) -> str:

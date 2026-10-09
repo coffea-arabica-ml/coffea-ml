@@ -67,7 +67,10 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 ## Comandos (na raiz do repositório, com o venv ativo)
 
 ```
-pip install -r requirements.txt
+pip install -r requirements.txt              # CPU; no Linux (Colab) o torch do PyPI já vem com CUDA
+pip install "torch==2.13.0+cu130" "torchvision==0.28.0+cu130" --index-url https://download.pytorch.org/whl/cu130
+                                             # GPU no Windows: só troca o build (cu126 se o driver
+                                             # for CUDA 12; ver README.md, seção Ambiente)
 python data/organize_dataset.py              # gera o manifest e o relatório de integridade
 python data/organize_dataset.py --verificar  # confere dados x manifest sem mudar o manifest
 python data/eda_bracol.py                    # figuras em data/reports/figures/
@@ -75,6 +78,9 @@ python data/jmuben.py                        # manifest e relatório do JMuBEN (
 python data/jmuben.py --verificar            # confere dados x manifest do JMuBEN
 python data/bracot.py                        # manifest e relatório do BRACOT (detecção)
 python data/bracot.py --verificar            # confere dados x manifest do BRACOT
+python model/train.py --rapido               # teste de fumaça do treino (model/runs/_rapido/, fora do git)
+python model/train.py --nome NOME            # treino; grava model/runs/NOME/ e não usa o teste
+python model/train.py --avaliar-teste --run NOME   # só no fim: avalia no teste e registra o uso
 jupyter nbconvert --clear-output --inplace notebooks/01_eda.ipynb   # antes de commitar
 python -m pytest
 ```

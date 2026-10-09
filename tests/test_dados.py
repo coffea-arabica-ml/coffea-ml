@@ -1,12 +1,13 @@
 """Testes da montagem dos dados da Frente 9 (model/dados.py).
 
-Só leem os manifests versionados: nenhum teste lê data/raw, abre imagem do dataset ou baixa
-alguma coisa.
+Só leem os manifests versionados e imagens sintéticas gravadas em pastas temporárias: nenhum
+teste lê data/raw, abre imagem do dataset ou baixa alguma coisa.
 """
 import numpy as np
 import pandas as pd
 import pytest
 import torch
+from PIL import Image, ImageOps
 
 import bracol
 import dados
@@ -86,14 +87,46 @@ def test_transformacoes_entregam_tensor_canais_altura_largura():
     assert torch.equal(avaliacao(image=imagem)["image"], avaliacao(image=imagem)["image"])
 
 
-def test_leitura_converte_bgr_para_rgb(monkeypatch):
-    bgr = np.zeros((2, 4, 3), np.uint8)
-    bgr[..., 2] = 255  # vermelho, na ordem BGR do OpenCV
-    monkeypatch.setattr(dados.cv2, "imread", lambda caminho, modo: bgr)
-    rgb = dados.ler_imagem("qualquer.jpg")
-    assert (rgb[..., 0] == 255).all() and (rgb[..., 2] == 0).all()
+VERMELHO, AZUL = (255, 0, 0), (0, 0, 255)
 
 
-def test_imagem_ausente_da_erro_claro(tmp_path):
+def _metades(altura: int, largura: int) -> np.ndarray:
+    """Imagem RGB sintética: metade esquerda vermelha, metade direita azul."""
+    rgb = np.zeros((altura, largura, 3), np.uint8)
+    rgb[:, : largura // 2] = VERMELHO
+    rgb[:, largura // 2:] = AZUL
+    return rgb
+
+
+def test_leitura_aceita_caminho_com_acento_e_devolve_rgb(tmp_path):
+    # No Windows, o cv2.imread não abriria este caminho ("Área de Trabalho" é a pasta da área
+    # de trabalho do Windows em português).
+    caminho = tmp_path / "Área de Trabalho" / "folha_ção.png"
+    caminho.parent.mkdir()
+    Image.fromarray(_metades(4, 8)).save(caminho)  # PNG: sem perda, as cores voltam exatas
+    assert np.array_equal(dados.ler_imagem(caminho), _metades(4, 8))
+
+
+def test_leitura_aplica_a_orientacao_exif(tmp_path):
+    # Orientação EXIF 6: a foto gravada deitada (4x8) é mostrada em pé (8x4), girada 90 graus
+    # no sentido horário; a metade esquerda (vermelha) vai para cima. Parte do JMuBEN é assim.
+    caminho = tmp_path / "Área de Trabalho" / "deitada.jpg"
+    caminho.parent.mkdir()
+    exif = Image.Exif()
+    exif[0x0112] = 6
+    Image.fromarray(_metades(4, 8)).save(caminho, quality=100, exif=exif)
+    rgb = dados.ler_imagem(caminho).astype(int)
+    with Image.open(caminho) as gravada:
+        assert np.asarray(gravada).shape == (4, 8, 3)  # o arquivo continua deitado
+        assert rgb.shape == np.asarray(ImageOps.exif_transpose(gravada)).shape == (8, 4, 3)
+    assert np.abs(rgb[1, 1] - VERMELHO).max() < 40  # em cima: vermelho (o JPEG perde um pouco)
+    assert np.abs(rgb[6, 1] - AZUL).max() < 40  # embaixo: azul
+
+
+def test_imagem_ausente_ou_ilegivel_da_erro_claro(tmp_path):
     with pytest.raises(FileNotFoundError, match="não encontrada"):
         dados.ler_imagem(tmp_path / "nao_existe.jpg")
+    falsa = tmp_path / "falsa.jpg"
+    falsa.write_bytes(b"isto nao e uma imagem")
+    with pytest.raises(ValueError, match="não foi possível decodificar"):
+        dados.ler_imagem(falsa)

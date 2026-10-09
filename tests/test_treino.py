@@ -5,6 +5,7 @@ Nenhum teste lê data/raw nem baixa pesos (pretrained=False). O fluxo de ponta a
 backbone minúsculo test_resnet do timm e imagens sintéticas geradas na memória.
 """
 import json
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -53,6 +54,66 @@ def test_lote_sem_nenhum_alvo_de_severidade_nao_da_nan():
     assert (logits_sev.grad == 0).all()
 
 
+# --------------------------------------------------------- pesos pré-treinados (cache)
+@pytest.fixture
+def create_model_espiao(monkeypatch):
+    """Troca timm.create_model por um espião: guarda os argumentos e devolve o backbone
+    minúsculo test_resnet sem pesos, sem baixar nada."""
+    original = train.timm.create_model
+    chamadas = []
+
+    def espiao(nome, **kwargs):
+        chamadas.append({"nome": nome, **kwargs})
+        return original("test_resnet", pretrained=False, num_classes=0)
+
+    monkeypatch.setattr(train.timm, "create_model", espiao)
+    return chamadas
+
+
+def test_com_pesos_no_cache_o_timm_recebe_o_arquivo(monkeypatch, create_model_espiao):
+    monkeypatch.setattr(train, "pesos_em_cache", lambda backbone: "cache/model.safetensors")
+    train.criar_modelo("resnet50", pretrained=True)
+    assert create_model_espiao == [{
+        "nome": "resnet50", "pretrained": True, "num_classes": 0,
+        "pretrained_cfg_overlay": {"file": "cache/model.safetensors"},
+    }]
+
+
+def test_sem_pesos_no_cache_o_timm_baixa_normalmente(monkeypatch, capsys, create_model_espiao):
+    # Máquina nova ou Colab: sem o arquivo no cache, o timm segue o caminho normal (baixa do
+    # huggingface). Nada força o modo offline.
+    monkeypatch.setattr(train, "pesos_em_cache", lambda backbone: None)
+    train.criar_modelo("resnet50", pretrained=True)
+    assert create_model_espiao == [{"nome": "resnet50", "pretrained": True, "num_classes": 0}]
+    assert "Baixando os pesos pre-treinados de resnet50" in capsys.readouterr().out
+
+
+def test_sem_pretreino_nao_procura_pesos(monkeypatch, create_model_espiao):
+    def nao_chamar(backbone):
+        raise AssertionError("não devia procurar pesos")
+
+    monkeypatch.setattr(train, "pesos_em_cache", nao_chamar)
+    train.criar_modelo("resnet50", pretrained=False)
+    assert create_model_espiao == [{"nome": "resnet50", "pretrained": False, "num_classes": 0}]
+
+
+def test_pesos_em_cache_so_le_o_cache_local(monkeypatch, tmp_path):
+    import huggingface_hub.constants
+
+    monkeypatch.setattr(huggingface_hub.constants, "HF_HUB_CACHE", str(tmp_path))
+    assert train.pesos_em_cache("resnet50") is None  # cache vazio: o timm vai baixar
+    # Cache no formato do huggingface: refs/main aponta para o snapshot com o arquivo.
+    repositorio = tmp_path / "models--timm--resnet50.a1_in1k"
+    commit = "0123456789abcdef0123456789abcdef01234567"
+    (repositorio / "refs").mkdir(parents=True)
+    (repositorio / "refs" / "main").write_text(commit)
+    (repositorio / "snapshots" / commit).mkdir(parents=True)
+    (repositorio / "snapshots" / commit / "model.safetensors").write_bytes(b"pesos")
+    assert Path(train.pesos_em_cache("resnet50")) == (
+        repositorio / "snapshots" / commit / "model.safetensors"
+    )
+
+
 # ------------------------------------------------------------------- ponta a ponta
 ARGS_PEQUENOS = ["--backbone", "test_resnet", "--sem-pretreino", "--largura", "128",
                  "--altura", "64", "--batch", "8", "--workers", "0", "--dispositivo", "cpu"]
@@ -98,8 +159,10 @@ def test_treino_grava_o_run_completo(runs, capsys):
     historico = pd.read_csv(pasta / "historico.csv")
     assert historico["epoca"].tolist() == [1, 2]
     for coluna in ["perda_treino", "perda_val", "acuracia_val", "f1_macro_val", "mae_sev_val",
-                   "kappa_sev_val", "tempo_s", *[f"recall_val_{c}" for c in bracol.CLASSES]]:
+                   "kappa_sev_val", "tempo_s", "memoria_gpu_gb",
+                   *[f"recall_val_{c}" for c in bracol.CLASSES]]:
         assert coluna in historico.columns
+    assert historico["memoria_gpu_gb"].isna().all()  # em CPU, sem memória de GPU
 
     config = json.loads((pasta / "config.json").read_text(encoding="utf-8"))
     assert config["backbone"] == "test_resnet" and config["dados"]["val"]["n"] == 10

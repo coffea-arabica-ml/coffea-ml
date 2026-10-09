@@ -225,3 +225,5 @@ data/processed/
 data/tools/relatorio_*.txt
 # Checkpoints dos treinos (model/train.py): grandes; os json, csv, md e png dos runs entram no git
 model/runs/**/*.pt
+# Teste de fumaca do treino (python model/train.py --rapido): regravado a cada execucao
+model/runs/_rapido/

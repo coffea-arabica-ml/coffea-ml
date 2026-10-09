@@ -22,6 +22,7 @@ os.environ.setdefault("NO_ALBUMENTATIONS_UPDATE", "1")
 
 import albumentations as A
 import cv2
+import numpy as np
 import pandas as pd
 import torch
 from albumentations.pytorch import ToTensorV2
@@ -110,16 +111,20 @@ def amostra_estratificada(df, n: int, seed: int = bracol.SEED_PADRAO) -> pd.Data
 
 # ----------------------------------------------------------------------------- leitura
 def ler_imagem(caminho: Path):
-    """Imagem RGB (altura x largura x 3, uint8). O cv2.imread aplica a orientação EXIF, que
-    parte do JMuBEN usa (ver data/README.md)."""
-    imagem = cv2.imread(str(caminho), cv2.IMREAD_COLOR)
+    """Imagem RGB (altura x largura x 3, uint8).
+
+    Os bytes são lidos pelo numpy e decodificados com cv2.imdecode, porque no Windows o
+    cv2.imread não abre caminho com acento. O resultado é o mesmo do cv2.imread, inclusive a
+    orientação EXIF aplicada, que parte do JMuBEN usa (ver data/README.md). O backend também
+    decodifica assim a foto que recebe em bytes.
+    """
+    caminho = Path(caminho)
+    if not caminho.is_file():
+        raise FileNotFoundError(f"imagem não encontrada: {caminho}")
+    imagem = cv2.imdecode(np.fromfile(caminho, dtype=np.uint8), cv2.IMREAD_COLOR)
     if imagem is None:
-        if not Path(caminho).is_file():
-            raise FileNotFoundError(f"imagem não encontrada: {caminho}")
-        raise FileNotFoundError(
-            f"o cv2.imread não conseguiu ler {caminho}: arquivo corrompido ou, no Windows, "
-            "caminho com acento (o cv2.imread não abre esses caminhos)"
-        )
+        raise ValueError(f"não foi possível decodificar a imagem {caminho}: arquivo corrompido "
+                         "ou formato desconhecido")
     return cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB)
 
 

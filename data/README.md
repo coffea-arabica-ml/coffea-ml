@@ -206,7 +206,8 @@ com seed 42.
 - **JMuBEN:** Jepkoech, Kenduiywo, Mugo e Chebet (2021), Mendeley Data, DOI
   [10.17632/t2r6rszp5c.1](https://doi.org/10.17632/t2r6rszp5c.1), versão 1, publicado em
   26/03/2021. Pastas `Cerscospora`, `Leaf rust` e `Phoma`.
-- **JMuBEN2:** Mugo, Kenduiywo e Chebet (2021), Mendeley Data, DOI
+- **JMuBEN2:** [primeiro autor sem nome na página; provavelmente Jepkoech, a confirmar], Mugo,
+  Kenduiywo e Chebet (2021), Mendeley Data, DOI
   [10.17632/tgv3zb82nd.1](https://doi.org/10.17632/tgv3zb82nd.1), versão 1, publicado em
   26/03/2021. Pastas `Healthy` e `Miner`.
 - **Artigo:** Jepkoech, Mugo, Kenduiywo e Too, *Data in Brief* 36 (2021) 107142.

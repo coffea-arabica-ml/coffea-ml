@@ -223,3 +223,5 @@ data/processed/
 *.zip
 # Relatorios das ferramentas de zip: gerados ao lado dos scripts, com caminhos da maquina
 data/tools/relatorio_*.txt
+# Checkpoints dos treinos (model/train.py): grandes; os json, csv, md e png dos runs entram no git
+model/runs/**/*.pt

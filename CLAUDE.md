@@ -57,7 +57,10 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
     `data/manifests/jmuben.csv`, gerado por `data/jmuben.py`, uma linha por conteúdo distinto;
     grupos pelo hash canônico a até 64 bits; teto em `CAP_POR_CLASSE`.
   - BRACOT: detecção e segmentação de folhas (RF09). A divisão dos autores (240 treino / 60
-    teste) é a oficial. Não há classe de estresse por folha.
+    teste) é a oficial. Não há classe de estresse por folha. Manifest
+    `data/manifests/bracot.csv`, gerado por `data/bracot.py`, uma linha por foto; cenas de
+    10 s. A validação do detector separa cenas inteiras do treino, nunca imagens soltas, e as
+    métricas saem com e sem as 2 fotos de `TESTE_SOBREPOSTO`.
   - Teste de classificação e de severidade (RNF01): só BRACOL. Um teste de campo com rótulo de
     classe, se vier, entra como fonte nova, com manifest próprio.
 
@@ -70,6 +73,8 @@ python data/organize_dataset.py --verificar  # confere dados x manifest sem muda
 python data/eda_bracol.py                    # figuras em data/reports/figures/
 python data/jmuben.py                        # manifest e relatório do JMuBEN (fonte auxiliar)
 python data/jmuben.py --verificar            # confere dados x manifest do JMuBEN
+python data/bracot.py                        # manifest e relatório do BRACOT (detecção)
+python data/bracot.py --verificar            # confere dados x manifest do BRACOT
 jupyter nbconvert --clear-output --inplace notebooks/01_eda.ipynb   # antes de commitar
 python -m pytest
 ```

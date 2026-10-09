@@ -192,12 +192,13 @@ def _otsu(valores) -> int:
     return int(np.argmax(peso_fundo * peso_frente * (media_fundo - media_frente) ** 2))
 
 
-def ler_manifest_anterior(caminho: Path) -> dict[int, dict]:
-    """Linhas do manifest já gravado, por id ({} se ele ainda não existe)."""
+def ler_manifest_anterior(caminho: Path, chave=int) -> dict:
+    """Linhas do manifest já gravado, por id ({} se ele ainda não existe). `chave` converte o
+    id: int no BRACOL e no JMuBEN, str no BRACOT (lá o id é o nome da foto)."""
     if not caminho.is_file():
         return {}
     with open(caminho, newline="", encoding="utf-8") as f:
-        return {int(linha["id"]): linha for linha in csv.DictReader(f)}
+        return {chave(linha["id"]): linha for linha in csv.DictReader(f)}
 
 
 # --------------------------------------------------------------------------- manifest
@@ -264,7 +265,7 @@ def conferir_com_versionado(manifest, versionado, oc, colunas_esperadas=bracol.C
     outras colunas são comparados exatamente; as colunas de pHash (`colunas_hash`), com
     tolerância de TOLERANCIA_PHASH bits (outro decodificador JPEG pode mudar alguns bits).
 
-    Os padrões são os do BRACOL; o jmuben.py passa as colunas do manifest dele."""
+    Os padrões são os do BRACOL; jmuben.py e bracot.py passam as colunas dos manifests deles."""
     colunas = list(next(iter(versionado.values())))
     if colunas != colunas_esperadas:
         oc.erros.append(
@@ -325,7 +326,7 @@ def _comparar_com_anterior(manifest, anterior, fixos, oc):
 def escrever_manifest(linhas: list[dict], caminho: Path, colunas=bracol.COLUNAS_MANIFEST) -> None:
     """Grava o manifest em UTF-8 sem BOM e com fim de linha LF (mesmos bytes em qualquer SO).
 
-    As colunas padrão são as do BRACOL; o jmuben.py passa as do manifest dele."""
+    As colunas padrão são as do BRACOL; jmuben.py e bracot.py passam as dos manifests deles."""
     caminho.parent.mkdir(parents=True, exist_ok=True)
     with open(caminho, "w", newline="", encoding="utf-8") as f:
         escritor = csv.DictWriter(f, fieldnames=colunas, lineterminator="\n")

@@ -21,10 +21,11 @@ def pct(parte: float, total: float, casas: int = 1) -> str:
 
 
 def intervalos(ids) -> list[tuple[int, int]]:
-    """Ids em intervalos contíguos: [7, 8, 9, 69, 70] -> [(7, 9), (69, 70)]."""
+    """Ids em intervalos contíguos: [7, 8, 9, 69, 70] -> [(7, 9), (69, 70)]. Ids que não são
+    inteiros (no BRACOT, o nome da foto) ficam um a um."""
     saida = []
     for i in sorted(ids):
-        if saida and i == saida[-1][1] + 1:
+        if saida and isinstance(i, int) and i == saida[-1][1] + 1:
             saida[-1] = (saida[-1][0], i)
         else:
             saida.append((i, i))

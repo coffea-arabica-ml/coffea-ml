@@ -1,17 +1,49 @@
 # Dados do coffea-ml (Frente 8)
 
-Imagens de folhas de café do BRACOL, o manifest que diz o que cada imagem é e em que split
-está, o relatório de integridade e a EDA. As imagens não entram no git; o manifest, os
+Imagens de folhas de café de três fontes:
+- **BRACOL:** classificação, severidade e teste;
+- **JMuBEN/JMuBEN2:** treino auxiliar de classificação, com folhas de campo;
+- **BRACOT:** detecção e segmentação das folhas.
+
+Cada fonte tem um manifest, que diz o que cada imagem é e como ela é usada, e um relatório de
+integridade; o BRACOL tem também a EDA. As imagens não entram no git; os manifests, os
 relatórios e as figuras, sim.
+
+## Decisões do gestor (09/10/2026)
+
+- **Mudança de requisito:** o app vai receber a foto de uma planta inteira, de um galho ou de uma
+  única folha, em qualquer situação (luz, fundo, ângulo). O sistema acha cada folha na foto e
+  diagnostica cada uma (classe e severidade).
+- **Desenho da Frente 8, atualizado:**
+  - o BRACOL (folhas isoladas, 2048x1024) continua sustentando a classificação, a severidade e o
+    teste do RNF01, e é a única fonte de teste de classificação e de severidade;
+  - o JMuBEN/JMuBEN2 entra só no treino de classificação, para trazer folhas fotografadas em
+    campo. Nunca entra em validação nem em teste. Fica sem duplicatas, com teto por classe e com
+    a fonte marcada no manifest;
+  - o BRACOT é usado para achar e contornar as folhas na foto da planta. A divisão dos autores
+    (240 treino / 60 teste) é a oficial;
+  - um teste de campo com rótulo de classe ainda não existe. Quando vier, entra como fonte nova,
+    com manifest próprio.
+- **RD02 (desbalanceamento): compensar.**
+  - Amostragem balanceada por classe no treino e augmentation moderada (Albumentations) só no
+    treino, em memória.
+  - Validação e teste intactos.
+  - Métricas por classe (recall, F1 macro), além da acurácia.
+  - Os parâmetros finos ficam com a Frente 9, que os compara na prática.
+- **Entrada do JMuBEN no modelo:** só se melhorar a validação do BRACOL sem piorar o recall de
+  saudável. A Frente 9 compara o treino com e sem JMuBEN, e com tetos menores, que o leitor
+  aceita como parâmetro (`jmuben.ler_manifest(teto=...)`).
+- **Validação do detector:** separa cenas inteiras do treino dos autores, nunca imagens soltas.
+  O teste dos autores fica intacto.
 
 ## Fontes
 
 | fonte | papel | situação |
 |---|---|---|
-| BRACOL, cópia completa (`data/raw/bracol/bracol_completo/`) | treino, validação e teste | em uso desde 07/10/2026 |
+| BRACOL, cópia completa (`data/raw/bracol/bracol_completo/`) | classificação e severidade: treino, validação e teste (RNF01) | em uso desde 07/10/2026 |
 | BRACOL, cópia parcial (`data/raw/bracol/bracol_recuperado/`) | nenhum | obsoleta: mantida, sem uso |
-| JMuBEN e JMuBEN2 | só treino auxiliar, nunca teste | prevista, não baixada |
-| BRACOT | detecção de folhas na foto do pé (RF09) | prevista, não baixada |
+| JMuBEN e JMuBEN2 (`data/raw/jmuben/`) | só treino auxiliar de classificação, nunca validação nem teste | em uso desde 09/10/2026 |
+| BRACOT (`data/raw/bracot/bracot-data/`) | detecção e segmentação de folhas (RF09), com a divisão dos autores | em uso desde 09/10/2026 |
 
 ## Procedência do BRACOL
 
@@ -78,7 +110,8 @@ data/raw/bracol/
   multirrótulo. Segundo o repositório dos autores, consultado em 07/10/2026, o `dataset.csv` dos
   experimentos deles também não tem essas linhas.
 - A correspondência das colunas `phoma` e `cercospora` com as classes do artigo ainda não está
-  confirmada. A ressalva fica só em `RESSALVA_PHOMA_CERCOSPORA`, em `data/bracol.py`.
+  confirmada, e o mesmo vale para as pastas `Phoma` e `Cerscospora` do JMuBEN. A ressalva fica
+  só em `RESSALVA_PHOMA_CERCOSPORA`, em `data/bracol.py`.
 - **Severidade (`severity`):** 0 saudável (<0,1% da área), 1 muito baixa (0,1-5%), 2 baixa
   (5-10%), 3 alta (10-15%) e 4 muito alta (>15%).
 
@@ -167,6 +200,238 @@ com seed 42.
 - `data/processed/` continua ignorada pelo git, reservada para derivados pesados (por exemplo, um
   cache de imagens reduzidas), se a Frente 9 precisar.
 
+## JMuBEN e JMuBEN2 (treino auxiliar)
+
+**Citação obrigatória.** Quem usar estas imagens precisa citar os autores:
+- **JMuBEN:** Jepkoech, Kenduiywo, Mugo e Chebet (2021), Mendeley Data, DOI
+  [10.17632/t2r6rszp5c.1](https://doi.org/10.17632/t2r6rszp5c.1), versão 1, publicado em
+  26/03/2021. Pastas `Cerscospora`, `Leaf rust` e `Phoma`.
+- **JMuBEN2:** Mugo, Kenduiywo e Chebet (2021), Mendeley Data, DOI
+  [10.17632/tgv3zb82nd.1](https://doi.org/10.17632/tgv3zb82nd.1), versão 1, publicado em
+  26/03/2021. Pastas `Healthy` e `Miner`.
+- **Artigo:** Jepkoech, Mugo, Kenduiywo e Too, *Data in Brief* 36 (2021) 107142.
+
+**Licença:** não exibida na página consultada em 09/10/2026; confirmar.
+
+**Cópia local:**
+- O material foi recebido pela equipe em cinco pastas exportadas (`<Classe>-20210326T…Z-001`) e
+  copiado em 09/10/2026 para `data/raw/jmuben/<Pasta>/`.
+- `Cerscospora` é a grafia da origem.
+- O JMuBEN publicado tem 22.591 imagens; a cópia local tem 22.588. A diferença de 3 arquivos está
+  registrada, sem investigar.
+
+| pasta | classe | subconjunto | arquivos | conteúdos distintos | grupos | teto | selecionadas |
+|---|---|---|---:|---:|---:|---:|---:|
+| `Cerscospora` | cercosporiose | jmuben | 7.681 | 322 | 80 | 51 | 51 |
+| `Healthy` | saudavel | jmuben2 | 18.984 | 63 | 12 | 95 | 12 |
+| `Leaf rust` | ferrugem | jmuben | 8.336 | 1.042 | 406 | 186 | 186 |
+| `Miner` | bicho_mineiro | jmuben2 | 16.978 | 1.639 | 309 | 135 | 135 |
+| `Phoma` | phoma | jmuben | 6.571 | 691 | 177 | 122 | 122 |
+| **total** | | | 58.550 | 3.757 | 984 | | 506 |
+
+**Limitações** (detalhes em `data/reports/integridade_jmuben.md`):
+- **Recortes, não folhas inteiras:**
+  - quase todos têm 128x128;
+  - 2.953 são retangulares, com lado maior de 256, em `Cerscospora` e `Miner`.
+
+  Segundo a descrição dos autores, são café arábica fotografado em campo, recortado para a região
+  de interesse, com augmentation em parte das imagens. As imagens são do Quênia.
+- **Augmentation e cópias:**
+  - 58.550 arquivos, mas só 3.757 conteúdos distintos (1.357 matrizes de pixels distintas) e 984
+    recortes (grupos);
+  - parte da "rotação" está só na etiqueta EXIF de orientação. O Pillow ignora a etiqueta e o
+    `cv2.imread` a aplica.
+- **Saudável quase sem diversidade:**
+  - os 18.984 arquivos de `Healthy` viram 12 grupos, que a olho são 2 regiões de folha;
+  - o treino auxiliar traz 494 recortes de doença e só 12 de folha saudável;
+  - o risco é o modelo associar "cara de recorte de campo" a doença. É para isso a regra de
+    entrada no modelo (seção "Decisões do gestor").
+- **Rótulos não verificados:**
+  - `Leaf rust` é desbotado: saturação mediana de 40 (escala 0–255), contra 102 a 145 nas outras
+    pastas;
+  - `Phoma` tem imagens com manchas escuras grandes;
+  - a correspondência de `Phoma` e `Cerscospora` com as classes do projeto não está confirmada.
+- **Os 144 `.jpeg` de `Leaf rust`:** formam 9 recortes próprios, de 16 arquivos cada, com o mesmo
+  aspecto desbotado do resto da pasta. Entram como os outros.
+- **Prefixo N dos nomes (`N (k).jpg`):** não identifica a foto de origem (cópias do mesmo recorte
+  aparecem com N diferentes) e não é usado.
+- **Arquivo ilegível:** `Healthy/2 (691).jpg` fica excluído com motivo. O Pillow não o
+  reconhece. Ele tem o mesmo tamanho de `2 (691).bak.jpg`, que abre e tem 293 cópias idênticas.
+
+**Manifest: `data/manifests/jmuben.csv`.** Tem uma linha por conteúdo distinto (SHA-256), ou seja,
+3.757 linhas. As 54.793 cópias idênticas só aparecem na contagem `copias`. Não editar à mão: ele é
+gerado por `python data/jmuben.py`. **Não tem coluna de split.**
+
+| coluna | conteúdo |
+|---|---|
+| `fonte` | `jmuben` |
+| `subconjunto` | `jmuben` (`Cerscospora`, `Leaf rust`, `Phoma`) ou `jmuben2` (`Healthy`, `Miner`) |
+| `id` | 1 a 3.757, na ordem do caminho |
+| `caminho` | a primeira cópia do conteúdo, em ordem de nome |
+| `copias` | número de arquivos idênticos (mesmo SHA-256) |
+| `classe` | classe do projeto |
+| `largura`, `altura` | como gravadas, sem aplicar a orientação EXIF |
+| `sha256`, `phash_canonico` | hash exato e hash canônico (abaixo) |
+| `grupo` | `jmuben-<menor id do grupo>` (vazio no ilegível) |
+| `uso` | `treino_auxiliar` ou `excluida` |
+| `selecionada`, `motivo` | 1 e motivo vazio; ou 0 com `grupo_ja_representado`, `acima_do_limite_da_classe` ou `arquivo_ilegivel` |
+
+**Hash canônico e grupos.**
+- **Hash canônico:** o menor pHash de 256 bits entre as 8 transformações de giro e espelhamento
+  do cinza equalizado. Por isso não muda com giro, espelhamento ou brilho.
+- **Grupo:** um conteúdo entra no grupo de outro, de forma transitiva, se o SHA-256 for igual ou
+  se o hash canônico ficar a até 64 bits.
+- **Calibração** (09/10/2026; detalhes em `data/jmuben.py`):
+  - variantes do mesmo recorte foram conferidas a olho de 2 a 88 bits;
+  - recortes diferentes aparecem a partir de 94 bits, e o par de classes diferentes mais próximo
+    fica a 86;
+  - não há lacuna limpa. Com 64 bits saem 984 grupos, nenhum com duas classes.
+- **Por que o erro não é grave:** errar aqui só muda a diversidade do treino auxiliar, nunca vaza
+  para validação ou teste.
+
+**Seleção.**
+- **Teto por classe** (`CAP_POR_CLASSE`): metade do treino do BRACOL na classe (190, 372, 271,
+  244 e 103 imagens).
+- **Um representante por grupo, sem repetir.** Os membros de um grupo são giros, espelhos e
+  mudanças de brilho do mesmo recorte, que o augmentation já produz.
+- **Sorteio determinístico (seed 42):** a ordem dos grupos sai do SHA-256 de `"42:grupo"` e o
+  representante, do de `"42:id"`.
+- **Resultado:** 506 imagens, o que dá 1/3 do treino de cada classe doente e 6% do de saudável.
+- **Hash da seleção:** `6b206f932ee7c561ac1ac82749e20e0d612c81bab882a948c82f001ed4ddb1a5`.
+
+**Leitura (Frente 9):**
+```python
+import jmuben                             # com data/ no sys.path, como no exemplo do BRACOL
+
+auxiliar = jmuben.ler_manifest()          # só as 506 selecionadas; não há parâmetro de split
+menor = jmuben.ler_manifest(teto=50)      # no máximo 50 por classe (subconjunto do anterior)
+sem_saudavel = jmuben.ler_manifest(teto={"saudavel": 0})
+```
+O teto do leitor só reduz a seleção, e um teto menor dá sempre um subconjunto do maior. Para
+passar de `CAP_POR_CLASSE` é preciso regerar o manifest, por decisão do gestor.
+
+## BRACOT (detecção e segmentação de folhas)
+
+**Citação obrigatória.** Krohling, Tozzi de Souza e Tassis (2021), Mendeley Data, DOI
+[10.17632/pmkbyjpf6k.1](https://doi.org/10.17632/pmkbyjpf6k.1), versão 1, publicado em
+08/01/2021, material complementar ao BRACOL. Citar o dataset.
+
+**Licença:** não exibida na página consultada em 09/10/2026; confirmar.
+
+**Cópia local:** `data/raw/bracot/bracot-data/`, copiada em 09/10/2026.
+
+```
+data/raw/bracot/bracot-data/
+  train/   240 JPEG 4032x3024, train_annotation_coco.json (1.318 folhas), via_export_json.json
+  test/     60 JPEG 4032x3024, test_annotation_coco.json (344 folhas), via_export_json.json
+```
+
+| split | fotos | folhas | folhas por foto (mín / mediana / máx) | área coberta (mediana; mín–máx) | 31/08/2019 | 08/12/2019 |
+|---|---:|---:|---|---|---:|---:|
+| treino | 240 | 1.318 | 2 / 5 / 12 | 34,5% (9,7–67,3%) | 109 | 131 |
+| teste | 60 | 344 | 2 / 6 / 9 | 31,9% (15,0–57,7%) | 15 | 45 |
+
+**Anotações** (detalhes em `data/reports/integridade_bracot.md`):
+- **Formato:** polígonos COCO com uma única categoria, `leaf` (id 0). O export do VIA tem as
+  mesmas regiões, sem atributos: não há classe de estresse por folha.
+- **Campo `area`:** é a área do bbox nas 1.662 anotações, efeito do export do VIA. Não usar.
+- **Borda:** 28 polígonos passam 3 ou 4 px da borda da foto. Quem lê recorta na borda.
+
+**Limitações:**
+- **Só parte das folhas de cada foto está contornada.**
+  - As folhas anotadas cobrem cerca de 1/3 da foto, que é quase toda folhagem.
+  - Elas são mais claras que o resto da foto em 287 de 300 fotos (brilho V mediano +42, em escala
+    0–255, medido em 09/10/2026).
+  - Folha não contornada conta como fundo. Um detector treinado aqui aprende esse tipo de folha e
+    pode ignorar as outras; nas métricas, acertar uma folha não anotada conta como erro.
+- **Não há classe de estresse por folha.**
+- **São só duas sessões de fotos,** de um dia cada (31/08/2019 e 08/12/2019).
+
+**Manifest: `data/manifests/bracot.csv`.** Tem uma linha por foto (300 linhas). Não editar à mão:
+ele é gerado por `python data/bracot.py`. As anotações ficam em `data/raw/` e não são copiadas nem
+convertidas.
+
+| coluna | conteúdo |
+|---|---|
+| `fonte` | `bracot` |
+| `id` | o nome da foto sem extensão (`AAAAMMDD_HHMMSS`, a hora do celular) |
+| `caminho` | caminho POSIX relativo à raiz do repositório |
+| `largura`, `altura` | tamanho em pixels |
+| `split` | `treino` ou `teste`: a divisão dos autores, oficial |
+| `n_folhas` | folhas anotadas na foto |
+| `area_coberta` | a soma das áreas dos polígonos (fórmula do laço) dividida pela área da foto. Folhas que se tocam contam duas vezes; a diferença em relação à união é de no máximo 0,09 ponto percentual |
+| `data_hora` | data e hora tiradas do nome |
+| `cena` | o id da primeira foto da cena (abaixo) |
+| `sha256`, `phash` | hash exato e pHash de 256 bits da foto inteira |
+| `anotacao` | o arquivo COCO de origem, em `data/raw/` |
+
+**Cenas e vazamento treino→teste.**
+- **Cena:** junta as fotos tiradas em sequência, a até 10 s da anterior, em ordem de hora e sem
+  olhar o split. São 90 cenas, com mediana de 2 fotos e no máximo 22.
+  - O intervalo mediano entre fotos é 7 s.
+  - 10 s é o menor intervalo inteiro que deixa numa cena só cada par de fotos com as mesmas folhas
+    (abaixo).
+- **Pelo tempo:**
+  - as 60 fotos de teste ficam a no máximo 21 s de uma foto de treino;
+  - 27 cenas misturam treino e teste, com 55 das 60 fotos de teste.
+- **Pelo conteúdo:** medido por pontos casados (ORB + RANSAC, nos 8.540 pares a até 300 s) e
+  conferido a olho em 09/10/2026.
+  - Fotos seguidas, mesmo a 2 s de distância, costumam mostrar folhas diferentes.
+  - Só 2 fotos de teste repetem folhas de uma foto de treino, listadas em
+    `bracot.TESTE_SOBREPOSTO`:
+    - `20190831_164920` é quase a mesma foto que a `164921` de treino;
+    - `20190831_165013` mostra o mesmo galho que a `164937` de treino, de outro ângulo.
+  - Reporte o detector no teste inteiro e sem essas 2 fotos.
+- **Divisão:** a oficial é a dos autores, com hash
+  `890c3fb2c5065fedd3a5b3807cbcd082070dcfd24d75b579b263a352853c0317`.
+- **Divisão por cena, só simulada** (cenas de 10 s, estratificada por dia, 80/20, seed 42, com
+  `bracol.dividir`). Ficou só documentada, por decisão do gestor:
+  - treino 241 e teste 59 (31/08: 99/25; 08/12: 142/34), com 29 cenas no teste e 1.339/323 folhas;
+  - 87 fotos mudariam de split;
+  - hash `fc3220b592bfa234c05d0c9d5f04fead6b1ef0a3cb967253f731cbd82f2718af`.
+- **Validação do detector:** para ajustar hiperparâmetros ou parar o treino, separe cenas
+  inteiras do treino dos autores, nunca fotos soltas. O grupo é a coluna `cena`, por exemplo com
+  `bracol.dividir` estratificando por dia, ou com `GroupShuffleSplit` do scikit-learn.
+
+**Leitura (detector):**
+```python
+import bracot                             # com data/ no sys.path, como no exemplo do BRACOL
+
+treino = bracot.ler_manifest(split="treino")       # 240 fotos, com a coluna cena
+coco_treino = bracot.caminho_coco("treino")        # data/raw/.../train_annotation_coco.json
+sobrepostas = [teste for teste, _ in bracot.TESTE_SOBREPOSTO]
+```
+
+## Interface para a Frente 9
+
+- **Classificação e severidade:**
+  - o treino junta o BRACOL e o JMuBEN selecionado;
+  - validação e teste são só do BRACOL;
+  - o rótulo é `CLASSES.index(classe)`.
+
+  ```python
+  import sys
+  import pandas as pd
+  sys.path.insert(0, "data")  # a partir da raiz do repositório
+  import bracol, jmuben
+
+  colunas = ["fonte", "id", "caminho", "classe"]
+  treino = pd.concat([bracol.ler_manifest(split="treino")[colunas],
+                      jmuben.ler_manifest()[colunas]], ignore_index=True)
+  val = bracol.ler_manifest(split="val")
+  teste = bracol.ler_manifest(split="teste")
+  ```
+
+  - **Severidade:** vem só das linhas do BRACOL. As do JMuBEN não têm alvo de severidade, e a
+    perda dessa saída é mascarada.
+  - **Amostragem balanceada do RD02:** os pesos são calculados sobre o treino combinado.
+  - **Regra de entrada:** o JMuBEN só fica no modelo se melhorar a validação do BRACOL sem piorar
+    o recall de saudável.
+- **Detector:**
+  - lê `bracot.ler_manifest()` e os polígonos COCO de `bracot.caminho_coco(split)`;
+  - valida com cenas inteiras do treino;
+  - reporta o teste com e sem `TESTE_SOBREPOSTO`.
+
 ## Comandos (na raiz do repositório, com o venv ativo)
 
 | comando | o que faz |
@@ -175,6 +440,10 @@ com seed 42.
 | `python data/organize_dataset.py --verificar` | confere dados x manifest sem alterar o manifest (código 0 se tudo bate) |
 | `python data/organize_dataset.py --entrada PASTA` | usa outra cópia do BRACOL (dentro do repositório) |
 | `python data/eda_bracol.py` | gera `data/reports/eda_bracol.md` e as figuras em `data/reports/figures/` |
+| `python data/jmuben.py` | gera o manifest do JMuBEN e `data/reports/integridade_jmuben.md` (cerca de 1 min) |
+| `python data/jmuben.py --verificar` | confere dados x manifest do JMuBEN sem alterar o manifest |
+| `python data/bracot.py` | gera o manifest do BRACOT e `data/reports/integridade_bracot.md` (cerca de 30 s) |
+| `python data/bracot.py --verificar` | confere dados x manifest do BRACOT sem alterar o manifest |
 | `jupyter nbconvert --clear-output --inplace notebooks/01_eda.ipynb` | limpa as saídas do notebook antes de commitar |
 | `python -m pytest` | roda os testes; os do manifest versionado não precisam das imagens |
 
@@ -233,3 +502,18 @@ python -m pytest
 
 O `--verificar` tem de terminar com "Manifest confere com os dados" e código 0. Não regenere o
 manifest para "reproduzir": a divisão versionada é a que vale.
+
+**JMuBEN e BRACOT.**
+1. Copie as fontes para as mesmas pastas da cópia local:
+   - JMuBEN: as cinco pastas de classe em `data/raw/jmuben/<Pasta>/`;
+   - BRACOT: `train/` e `test/` em `data/raw/bracot/bracot-data/`.
+2. Rode:
+
+```
+python data/jmuben.py --verificar
+python data/bracot.py --verificar
+```
+
+Cuidado com o JMuBEN: a cópia local tem 3 arquivos a menos que a publicada no Mendeley. Uma cópia
+baixada de lá pode não bater com o manifest versionado; nesse caso, o `--verificar` aponta as
+diferenças. O manifest versionado vale como registro da cópia usada.

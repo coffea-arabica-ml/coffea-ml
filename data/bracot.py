@@ -7,9 +7,10 @@ de pés de café (4032x3024) com folhas contornadas por polígonos (COCO, uma ca
 sem classe de estresse por folha. A divisão oficial é a dos autores: 240 fotos em train/ e 60 em
 test/. As anotações ficam em data/raw/ e não são copiadas nem convertidas.
 
-O manifest tem uma linha por foto: tamanho, split dos autores, número de folhas, fração da foto
-coberta pelas folhas anotadas, data e hora (do nome do arquivo), cena, hashes e o arquivo COCO
-de origem.
+O manifest tem uma linha por foto: tamanho, split dos autores, número de folhas, área coberta,
+data e hora (do nome do arquivo), cena, hashes e o arquivo COCO de origem. A área coberta é a
+soma das áreas dos polígonos dividida pela área da foto: folhas que se tocam contam duas vezes,
+e a diferença em relação à união é de no máximo 0,09 ponto percentual (medido em 09/10/2026).
 
 Uso (de qualquer pasta):
     python data/bracot.py               gera o manifest e o relatório

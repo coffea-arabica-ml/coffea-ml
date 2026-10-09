@@ -4,7 +4,7 @@ Gerado por `python data/eda_bracol.py` a partir de `data/manifests/bracol.csv`. 
 
 > **Cópia completa do BRACOL:** 1.747 imagens. Sem a classe 5 são 1.685, as mesmas imagens que os autores usaram, mas a divisão é outra (seed 42): comparar com Esgario et al. (2020) só com essa ressalva.
 >
-> **Ressalva:** A correspondência das colunas 'phoma' e 'cercospora' do dataset.csv (códigos 3 e 4 de predominant_stress) com as classes 'brown leaf spot' e 'cercospora leaf spot' de Esgario et al. (2020) ainda não foi confirmada. Aqui elas viram as classes 'phoma' e 'cercosporiose' do projeto.
+> **Ressalva:** A correspondência das colunas 'phoma' e 'cercospora' do dataset.csv (códigos 3 e 4 de predominant_stress) com as classes 'brown leaf spot' e 'cercospora leaf spot' de Esgario et al. (2020) ainda não foi confirmada. Aqui elas viram as classes 'phoma' e 'cercosporiose' do projeto. O mesmo vale para as pastas 'Phoma' e 'Cerscospora' do JMuBEN: viram 'phoma' e 'cercosporiose' sem confirmação de que nomeiam as mesmas doenças do BRACOL.
 >
 > **Classe 5** (`predominant_stress = 5`, "undetermined" no leaf/legend.txt): 62 linhas, 62 com imagem. Fica fora de classificação, severidade e multirrótulo.
 

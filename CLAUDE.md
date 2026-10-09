@@ -21,7 +21,9 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 - Sem DVC, Hydra ou frameworks de pipeline. Dependência nova: perguntar antes.
 - Notebooks são finos (chamam funções dos scripts, sem duplicar lógica) e entram no git com as
   saídas limpas.
-- Mudança de escopo exige aprovação do professor (RI01): sinalizar, não decidir.
+- O usuário é o gestor e o único tomador de decisões do projeto (o professor não acompanha).
+  Mudança de escopo ou de requisito: sinalizar e esperar a decisão do usuário, registrada como
+  "decisão do gestor", com a data. Não pedir nem sugerir aprovação de terceiros.
 - Todo o histórico passa pelo git (RI03): manifest, relatórios e figuras são versionados.
 - Não baixar dados da internet sem pedido explícito.
 
@@ -39,15 +41,23 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 - Duplicatas e folhas fotografadas de novo ficam no mesmo grupo, e um grupo nunca se divide
   entre splits: SHA-256 igual, pHash do quadro a até 32 bits, pHash da folha a até 46 bits ou
   `PARES_MESMA_FOLHA` (8 pares conferidos visualmente em 07/10/2026).
-- A correspondência das colunas phoma/cercospora com o artigo não está confirmada; a ressalva
-  fica só em `RESSALVA_PHOMA_CERCOSPORA` (`data/bracol.py`).
+- A correspondência de phoma/cercosporiose com as fontes (colunas do BRACOL e o artigo, pastas
+  `Phoma`/`Cerscospora` do JMuBEN) não está confirmada; a ressalva fica só em
+  `RESSALVA_PHOMA_CERCOSPORA` (`data/bracol.py`).
 - A ordem de `CLASSES` segue o RF01. O índice de uma classe é `CLASSES.index(nome)`, nunca o
   código `predominant_stress`.
 - A divisão treino/val/teste é estável: nenhuma imagem muda de split sem `--refazer-divisao` e
   decisão explícita do usuário. Ela foi refeita do zero uma vez, em 07/10/2026, ao adotar a
   cópia completa (motivo em `HISTORICO_DIVISAO`, `data/bracol.py`).
 - Teste: só BRACOL, nunca aumentado. Augmentation (Albumentations) só no treino, em memória.
-- JMuBEN/JMuBEN2: só treino auxiliar, nunca teste. BRACOT: futuro (detecção por folha, RF09).
+- Fontes de campo (decisão do gestor, 09/10/2026):
+  - JMuBEN/JMuBEN2, e qualquer fonte auxiliar: só treino, nunca validação nem teste. Sem
+    duplicatas (um representante por grupo) e com limite de imagens por classe. A fonte fica
+    marcada em toda linha do manifest, que não tem coluna de split.
+  - BRACOT: detecção e segmentação de folhas (RF09). A divisão dos autores (240 treino / 60
+    teste) é a oficial. Não há classe de estresse por folha.
+  - Teste de classificação e de severidade (RNF01): só BRACOL. Um teste de campo com rótulo de
+    classe, se vier, entra como fonte nova, com manifest próprio.
 
 ## Comandos (na raiz do repositório, com o venv ativo)
 

@@ -44,11 +44,14 @@ PS_INDETERMINADO = 5
 # Coluna binária que precisa estar marcada quando o estresse é o predominante.
 PS_PARA_COLUNA = {1: "miner", 2: "rust", 3: "phoma", 4: "cercospora"}
 
+# Única ressalva sobre phoma/cercosporiose, para todas as fontes (BRACOL e JMuBEN).
 RESSALVA_PHOMA_CERCOSPORA = (
     "A correspondência das colunas 'phoma' e 'cercospora' do dataset.csv (códigos 3 e 4 de "
     "predominant_stress) com as classes 'brown leaf spot' e 'cercospora leaf spot' de "
     "Esgario et al. (2020) ainda não foi confirmada. Aqui elas viram as classes 'phoma' e "
-    "'cercosporiose' do projeto."
+    "'cercosporiose' do projeto. O mesmo vale para as pastas 'Phoma' e 'Cerscospora' do "
+    "JMuBEN: viram 'phoma' e 'cercosporiose' sem confirmação de que nomeiam as mesmas doenças "
+    "do BRACOL."
 )
 
 # Coluna severity: fração da área da folha afetada.

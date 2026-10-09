@@ -206,13 +206,13 @@ com seed 42.
 - **JMuBEN:** Jepkoech, Kenduiywo, Mugo e Chebet (2021), Mendeley Data, DOI
   [10.17632/t2r6rszp5c.1](https://doi.org/10.17632/t2r6rszp5c.1), versão 1, publicado em
   26/03/2021. Pastas `Cerscospora`, `Leaf rust` e `Phoma`.
-- **JMuBEN2:** [primeiro autor sem nome na página; provavelmente Jepkoech, a confirmar], Mugo,
-  Kenduiywo e Chebet (2021), Mendeley Data, DOI
+- **JMuBEN2:** Jepkoech, Mugo, Kenduiywo e Chebet (2021), Mendeley Data, DOI
   [10.17632/tgv3zb82nd.1](https://doi.org/10.17632/tgv3zb82nd.1), versão 1, publicado em
   26/03/2021. Pastas `Healthy` e `Miner`.
-- **Artigo:** Jepkoech, Mugo, Kenduiywo e Too, *Data in Brief* 36 (2021) 107142.
+- **Artigo de referência dos dois conjuntos:** Jepkoech, Mugo, Kenduiywo e Too, *Data in Brief*,
+  v. 36, art. 107142, 2021.
 
-**Licença:** não exibida na página consultada em 09/10/2026; confirmar.
+**Licença:** CC BY 4.0 (lida na página do Mendeley Data em 09/10/2026), nos dois conjuntos.
 
 **Cópia local:**
 - O material foi recebido pela equipe em cinco pastas exportadas (`<Classe>-20210326T…Z-001`) e
@@ -230,7 +230,7 @@ com seed 42.
 | `Phoma` | phoma | jmuben | 6.571 | 691 | 177 | 122 | 122 |
 | **total** | | | 58.550 | 3.757 | 984 | | 506 |
 
-**Limitações** (detalhes em `data/reports/integridade_jmuben.md`):
+**Limitações e riscos** (detalhes em `data/reports/integridade_jmuben.md`):
 - **Recortes, não folhas inteiras:**
   - quase todos têm 128x128;
   - 2.953 são retangulares, com lado maior de 256, em `Cerscospora` e `Miner`.
@@ -252,6 +252,10 @@ com seed 42.
     pastas;
   - `Phoma` tem imagens com manchas escuras grandes;
   - a correspondência de `Phoma` e `Cerscospora` com as classes do projeto não está confirmada.
+- **Hipótese, não verificada (pré-processamento diferente entre os conjuntos):** a descrição do
+  JMuBEN2 (`Healthy` e `Miner`) cita filtragem de ruído e alongamento de contraste, e a do JMuBEN
+  (`Cerscospora`, `Leaf rust` e `Phoma`) não cita. Se o pré-processamento for mesmo diferente, ele
+  fica correlacionado com a classe, e o modelo pode aprender o pré-processamento em vez da doença.
 - **Os 144 `.jpeg` de `Leaf rust`:** formam 9 recortes próprios, de 16 arquivos cada, com o mesmo
   aspecto desbotado do resto da pasta. Entram como os outros.
 - **Prefixo N dos nomes (`N (k).jpg`):** não identifica a foto de origem (cópias do mesmo recorte
@@ -315,9 +319,10 @@ passar de `CAP_POR_CLASSE` é preciso regerar o manifest, por decisão do gestor
 
 **Citação obrigatória.** Krohling, Tozzi de Souza e Tassis (2021), Mendeley Data, DOI
 [10.17632/pmkbyjpf6k.1](https://doi.org/10.17632/pmkbyjpf6k.1), versão 1, publicado em
-08/01/2021, material complementar ao BRACOL. Citar o dataset.
+08/01/2021, material complementar ao BRACOL. A página do Mendeley Data não nomeia artigo
+associado; citar o dataset.
 
-**Licença:** não exibida na página consultada em 09/10/2026; confirmar.
+**Licença:** CC BY 4.0 (lida na página do Mendeley Data em 09/10/2026).
 
 **Cópia local:** `data/raw/bracot/bracot-data/`, copiada em 09/10/2026.
 
@@ -346,7 +351,12 @@ data/raw/bracot/bracot-data/
   - Folha não contornada conta como fundo. Um detector treinado aqui aprende esse tipo de folha e
     pode ignorar as outras; nas métricas, acertar uma folha não anotada conta como erro.
 - **Não há classe de estresse por folha.**
-- **São só duas sessões de fotos,** de um dia cada (31/08/2019 e 08/12/2019).
+- **São só duas sessões de fotos,** de um dia cada.
+- **Datas dos nomes dos arquivos:** os nomes indicam 31/08/2019 e 08/12/2019, mas a página do
+  Mendeley Data diz setembro/2019 e março/2020. A página não explica a diferença; a causa é uma
+  hipótese: provável relógio do celular. As datas não devem ser usadas como informação: neste
+  README e nos relatórios, elas só identificam as duas sessões. As cenas usam só o intervalo entre
+  fotos seguidas, que um relógio errado por um valor fixo não altera.
 
 **Manifest: `data/manifests/bracot.csv`.** Tem uma linha por foto (300 linhas). Não editar à mão:
 ele é gerado por `python data/bracot.py`. As anotações ficam em `data/raw/` e não são copiadas nem
@@ -361,7 +371,7 @@ convertidas.
 | `split` | `treino` ou `teste`: a divisão dos autores, oficial |
 | `n_folhas` | folhas anotadas na foto |
 | `area_coberta` | a soma das áreas dos polígonos (fórmula do laço) dividida pela área da foto. Folhas que se tocam contam duas vezes; a diferença em relação à união é de no máximo 0,09 ponto percentual |
-| `data_hora` | data e hora tiradas do nome |
+| `data_hora` | data e hora tiradas do nome (provável relógio do celular; ver as limitações) |
 | `cena` | o id da primeira foto da cena (abaixo) |
 | `sha256`, `phash` | hash exato e pHash de 256 bits da foto inteira |
 | `anotacao` | o arquivo COCO de origem, em `data/raw/` |

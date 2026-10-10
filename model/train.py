@@ -507,16 +507,8 @@ def montar_checkpoint(modelo, config: dict, epoca: int, f1_macro: float) -> dict
 def gravar_resultados(pasta: Path, conjunto: str, df, aval: dict, m: dict, ms: dict,
                       epoca: int) -> None:
     """predicoes_<conjunto>.csv, metricas_<conjunto>.json e matriz_confusao_<conjunto>.png."""
-    predicoes = pd.DataFrame({
-        "id": df["id"].to_numpy(),
-        "classe_verdadeira": df["classe"].to_numpy(),
-        "classe_prevista": [bracol.CLASSES[i] for i in aval["classe_prevista"]],
-        **{f"prob_{c}": aval["probabilidades"][:, k] for k, c in enumerate(bracol.CLASSES)},
-        "severidade_verdadeira": aval["severidade"],
-        "severidade_prevista": aval["severidade_prevista"],
-    })
-    predicoes.to_csv(pasta / f"predicoes_{conjunto}.csv", index=False, float_format="%.6f",
-                     lineterminator="\n")
+    tabela_de_predicoes(df, aval).to_csv(pasta / f"predicoes_{conjunto}.csv", index=False,
+                                         float_format="%.6f", lineterminator="\n")
     gravar_json({"conjunto": conjunto, "epoca": epoca, "classificacao": m, "severidade": ms},
                 pasta / f"metricas_{conjunto}.json")
     nome = {"val": "validação", "teste": "teste"}[conjunto]
@@ -524,6 +516,19 @@ def gravar_resultados(pasta: Path, conjunto: str, df, aval: dict, m: dict, ms: d
         m["matriz_confusao"], f"Matriz de confusão: {nome} ({fmt.n(m['n'])} imagens)"
     )
     metrics.salvar_figura(figura, pasta / f"matriz_confusao_{conjunto}.png")
+
+
+def tabela_de_predicoes(df, aval: dict) -> pd.DataFrame:
+    """Uma linha por imagem de df (na ordem dele): id, classe verdadeira e prevista,
+    probabilidades de cada classe e severidade verdadeira e prevista."""
+    return pd.DataFrame({
+        "id": df["id"].to_numpy(),
+        "classe_verdadeira": df["classe"].to_numpy(),
+        "classe_prevista": [bracol.CLASSES[i] for i in aval["classe_prevista"]],
+        **{f"prob_{c}": aval["probabilidades"][:, k] for k, c in enumerate(bracol.CLASSES)},
+        "severidade_verdadeira": aval["severidade"],
+        "severidade_prevista": aval["severidade_prevista"],
+    })
 
 
 def gravar_json(objeto, caminho: Path) -> None:

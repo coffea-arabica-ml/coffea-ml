@@ -83,6 +83,8 @@ python model/train.py --rapido               # teste de fumaça do treino (model
 python model/train.py --nome NOME            # treino; grava model/runs/NOME/ e não usa o teste
 python model/train.py --avaliar-teste --run NOME   # só no fim: avalia no teste e registra o uso
 python evaluation/atalho.py --run NOME       # checagem de atalho (só treino e val); model/runs/NOME/atalho/
+python evaluation/diagnostico_blocos.py      # validação cruzada por blocos de ids x aleatória (só treino e
+                                             # val, retomável); model/runs/diagnostico_blocos/
 jupyter nbconvert --clear-output --inplace notebooks/01_eda.ipynb   # antes de commitar
 python -m pytest
 ```

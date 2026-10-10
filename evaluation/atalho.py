@@ -209,20 +209,25 @@ def extrair_cor(df, largura: int, altura: int) -> dict[str, np.ndarray]:
     return {chave: np.array(valores) for chave, valores in linhas.items()}
 
 
-def controle_de_fundo(x_treino, y_treino, x_val, y_val, seed: int = SEED) -> dict:
+def prever_por_cor(x_treino, y_treino, x_fora, seed: int = SEED):
     """O modelo "burro": regressão logística só com as estatísticas de cor, padronizadas com a
-    média e o desvio do treino. Ajusta no treino; mede na validação com
-    metrics.calcular_metricas (y são índices em CLASSES)."""
+    média e o desvio do treino. Ajusta no treino e devolve (previsto_fora, previsto_treino)."""
     from sklearn.linear_model import LogisticRegression
     from sklearn.preprocessing import StandardScaler
 
     escala = StandardScaler().fit(x_treino)
     modelo = LogisticRegression(max_iter=5000, random_state=seed)
     modelo.fit(escala.transform(x_treino), y_treino)
-    previsto_treino = modelo.predict(escala.transform(x_treino))
+    return modelo.predict(escala.transform(x_fora)), modelo.predict(escala.transform(x_treino))
+
+
+def controle_de_fundo(x_treino, y_treino, x_val, y_val, seed: int = SEED) -> dict:
+    """O controle de fundo (prever_por_cor) medido na validação com metrics.calcular_metricas
+    (y são índices em CLASSES), mais a acurácia no treino."""
+    previsto_val, previsto_treino = prever_por_cor(x_treino, y_treino, x_val, seed)
     return {
         "acuracia_treino": float(np.mean(previsto_treino == np.asarray(y_treino))),
-        "val": metrics.calcular_metricas(y_val, modelo.predict(escala.transform(x_val))),
+        "val": metrics.calcular_metricas(y_val, previsto_val),
     }
 
 

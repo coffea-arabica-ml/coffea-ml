@@ -1,0 +1,397 @@
+{
+  "nome": "diagnostico_blocos",
+  "criado_em": "2026-10-09T23:16:19",
+  "comando": "python evaluation/diagnostico_blocos.py",
+  "commit": "d66c49a50e943c3f634b0f225e7426e110d7b9c1",
+  "commit_com_alteracoes": true,
+  "decisao_do_gestor": {
+    "data": "09/10/2026",
+    "texto": "K=5 porque K=4 deixava a classe saudável com 47% das imagens no treino da dobra 1"
+  },
+  "pool": {
+    "origem": "dados.montar_treino() + dados.montar_val() (o teste não entra)",
+    "n": 1432,
+    "por_classe": {
+      "saudavel": 231,
+      "ferrugem": 451,
+      "bicho_mineiro": 329,
+      "phoma": 296,
+      "cercosporiose": 125
+    }
+  },
+  "k": 5,
+  "bloco": 100,
+  "purga": 20,
+  "semente": 42,
+  "limiar_classe": 0.5,
+  "protocolos": {
+    "blocos": "bloco i (ids 100i+1 a 100(i+1)) fora na dobra i mod 5; treino sem as imagens a até 20 ids de um bloco de fora e sem os grupos do conjunto de fora",
+    "aleatorio": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) pela classe, grupos do manifest; treino sorteado (estratificado, mesma semente) até o n do treino de blocos da mesma dobra"
+  },
+  "treino": {
+    "configuracao_do_run": "base_resnet50_bracol",
+    "backbone": "resnet50",
+    "pretreino": true,
+    "pesos": "timm/resnet50.a1_in1k",
+    "largura": 448,
+    "altura": 224,
+    "batch": 32,
+    "lr": 0.0001,
+    "weight_decay": 0.0001,
+    "peso_sev": 1.0,
+    "epocas": 20,
+    "t_max": 20,
+    "parada_antecipada": false,
+    "metricas": "última época",
+    "amp": "sim, na CUDA",
+    "workers": 0,
+    "checkpoint": false,
+    "amostragem": "WeightedRandomSampler: peso 1/frequência da classe no treino, len(treino) sorteios por época, com reposição",
+    "augmentation": {
+      "__version__": "2.0.8",
+      "transform": {
+        "__class_fullname__": "Compose",
+        "p": 1.0,
+        "transforms": [
+          {
+            "__class_fullname__": "Resize",
+            "p": 1.0,
+            "area_for_downscale": null,
+            "height": 224,
+            "interpolation": 3,
+            "mask_interpolation": 0,
+            "width": 448
+          },
+          {
+            "__class_fullname__": "HorizontalFlip",
+            "p": 0.5
+          },
+          {
+            "__class_fullname__": "VerticalFlip",
+            "p": 0.5
+          },
+          {
+            "__class_fullname__": "Rotate",
+            "p": 0.5,
+            "border_mode": 4,
+            "crop_border": false,
+            "fill": 0.0,
+            "fill_mask": 0.0,
+            "interpolation": 1,
+            "limit": [
+              -15.0,
+              15.0
+            ],
+            "mask_interpolation": 0,
+            "rotate_method": "largest_box"
+          },
+          {
+            "__class_fullname__": "RandomBrightnessContrast",
+            "p": 0.5,
+            "brightness_by_max": true,
+            "brightness_limit": [
+              -0.1,
+              0.1
+            ],
+            "contrast_limit": [
+              -0.1,
+              0.1
+            ],
+            "ensure_safe_range": false
+          },
+          {
+            "__class_fullname__": "Normalize",
+            "p": 1.0,
+            "max_pixel_value": 255.0,
+            "mean": [
+              0.485,
+              0.456,
+              0.406
+            ],
+            "normalization": "standard",
+            "std": [
+              0.229,
+              0.224,
+              0.225
+            ]
+          },
+          {
+            "__class_fullname__": "ToTensorV2",
+            "p": 1.0,
+            "transpose_mask": false
+          }
+        ],
+        "bbox_params": null,
+        "keypoint_params": null,
+        "additional_targets": {},
+        "is_check_shapes": true
+      }
+    }
+  },
+  "regra_de_leitura": {
+    "d": "F1 macro (aleatório) - F1 macro (blocos), em pontos",
+    "faixas": [
+      [
+        3,
+        "pouco atalho de sessão detectado"
+      ],
+      [
+        8,
+        "atenção"
+      ],
+      [
+        null,
+        "atalho relevante"
+      ]
+    ]
+  },
+  "dobras": [
+    {
+      "protocolo": "blocos",
+      "dobra": 0,
+      "n_treino": 989,
+      "n_fora": 327,
+      "n_purga_distancia": 115,
+      "n_purga_grupo": 1,
+      "n_descartada_sorteio": 0,
+      "treino_saudavel": 167,
+      "treino_ferrugem": 316,
+      "treino_bicho_mineiro": 192,
+      "treino_phoma": 228,
+      "treino_cercosporiose": 86,
+      "fora_saudavel": 36,
+      "fora_ferrugem": 89,
+      "fora_bicho_mineiro": 123,
+      "fora_phoma": 50,
+      "fora_cercosporiose": 29,
+      "classe_menor_fracao": "bicho_mineiro",
+      "menor_fracao_treino": 0.583587
+    },
+    {
+      "protocolo": "blocos",
+      "dobra": 1,
+      "n_treino": 976,
+      "n_fora": 328,
+      "n_purga_distancia": 128,
+      "n_purga_grupo": 0,
+      "n_descartada_sorteio": 0,
+      "treino_saudavel": 140,
+      "treino_ferrugem": 276,
+      "treino_bicho_mineiro": 219,
+      "treino_phoma": 273,
+      "treino_cercosporiose": 68,
+      "fora_saudavel": 68,
+      "fora_ferrugem": 132,
+      "fora_bicho_mineiro": 68,
+      "fora_phoma": 21,
+      "fora_cercosporiose": 39,
+      "classe_menor_fracao": "cercosporiose",
+      "menor_fracao_treino": 0.544
+    },
+    {
+      "protocolo": "blocos",
+      "dobra": 2,
+      "n_treino": 1035,
+      "n_fora": 281,
+      "n_purga_distancia": 116,
+      "n_purga_grupo": 0,
+      "n_descartada_sorteio": 0,
+      "treino_saudavel": 156,
+      "treino_ferrugem": 333,
+      "treino_bicho_mineiro": 241,
+      "treino_phoma": 218,
+      "treino_cercosporiose": 87,
+      "fora_saudavel": 41,
+      "fora_ferrugem": 85,
+      "fora_bicho_mineiro": 65,
+      "fora_phoma": 59,
+      "fora_cercosporiose": 31,
+      "classe_menor_fracao": "saudavel",
+      "menor_fracao_treino": 0.675325
+    },
+    {
+      "protocolo": "blocos",
+      "dobra": 3,
+      "n_treino": 1075,
+      "n_fora": 254,
+      "n_purga_distancia": 102,
+      "n_purga_grupo": 1,
+      "n_descartada_sorteio": 0,
+      "treino_saudavel": 200,
+      "treino_ferrugem": 326,
+      "treino_bicho_mineiro": 264,
+      "treino_phoma": 174,
+      "treino_cercosporiose": 111,
+      "fora_saudavel": 22,
+      "fora_ferrugem": 87,
+      "fora_bicho_mineiro": 47,
+      "fora_phoma": 89,
+      "fora_cercosporiose": 9,
+      "classe_menor_fracao": "phoma",
+      "menor_fracao_treino": 0.587838
+    },
+    {
+      "protocolo": "blocos",
+      "dobra": 4,
+      "n_treino": 1088,
+      "n_fora": 242,
+      "n_purga_distancia": 102,
+      "n_purga_grupo": 0,
+      "n_descartada_sorteio": 0,
+      "treino_saudavel": 162,
+      "treino_ferrugem": 361,
+      "treino_bicho_mineiro": 278,
+      "treino_phoma": 186,
+      "treino_cercosporiose": 101,
+      "fora_saudavel": 64,
+      "fora_ferrugem": 58,
+      "fora_bicho_mineiro": 26,
+      "fora_phoma": 77,
+      "fora_cercosporiose": 17,
+      "classe_menor_fracao": "phoma",
+      "menor_fracao_treino": 0.628378
+    },
+    {
+      "protocolo": "aleatorio",
+      "dobra": 0,
+      "n_treino": 989,
+      "n_fora": 287,
+      "n_purga_distancia": 0,
+      "n_purga_grupo": 0,
+      "n_descartada_sorteio": 156,
+      "treino_saudavel": 160,
+      "treino_ferrugem": 312,
+      "treino_bicho_mineiro": 227,
+      "treino_phoma": 204,
+      "treino_cercosporiose": 86,
+      "fora_saudavel": 46,
+      "fora_ferrugem": 90,
+      "fora_bicho_mineiro": 66,
+      "fora_phoma": 60,
+      "fora_cercosporiose": 25,
+      "classe_menor_fracao": "cercosporiose",
+      "menor_fracao_treino": 0.688
+    },
+    {
+      "protocolo": "aleatorio",
+      "dobra": 1,
+      "n_treino": 976,
+      "n_fora": 286,
+      "n_purga_distancia": 0,
+      "n_purga_grupo": 0,
+      "n_descartada_sorteio": 170,
+      "treino_saudavel": 157,
+      "treino_ferrugem": 307,
+      "treino_bicho_mineiro": 225,
+      "treino_phoma": 202,
+      "treino_cercosporiose": 85,
+      "fora_saudavel": 47,
+      "fora_ferrugem": 90,
+      "fora_bicho_mineiro": 65,
+      "fora_phoma": 59,
+      "fora_cercosporiose": 25,
+      "classe_menor_fracao": "saudavel",
+      "menor_fracao_treino": 0.679654
+    },
+    {
+      "protocolo": "aleatorio",
+      "dobra": 2,
+      "n_treino": 1035,
+      "n_fora": 287,
+      "n_purga_distancia": 0,
+      "n_purga_grupo": 0,
+      "n_descartada_sorteio": 110,
+      "treino_saudavel": 167,
+      "treino_ferrugem": 326,
+      "treino_bicho_mineiro": 238,
+      "treino_phoma": 214,
+      "treino_cercosporiose": 90,
+      "fora_saudavel": 46,
+      "fora_ferrugem": 91,
+      "fora_bicho_mineiro": 66,
+      "fora_phoma": 59,
+      "fora_cercosporiose": 25,
+      "classe_menor_fracao": "cercosporiose",
+      "menor_fracao_treino": 0.72
+    },
+    {
+      "protocolo": "aleatorio",
+      "dobra": 3,
+      "n_treino": 1075,
+      "n_fora": 286,
+      "n_purga_distancia": 0,
+      "n_purga_grupo": 0,
+      "n_descartada_sorteio": 71,
+      "treino_saudavel": 173,
+      "treino_ferrugem": 339,
+      "treino_bicho_mineiro": 247,
+      "treino_phoma": 222,
+      "treino_cercosporiose": 94,
+      "fora_saudavel": 46,
+      "fora_ferrugem": 90,
+      "fora_bicho_mineiro": 66,
+      "fora_phoma": 59,
+      "fora_cercosporiose": 25,
+      "classe_menor_fracao": "saudavel",
+      "menor_fracao_treino": 0.748918
+    },
+    {
+      "protocolo": "aleatorio",
+      "dobra": 4,
+      "n_treino": 1088,
+      "n_fora": 286,
+      "n_purga_distancia": 0,
+      "n_purga_grupo": 0,
+      "n_descartada_sorteio": 58,
+      "treino_saudavel": 175,
+      "treino_ferrugem": 343,
+      "treino_bicho_mineiro": 250,
+      "treino_phoma": 225,
+      "treino_cercosporiose": 95,
+      "fora_saudavel": 46,
+      "fora_ferrugem": 90,
+      "fora_bicho_mineiro": 66,
+      "fora_phoma": 59,
+      "fora_cercosporiose": 25,
+      "classe_menor_fracao": "saudavel",
+      "menor_fracao_treino": 0.757576
+    }
+  ],
+  "run_base": "base_resnet50_bracol",
+  "sha256_run_base_antes": {
+    "atalho/controle_fundo.json": "7359d898b08aa826ca5d8f2b3b50c24664fd44b0fc0a41ae95056735eb6fd2e7",
+    "atalho/erros_val.csv": "3a92758d96632f5c920b54f74fa38a4e3608a99d105b8e91916219215a9b5514",
+    "atalho/faixas_id.csv": "5dbd4a2ba56b757c5e6908deb5e92cc31f65bc34f204630e1d3f1ec389073156",
+    "atalho/gradcam_acertos_1.jpg": "eb379c4ab71065f65629452fac83afb3f7de1ba4003fe90568cd7b3d5a333b13",
+    "atalho/gradcam_acertos_2.jpg": "2a8f3f2ce29ac1b86a030e708a03b482d27a8bd97565f74bc5eb8c6aae56ff0f",
+    "atalho/gradcam_acertos_3.jpg": "7b578733a45c4f7d2008c24b4f30b48e2264753fb98b75106e824089408657a6",
+    "atalho/gradcam_acertos_4.jpg": "2b977bd73205e7396375a018cc26c26501a899495b43e8fb12b9fb8569b4d1a6",
+    "atalho/gradcam_acertos_5.jpg": "134529ff7e63fbc300e4aa2757b78d0388ac059a2efdee6ed4af45f3dae3adb8",
+    "atalho/gradcam_amostra.csv": "7338f98dad1783a01477e6f60aefa4cec11f2920cb09251c4bc5e8971af59f48",
+    "atalho/gradcam_borda.csv": "1d120b91275e8ceb083bde013eca0c2ac311afaf2fe2dccc916314fb950fcc37",
+    "atalho/gradcam_erros_1.jpg": "35db300970c1714d25b23200cc6bad4a04ae507784edc75c08e04edf58f1c850",
+    "atalho/gradcam_erros_2.jpg": "32e68a956d5c2031a1076c8629cd65268a80ea53c5c3e5f3546562197fc6a9a9",
+    "atalho/gradcam_erros_3.jpg": "b7b2e84c93a10362a11428aa0e0bc063c8c79cc81b57236c09a0d00681296a09",
+    "atalho/gradcam_erros_4.jpg": "bec070303b471ca5356e81fd8a0900bb170306b01ce9d403ee7dd608c25d03b1",
+    "atalho/pureza_local.csv": "3e5f3f944c942bebc4e3d352f27fd95df79c0385d07309ea61bfe16781b1233f",
+    "atalho/relatorio_atalho.md": "b86e5b9840e2a8db95cb4016d9f8ed0e982aa8994ac03c455a546c9e575022e0",
+    "config.json": "ee48ea0e3cedba2c71147573d46d87b7bdd04773491924fb82b5439120e46e77",
+    "historico.csv": "3f992d7df157cd1a3a614433e339351839f18791981cbc24e367fb67b4c85dbb",
+    "matriz_confusao_val.png": "8dff90345f8c60b6fcc8116c2c61eeba3442d77c6c3c61dd0684152421cb5283",
+    "melhor.pt": "0d7c043ab2907e186b5c4f99fa09a6a62120687f862c91404b5bafee9b66066a",
+    "metricas_val.json": "99dc78b4bcaf335ba013023fc769f808b9e6c8aa4c694259b1a733c9c58a1aff",
+    "predicoes_val.csv": "405383d04c78e91a6755817da3d87afb587b6b600f6808a26553457c46cb1b44",
+    "relatorio.md": "6711f61dee445103ab0fba06d555a577b70b9acbb8be3f846865376f6955a628"
+  },
+  "versoes": {
+    "python": "3.13.14",
+    "torch": "2.13.0+cu130",
+    "timm": "1.0.28",
+    "albumentations": "2.0.8",
+    "opencv": "5.0.0",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "scikit-learn": "1.9.0",
+    "sistema": "Windows-11-10.0.26200-SP0"
+  }
+}

@@ -1,0 +1,358 @@
+{
+  "d_pontos_f1_macro": 1.00341,
+  "faixa": "pouco atalho de sessão detectado",
+  "protocolos": {
+    "blocos": {
+      "classificacao": {
+        "classes": [
+          "saudavel",
+          "ferrugem",
+          "bicho_mineiro",
+          "phoma",
+          "cercosporiose"
+        ],
+        "n": 1432,
+        "acertos": 1288,
+        "acuracia": 0.899441,
+        "acuracia_ic95": [
+          0.88278,
+          0.913965
+        ],
+        "precisao": [
+          0.926829,
+          0.946136,
+          0.896226,
+          0.969178,
+          0.590604
+        ],
+        "recall": [
+          0.987013,
+          0.895787,
+          0.866261,
+          0.956081,
+          0.704
+        ],
+        "f1": [
+          0.955975,
+          0.920273,
+          0.880989,
+          0.962585,
+          0.642336
+        ],
+        "suporte": [
+          231,
+          451,
+          329,
+          296,
+          125
+        ],
+        "f1_macro": 0.872432,
+        "matriz_confusao": [
+          [
+            228,
+            1,
+            0,
+            1,
+            1
+          ],
+          [
+            11,
+            404,
+            10,
+            1,
+            25
+          ],
+          [
+            6,
+            6,
+            285,
+            4,
+            28
+          ],
+          [
+            0,
+            0,
+            6,
+            283,
+            7
+          ],
+          [
+            1,
+            16,
+            17,
+            3,
+            88
+          ]
+        ]
+      },
+      "severidade": {
+        "n": 1432,
+        "mae": 0.273045,
+        "kappa_quadratico": 0.707844,
+        "acuracia_exata": 0.770251,
+        "acuracia_tolerancia_1": 0.958101,
+        "suporte": [
+          231,
+          785,
+          282,
+          86,
+          48
+        ]
+      },
+      "por_dobra": [
+        {
+          "dobra": 0,
+          "n": 327,
+          "acuracia": 0.892966,
+          "f1_macro": 0.869184
+        },
+        {
+          "dobra": 1,
+          "n": 328,
+          "acuracia": 0.838415,
+          "f1_macro": 0.803457
+        },
+        {
+          "dobra": 2,
+          "n": 281,
+          "acuracia": 0.932384,
+          "f1_macro": 0.919804
+        },
+        {
+          "dobra": 3,
+          "n": 254,
+          "acuracia": 0.952756,
+          "f1_macro": 0.887281
+        },
+        {
+          "dobra": 4,
+          "n": 242,
+          "acuracia": 0.896694,
+          "f1_macro": 0.814892
+        }
+      ]
+    },
+    "aleatorio": {
+      "classificacao": {
+        "classes": [
+          "saudavel",
+          "ferrugem",
+          "bicho_mineiro",
+          "phoma",
+          "cercosporiose"
+        ],
+        "n": 1432,
+        "acertos": 1299,
+        "acuracia": 0.907123,
+        "acuracia_ic95": [
+          0.890981,
+          0.921087
+        ],
+        "precisao": [
+          0.946281,
+          0.955504,
+          0.902516,
+          0.969072,
+          0.603896
+        ],
+        "recall": [
+          0.991342,
+          0.904656,
+          0.87234,
+          0.952703,
+          0.744
+        ],
+        "f1": [
+          0.968288,
+          0.929385,
+          0.887172,
+          0.960818,
+          0.666667
+        ],
+        "suporte": [
+          231,
+          451,
+          329,
+          296,
+          125
+        ],
+        "f1_macro": 0.882466,
+        "matriz_confusao": [
+          [
+            229,
+            0,
+            0,
+            2,
+            0
+          ],
+          [
+            3,
+            408,
+            9,
+            0,
+            31
+          ],
+          [
+            7,
+            6,
+            287,
+            4,
+            25
+          ],
+          [
+            1,
+            0,
+            8,
+            282,
+            5
+          ],
+          [
+            2,
+            13,
+            14,
+            3,
+            93
+          ]
+        ]
+      },
+      "severidade": {
+        "n": 1432,
+        "mae": 0.285615,
+        "kappa_quadratico": 0.69864,
+        "acuracia_exata": 0.757682,
+        "acuracia_tolerancia_1": 0.956704,
+        "suporte": [
+          231,
+          785,
+          282,
+          86,
+          48
+        ]
+      },
+      "por_dobra": [
+        {
+          "dobra": 0,
+          "n": 287,
+          "acuracia": 0.902439,
+          "f1_macro": 0.883159
+        },
+        {
+          "dobra": 1,
+          "n": 286,
+          "acuracia": 0.905594,
+          "f1_macro": 0.878863
+        },
+        {
+          "dobra": 2,
+          "n": 287,
+          "acuracia": 0.898955,
+          "f1_macro": 0.868696
+        },
+        {
+          "dobra": 3,
+          "n": 286,
+          "acuracia": 0.933566,
+          "f1_macro": 0.914756
+        },
+        {
+          "dobra": 4,
+          "n": 286,
+          "acuracia": 0.895105,
+          "f1_macro": 0.867523
+        }
+      ]
+    }
+  },
+  "pareada": {
+    "n": 1432,
+    "certas_nos_dois": 1250,
+    "so_no_aleatorio": 49,
+    "so_em_blocos": 38,
+    "erradas_nos_dois": 95
+  },
+  "pureza_local": {
+    "blocos": [
+      {
+        "grupo": "1.0",
+        "n": 407,
+        "acertos": 390,
+        "acuracia": 0.958231,
+        "ic95_baixo": 0.934132,
+        "ic95_alto": 0.97376,
+        "saudavel": 82,
+        "ferrugem": 91,
+        "bicho_mineiro": 39,
+        "phoma": 195,
+        "cercosporiose": 0
+      },
+      {
+        "grupo": "0.6_a_1.0",
+        "n": 455,
+        "acertos": 420,
+        "acuracia": 0.923077,
+        "ic95_baixo": 0.894897,
+        "ic95_alto": 0.944173,
+        "saudavel": 24,
+        "ferrugem": 231,
+        "bicho_mineiro": 119,
+        "phoma": 70,
+        "cercosporiose": 11
+      },
+      {
+        "grupo": "abaixo_de_0.6",
+        "n": 570,
+        "acertos": 478,
+        "acuracia": 0.838596,
+        "ic95_baixo": 0.806143,
+        "ic95_alto": 0.866516,
+        "saudavel": 125,
+        "ferrugem": 129,
+        "bicho_mineiro": 171,
+        "phoma": 31,
+        "cercosporiose": 114
+      }
+    ],
+    "aleatorio": [
+      {
+        "grupo": "1.0",
+        "n": 407,
+        "acertos": 403,
+        "acuracia": 0.990172,
+        "ic95_baixo": 0.975006,
+        "ic95_alto": 0.996172,
+        "saudavel": 82,
+        "ferrugem": 91,
+        "bicho_mineiro": 39,
+        "phoma": 195,
+        "cercosporiose": 0
+      },
+      {
+        "grupo": "0.6_a_1.0",
+        "n": 455,
+        "acertos": 419,
+        "acuracia": 0.920879,
+        "ic95_baixo": 0.892407,
+        "ic95_alto": 0.942304,
+        "saudavel": 24,
+        "ferrugem": 231,
+        "bicho_mineiro": 119,
+        "phoma": 70,
+        "cercosporiose": 11
+      },
+      {
+        "grupo": "abaixo_de_0.6",
+        "n": 570,
+        "acertos": 477,
+        "acuracia": 0.836842,
+        "ic95_baixo": 0.80427,
+        "ic95_alto": 0.864904,
+        "saudavel": 125,
+        "ferrugem": 129,
+        "bicho_mineiro": 171,
+        "phoma": 31,
+        "cercosporiose": 114
+      }
+    ]
+  },
+  "run_base_intacto": true
+}

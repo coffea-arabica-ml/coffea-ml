@@ -81,6 +81,19 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 - Anotação parcial (decisão do gestor, 10/10/2026): no treino, cinza (114) fora do casco das
   folhas anotadas, com margem de 2%; as métricas saem nos modos região (principal) e conservador.
 
+## Inferência para o backend (passo 3)
+
+- `model/inferencia.py`: `carregar_modelos()` e `diagnosticar_arquivo(bytes ou caminho)` devolvem
+  o contrato do coffea-web (`src/api/types.ts`); interface no README. Os parâmetros ficam em
+  `inferencia.Configuracao`. O limiar de confiança 0,61 é uma proposta e aguarda a decisão do
+  gestor.
+- Regras de folha única (decisão do gestor, 10/10/2026): a foto inteira é classificada se houver
+  uma só folha utilizável cobrindo a foto (regra 1) ou só detecção fraca com cor de folha, score
+  >= 0,05 (regra 2); sem nenhuma das duas, `planta_nao_identificada`. Mais de 64 MP (cabeçalho,
+  Pillow): `arquivo_muito_grande`. `especie_incorreta` não é produzido.
+- O classificador atual só funciona em folha de BRACOL (fundo claro). No campo (T2 do
+  `pipeline_base`), ele puxa quase tudo para ferrugem. Não usar em campo sem retreinar.
+
 ## Comandos (na raiz do repositório, com o venv ativo)
 
 ```
@@ -106,6 +119,9 @@ python model/treinar_detector.py --nome NOME --epocas 60   # detector: prepara o
                                              # treina e avalia na validação; model/runs/NOME/
 python model/treinar_detector.py --avaliar --run NOME      # refaz a avaliação e o relatório do detector
 python model/treinar_detector.py --avaliar-teste --run NOME   # só por ordem do gestor: teste do BRACOT
+python model/avaliar_pipeline.py             # cadeia inteira: limiar de confiança (RF07), T1, T2 e T3;
+                                             # model/runs/pipeline_base/ (--classificador, --detector e
+                                             # --recortes PASTA_FORA_DO_REPO para recortes e pranchas)
 jupyter nbconvert --clear-output --inplace notebooks/01_eda.ipynb   # antes de commitar
 python -m pytest
 ```

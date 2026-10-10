@@ -70,3 +70,106 @@ e a medida do RNF02, está em `model/runs/detector_base/relatorio.md`.
 - **Rede:** `detector.importar_ultralytics()` impõe o modo offline do ultralytics e desliga a
   instalação automática de pacotes, a telemetria (`sync`) e a pré-carga da fonte dos gráficos. O
   treino roda sem AMP (a checagem de AMP baixaria outro peso) e sem gráficos.
+
+## Interface para o backend
+
+`model/inferencia.py` é o módulo que o backend chama. Ele recebe a foto (de uma planta, de um
+galho ou de uma folha) e devolve o diagnóstico no contrato dos frontends (coffea-web:
+`docs/frontend-reference/03-contrato-api-mock.md` e `src/api/types.ts`). A cadeia é:
+
+1. o detector acha as folhas;
+2. saem as detecções pequenas e os pedaços de fundo liso (filtro de cor);
+3. as regras de folha única decidem se a foto inteira vira uma folha;
+4. cada folha é recortada deitada, com margem, como nas fotos do BRACOL;
+5. o classificador avalia todas as folhas num lote só;
+6. as folhas abaixo do limiar de confiança saem.
+
+A avaliação completa, com o tempo em CPU, está em `model/runs/pipeline_base/relatorio.md`.
+
+```python
+import sys
+sys.path.insert(0, "coffea-ml/model")  # a pasta model/ do repositório
+import inferencia
+
+inferencia.carregar_modelos()                        # uma vez, ao subir o backend (CPU)
+resposta = inferencia.diagnosticar_arquivo(conteudo)  # bytes do upload ou caminho da foto
+```
+
+**Pesos.** Ficam fora do git e são lidos de arquivos locais, sem rede:
+- o `melhor.pt` do classificador, em `model/runs/base_resnet50_bracol/`;
+- o `last.pt` do detector, em `model/runs/detector_base/weights/`.
+
+Para usar outros: `carregar_modelos(pasta_do_classificador=..., pesos_do_detector=...,
+dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
+
+**Sucesso** (exemplo do formato):
+
+```json
+{
+  "status": "sucesso",
+  "folhas": [
+    {"id": "folha-1", "categoria": "ferrugem", "severidade": "baixa",
+     "regiao": {"x": 0.412, "y": 0.377, "raio": 0.142},
+     "confianca": 0.81, "scoreDeteccao": 0.93, "caixa": [0.28, 0.21, 0.55, 0.52],
+     "cortadaNaBorda": false},
+    {"id": "folha-2", "categoria": "saudavel", "severidade": "saudavel",
+     "regiao": {"x": 0.731, "y": 0.664, "raio": 0.118},
+     "confianca": 0.74, "scoreDeteccao": 0.88, "caixa": [0.63, 0.52, 0.86, 0.81],
+     "cortadaNaBorda": true}
+  ],
+  "detalhes": {"plano": "deteccao", "regra": null, "deteccoes": 7, "abaixo_do_limiar": 4,
+               "cortadas_por_area": 0, "cortadas_por_cor": 0, "cortadas_por_limite": 0,
+               "abaixo_da_confianca": 5, "recorte": "A", "limiar_confianca": 0.61,
+               "classificador": "base_resnet50_bracol", "detector": "detector_base"}
+}
+```
+
+- **Categoria e severidade:**
+  - `categoria` vem de `CLASSES` (saudavel, ferrugem, bicho_mineiro, phoma, cercosporiose).
+  - `severidade` vem dos níveis 0 a 4 do modelo: saudavel, muito_baixa, baixa, alta e muito_alta.
+  - A coerência é a do normalizador do frontend: folha saudável tem severidade "saudavel", e folha
+    doente com nível 0 vira "muito_baixa".
+- **Região:**
+  - `regiao` é o centroide da máscara, relativo à largura e à altura da foto.
+  - O raio é o do círculo de mesma área, relativo à menor dimensão, limitado a [0,01; 0,5].
+  - Quando a foto inteira vira uma folha, a região é a da detecção na regra 1 e o meio da foto, com
+    raio 0,5, na regra 2.
+- **Extras:** `confianca` (probabilidade da classe prevista), `scoreDeteccao` (nulo sem detecção),
+  `caixa` (relativa, [x0, y0, x1, y1]), `cortadaNaBorda` e `detalhes`. São campos extras, e o
+  normalizador do frontend os ignora.
+- **imagemUrl:** fica com o backend, que guarda a foto. Sem ela, o frontend usa a foto local.
+
+**Erros** (`{"status": "erro", "tipo": ..., "mensagem": ...}`, às vezes com `detalhes`):
+
+| tipo | quando | mensagem |
+|---|---|---|
+| `planta_nao_identificada` | nenhuma folha utilizável, e nenhuma detecção com cor de folha e score >= 0,05 | "Não encontramos folhas de café na foto. Fotografe a planta ou a folha mais de perto, com boa luz." |
+| `baixa_confianca` | todas as folhas abaixo do limiar de confiança (RF07) | "Encontramos folhas, mas o diagnóstico não ficou confiável. Tente outra foto, mais nítida e com boa luz." |
+| `formato_invalido` | o arquivo não decodifica (JPG ou PNG) | "Não foi possível ler a imagem. Envie uma foto em JPG ou PNG." |
+| `arquivo_muito_grande` | mais de 64 megapixels, lidos do cabeçalho com Pillow, sem decodificar | "A imagem tem 9000 x 8000 pixels (72,0 megapixels); o limite é 64,0 megapixels." |
+
+- **`especie_incorreta`:** não é produzido. Não há dados de outras plantas para treinar essa recusa,
+  então uma foto de outra planta pode sair como folha de café.
+- **Limite de 10 MB:** o limite de tamanho do arquivo é do backend.
+
+**Parâmetros** (`inferencia.Configuracao`, uma dataclass congelada; `diagnosticar(imagem, config)`):
+
+| parâmetro | padrão | o que faz |
+|---|---|---|
+| `limiar_deteccao` | 0,35 | score mínimo do detector (decisão do gestor, 10/10/2026) |
+| `max_folhas` | 15 | folhas classificadas por foto, as de maior score (RNF02) |
+| `area_minima` | 0,5% | área mínima da máscara, em fração da foto |
+| `saturacao_minima`, `fracao_colorida_minima` | 30, 25% | filtro de cor: tira os pedaços de fundo liso |
+| `limiar_confianca` | 0,61 | RF07; **proposta, aguarda a decisão do gestor** |
+| `recorte` | "A" | "A": a foto em volta da folha; "B": fundo fora da máscara em cinza |
+| `margem`, `cinza_fundo` | 0,17, 197 | medidos no treino do BRACOL |
+| `cobertura_folha_unica` | 30% | regra 1: uma folha cuja caixa cobre isso da foto → a foto inteira |
+| `score_minimo_folha_unica` | 0,05 | regra 2 (decisão do gestor, 10/10/2026) |
+| `max_megapixels` | 64 | acima disso, `arquivo_muito_grande` |
+
+**Limite atual:**
+- O classificador foi treinado só com folhas do BRACOL (fundo claro). No BRACOL, a cadeia acerta
+  tanto quanto a imagem inteira: 94,4% contra 94,8%.
+- Nas folhas do campo, porém, ele puxa quase tudo para doença, sobretudo ferrugem. O T2 está no
+  relatório do `pipeline_base`.
+- Antes de usar em campo, o classificador precisa ser retreinado.

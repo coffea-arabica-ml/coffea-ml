@@ -108,6 +108,38 @@ def calcular_metricas_severidade(sev_true, sev_pred) -> dict:
     return resultado
 
 
+# --------------------------------------------------------------------- confiança (RF07)
+def curva_risco_cobertura(confiancas, acertos, limiares, classes_verdadeiras=None,
+                          classes=bracol.CLASSES) -> list[dict]:
+    """Curva risco-cobertura do corte por confiança (RF07): em cada limiar, as predições com
+    confiança >= limiar ficam e as outras viram "baixa confiança". Por limiar: as mantidas, a
+    cobertura (fração mantida), a acurácia das mantidas com o intervalo de Wilson e o risco
+    (1 - acurácia). Com as classes verdadeiras (índices em classes), também a cobertura de cada
+    classe. Sem nenhuma mantida, acurácia e risco ficam NaN."""
+    confiancas = np.asarray(confiancas, dtype=np.float64).ravel()
+    acertos = np.asarray(acertos, dtype=bool).ravel()
+    if not len(confiancas) or confiancas.shape != acertos.shape:
+        raise ValueError("confiancas e acertos precisam ter o mesmo tamanho, maior que zero")
+    if classes_verdadeiras is not None:
+        classes_verdadeiras = np.asarray(classes_verdadeiras).ravel()
+    curva = []
+    for limiar in limiares:
+        mantidas = confiancas >= limiar
+        n = int(mantidas.sum())
+        acuracia = float(acertos[mantidas].mean()) if n else float("nan")
+        ponto = {"limiar": float(limiar), "mantidas": n, "cobertura": n / len(confiancas),
+                 "acuracia": acuracia,
+                 "acuracia_ic95": list(intervalo_wilson(acuracia, n)) if n else [float("nan")] * 2,
+                 "risco": 1 - acuracia}
+        if classes_verdadeiras is not None:
+            ponto["cobertura_por_classe"] = {
+                classe: float(mantidas[classes_verdadeiras == k].mean())
+                if np.any(classes_verdadeiras == k) else float("nan")
+                for k, classe in enumerate(classes)}
+        curva.append(ponto)
+    return curva
+
+
 def _vetores(a, b, vazio_ok: bool = False):
     """Duas listas de inteiros do mesmo tamanho, como vetores numpy."""
     a = np.asarray(a, dtype=np.int64).ravel()

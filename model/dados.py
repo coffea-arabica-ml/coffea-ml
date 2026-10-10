@@ -121,9 +121,19 @@ def ler_imagem(caminho: Path):
     caminho = Path(caminho)
     if not caminho.is_file():
         raise FileNotFoundError(f"imagem não encontrada: {caminho}")
-    imagem = cv2.imdecode(np.fromfile(caminho, dtype=np.uint8), cv2.IMREAD_COLOR)
+    return decodificar_imagem(np.fromfile(caminho, dtype=np.uint8), str(caminho))
+
+
+def decodificar_imagem(conteudo, origem: str = "recebida"):
+    """Imagem RGB (altura x largura x 3, uint8) a partir dos bytes do arquivo, com
+    cv2.imdecode e a orientação EXIF aplicada, como em ler_imagem (que chama esta função). O
+    backend decodifica assim a foto que recebe. ValueError se não decodificar."""
+    if isinstance(conteudo, (bytes, bytearray, memoryview)):
+        conteudo = np.frombuffer(conteudo, dtype=np.uint8)
+    conteudo = np.asarray(conteudo, dtype=np.uint8)
+    imagem = cv2.imdecode(conteudo, cv2.IMREAD_COLOR) if conteudo.size else None
     if imagem is None:
-        raise ValueError(f"não foi possível decodificar a imagem {caminho}: arquivo corrompido "
+        raise ValueError(f"não foi possível decodificar a imagem {origem}: arquivo corrompido "
                          "ou formato desconhecido")
     return cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB)
 

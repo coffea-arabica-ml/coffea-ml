@@ -1,0 +1,152 @@
+{
+  "run": "pipeline_base",
+  "criado_em": "2026-10-10T12:31:50",
+  "commit": "02033bdfd4bab29b24328159555a04cd6f90855f",
+  "commit_com_alteracoes": true,
+  "decisoes_do_gestor": [
+    {
+      "data": "10/10/2026",
+      "texto": "o detector está bom o bastante: AP50 de máscara de 94,7% (região) e 88,1% (conservador), limiar 0,35."
+    },
+    {
+      "data": "10/10/2026",
+      "texto": "classificar também as folhas cortadas pela borda, com área mínima e corte por confiança do classificador; reavaliar o filtro de borda olhando os recortes."
+    },
+    {
+      "data": "10/10/2026",
+      "texto": "folha única: a foto inteira só se houver detecção com score >= 0,05; sem nenhuma, planta_nao_identificada."
+    },
+    {
+      "data": "10/10/2026",
+      "texto": "arquivo_muito_grande acima de ~64 megapixels, com as dimensões lidas do cabeçalho."
+    }
+  ],
+  "configuracao": {
+    "limiar_deteccao": 0.35,
+    "max_folhas": 15,
+    "area_minima": 0.005,
+    "saturacao_minima": 30,
+    "fracao_colorida_minima": 0.25,
+    "limiar_confianca": 0.61,
+    "recorte": "A",
+    "margem": 0.17,
+    "cinza_fundo": 197,
+    "cobertura_folha_unica": 0.3,
+    "score_minimo_folha_unica": 0.05,
+    "max_megapixels": 64.0
+  },
+  "modelos": {
+    "classificador": "model/runs/base_resnet50_bracol",
+    "detector": "model/runs/detector_base/weights/last.pt",
+    "fora_da_dobra": "model/runs/diagnostico_blocos"
+  },
+  "dispositivo_t1_t2": "cuda",
+  "dispositivo_t3": "cpu",
+  "constantes_medidas": {
+    "fundo": {
+      "imagens": 1180,
+      "borda": 0.08,
+      "por_classe": {
+        "saudavel": {
+          "r": 187.5,
+          "g": 184.5,
+          "b": 177.0,
+          "luminancia": 183.2
+        },
+        "ferrugem": {
+          "r": 207.0,
+          "g": 202.0,
+          "b": 200.0,
+          "luminancia": 203.2
+        },
+        "bicho_mineiro": {
+          "r": 198.0,
+          "g": 195.0,
+          "b": 191.0,
+          "luminancia": 194.3
+        },
+        "phoma": {
+          "r": 211.0,
+          "g": 199.0,
+          "b": 194.0,
+          "luminancia": 201.3
+        },
+        "cercosporiose": {
+          "r": 208.0,
+          "g": 200.0,
+          "b": 196.0,
+          "luminancia": 201.7
+        }
+      },
+      "cinza": 197
+    },
+    "folha_unica_bracol": {
+      "imagens": 200,
+      "sem_deteccao": 10,
+      "uma_deteccao": 148,
+      "mais_de_uma": 42,
+      "comprimento_mediano": 0.746735,
+      "espessura_mediana": 0.637531,
+      "margem": 0.169582,
+      "cobertura": {
+        "min": 0.173006,
+        "p5": 0.286403,
+        "p25": 0.42004,
+        "mediana": 0.501073,
+        "p95": 0.675582,
+        "max": 0.781641
+      },
+      "deteccoes_antes_da_cor": 373,
+      "cortadas_pela_cor": 130,
+      "colorida_histograma": [
+        109,
+        15,
+        10,
+        10,
+        10,
+        9,
+        14,
+        13,
+        31,
+        152
+      ]
+    },
+    "plantas_bracot": {
+      "fotos": 194,
+      "uma_deteccao": 0,
+      "sem_deteccao": 0,
+      "cobertura_maior": {
+        "min": 0.055874,
+        "p5": 0.0870242,
+        "p25": 0.140504,
+        "mediana": 0.192286,
+        "p95": 0.390292,
+        "max": 0.613712
+      }
+    },
+    "cor_folhas_bracot": {
+      "fotos": 80,
+      "folhas": 450,
+      "min": 0.148529,
+      "p5": 0.603479,
+      "p25": 0.89277,
+      "mediana": 0.990354,
+      "p95": 1.0,
+      "max": 1.0,
+      "p1": 0.353471,
+      "abaixo_do_minimo": 2
+    }
+  },
+  "acessos_a_rede": [],
+  "versoes": {
+    "python": "3.13.14",
+    "torch": "2.13.0+cu130",
+    "timm": "1.0.28",
+    "albumentations": "2.0.8",
+    "opencv": "5.0.0",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "scikit-learn": "1.9.0",
+    "sistema": "Windows-11-10.0.26200-SP0"
+  }
+}

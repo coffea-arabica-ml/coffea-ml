@@ -1,0 +1,313 @@
+{
+  "descricao": "Regressão logística (scikit-learn, padronização com média e desvio do treino) só com média e desvio de R, G, B, H, S e V, na imagem já em 448x224, antes da normalização. Ajuste no treino; medida na validação.",
+  "caracteristicas": [
+    "media_R",
+    "desvio_R",
+    "media_G",
+    "desvio_G",
+    "media_B",
+    "desvio_B",
+    "media_H",
+    "desvio_H",
+    "media_S",
+    "desvio_S",
+    "media_V",
+    "desvio_V"
+  ],
+  "entrada": {
+    "largura": 448,
+    "altura": 224
+  },
+  "n_treino": 1180,
+  "n_val": 252,
+  "semente": 42,
+  "limiar_destaque": 0.5,
+  "referencias": {
+    "acaso": 0.2,
+    "majoritaria": {
+      "classe": "ferrugem",
+      "acuracia": 0.313492
+    },
+    "modelo": {
+      "epoca": 14,
+      "acuracia": 0.948413,
+      "f1_macro": 0.932032,
+      "recall": {
+        "saudavel": 0.97561,
+        "ferrugem": 0.974684,
+        "bicho_mineiro": 0.931034,
+        "phoma": 0.961538,
+        "cercosporiose": 0.818182
+      }
+    }
+  },
+  "variantes": {
+    "imagem_inteira": {
+      "rotulo": "(a) imagem inteira",
+      "borda": null,
+      "fracao_da_area": 1.0,
+      "acuracia_treino": 0.669492,
+      "val": {
+        "classes": [
+          "saudavel",
+          "ferrugem",
+          "bicho_mineiro",
+          "phoma",
+          "cercosporiose"
+        ],
+        "n": 252,
+        "acertos": 168,
+        "acuracia": 0.666667,
+        "acuracia_ic95": [
+          0.606346,
+          0.721982
+        ],
+        "precisao": [
+          0.617647,
+          0.607843,
+          0.636364,
+          0.819672,
+          0.0
+        ],
+        "recall": [
+          0.512195,
+          0.78481,
+          0.603448,
+          0.961538,
+          0.0
+        ],
+        "f1": [
+          0.56,
+          0.685083,
+          0.619469,
+          0.884956,
+          0.0
+        ],
+        "suporte": [
+          41,
+          79,
+          58,
+          52,
+          22
+        ],
+        "f1_macro": 0.549902,
+        "matriz_confusao": [
+          [
+            21,
+            8,
+            9,
+            3,
+            0
+          ],
+          [
+            10,
+            62,
+            4,
+            3,
+            0
+          ],
+          [
+            2,
+            21,
+            35,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            50,
+            0
+          ],
+          [
+            1,
+            10,
+            6,
+            5,
+            0
+          ]
+        ]
+      },
+      "acima_do_limiar": true
+    },
+    "borda_15": {
+      "rotulo": "(b) borda de 15%",
+      "borda": 0.15,
+      "fracao_da_area": 0.511878,
+      "acuracia_treino": 0.655085,
+      "val": {
+        "classes": [
+          "saudavel",
+          "ferrugem",
+          "bicho_mineiro",
+          "phoma",
+          "cercosporiose"
+        ],
+        "n": 252,
+        "acertos": 166,
+        "acuracia": 0.65873,
+        "acuracia_ic95": [
+          0.598199,
+          0.714494
+        ],
+        "precisao": [
+          0.619048,
+          0.636364,
+          0.634921,
+          0.724638,
+          0.0
+        ],
+        "recall": [
+          0.317073,
+          0.797468,
+          0.689655,
+          0.961538,
+          0.0
+        ],
+        "f1": [
+          0.419355,
+          0.707865,
+          0.661157,
+          0.826446,
+          0.0
+        ],
+        "suporte": [
+          41,
+          79,
+          58,
+          52,
+          22
+        ],
+        "f1_macro": 0.522965,
+        "matriz_confusao": [
+          [
+            13,
+            7,
+            12,
+            9,
+            0
+          ],
+          [
+            7,
+            63,
+            4,
+            5,
+            0
+          ],
+          [
+            1,
+            17,
+            40,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            50,
+            0
+          ],
+          [
+            0,
+            11,
+            6,
+            5,
+            0
+          ]
+        ]
+      },
+      "acima_do_limiar": true
+    },
+    "borda_8": {
+      "rotulo": "(c) borda de 8%",
+      "borda": 0.08,
+      "fracao_da_area": 0.295599,
+      "acuracia_treino": 0.629661,
+      "val": {
+        "classes": [
+          "saudavel",
+          "ferrugem",
+          "bicho_mineiro",
+          "phoma",
+          "cercosporiose"
+        ],
+        "n": 252,
+        "acertos": 169,
+        "acuracia": 0.670635,
+        "acuracia_ic95": [
+          0.610426,
+          0.725719
+        ],
+        "precisao": [
+          0.714286,
+          0.647619,
+          0.640625,
+          0.724638,
+          0.0
+        ],
+        "recall": [
+          0.243902,
+          0.860759,
+          0.706897,
+          0.961538,
+          0.0
+        ],
+        "f1": [
+          0.363636,
+          0.73913,
+          0.672131,
+          0.826446,
+          0.0
+        ],
+        "suporte": [
+          41,
+          79,
+          58,
+          52,
+          22
+        ],
+        "f1_macro": 0.520269,
+        "matriz_confusao": [
+          [
+            10,
+            7,
+            14,
+            10,
+            0
+          ],
+          [
+            3,
+            68,
+            5,
+            3,
+            0
+          ],
+          [
+            1,
+            15,
+            41,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            50,
+            0
+          ],
+          [
+            0,
+            14,
+            3,
+            5,
+            0
+          ]
+        ]
+      },
+      "acima_do_limiar": true
+    }
+  }
+}

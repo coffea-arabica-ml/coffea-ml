@@ -12,7 +12,8 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   mensagem de commit (português, sem acento, verbo no presente: "Adiciona ...", "Corrige ...")
   e parar até o usuário mandar seguir.
 - Nunca apagar nem modificar `data/raw/`. Imagens do dataset nunca entram no git, exceto o
-  mosaico derivado da EDA em `data/reports/figures/`, com crédito CC BY 4.0.
+  mosaico derivado da EDA em `data/reports/figures/` e as pranchas do Grad-CAM em
+  `model/runs/<run>/atalho/` (decisão do gestor, 09/10/2026), em JPEG e com crédito CC BY 4.0.
 - Português do Brasil em textos, comentários e mensagens. A saída de terminal dos scripts fica
   sem acento, setas, emojis ou outros símbolos especiais: no Windows, a saída redirecionada sai
   em cp1252 e os acentos viram lixo. Arquivos gravados (relatórios, README) são UTF-8 com acento.
@@ -81,6 +82,7 @@ python data/bracot.py --verificar            # confere dados x manifest do BRACO
 python model/train.py --rapido               # teste de fumaça do treino (model/runs/_rapido/, fora do git)
 python model/train.py --nome NOME            # treino; grava model/runs/NOME/ e não usa o teste
 python model/train.py --avaliar-teste --run NOME   # só no fim: avalia no teste e registra o uso
+python evaluation/atalho.py --run NOME       # checagem de atalho (só treino e val); model/runs/NOME/atalho/
 jupyter nbconvert --clear-output --inplace notebooks/01_eda.ipynb   # antes de commitar
 python -m pytest
 ```

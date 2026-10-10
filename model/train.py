@@ -379,10 +379,13 @@ def treinar(args, comando: str) -> int:
     return 0
 
 
-def avaliar_teste(args) -> int:
-    """Avalia o melhor checkpoint de um run no teste (só BRACOL) e registra o uso."""
-    pasta = PASTA_RUNS / args.run
-    arquivo = pasta / "melhor.pt"
+def carregar_modelo(pasta_run: Path, dispositivo) -> tuple[ModeloMultitarefa, dict]:
+    """O modelo do melhor.pt de um run, já no dispositivo e em eval, e o checkpoint.
+
+    Só lê o arquivo (torch.load com weights_only=True) e monta o backbone sem pré-treino, sem
+    acessar a internet. Confere se as classes e o pré-processamento são os de agora.
+    """
+    arquivo = Path(pasta_run) / "melhor.pt"
     if not arquivo.is_file():
         raise ErroFatal(f"checkpoint não encontrado: {_exibir(arquivo)}")
     checkpoint = torch.load(arquivo, map_location="cpu", weights_only=True)
@@ -391,11 +394,17 @@ def avaliar_teste(args) -> int:
     preprocessamento = (checkpoint["media"], checkpoint["desvio"], checkpoint["interpolacao"])
     if preprocessamento != (list(dados.MEDIA), list(dados.DESVIO), dados.NOME_INTERPOLACAO):
         raise ErroFatal("o pré-processamento do checkpoint não é o de model/dados.py")
-    dispositivo = escolher_dispositivo(args.dispositivo)
-    amp = dispositivo.type == "cuda"
     modelo = criar_modelo(checkpoint["backbone"], pretrained=False)
     modelo.load_state_dict(checkpoint["state_dict"])
-    modelo.to(dispositivo)
+    return modelo.to(dispositivo).eval(), checkpoint
+
+
+def avaliar_teste(args) -> int:
+    """Avalia o melhor checkpoint de um run no teste (só BRACOL) e registra o uso."""
+    pasta = PASTA_RUNS / args.run
+    dispositivo = escolher_dispositivo(args.dispositivo)
+    amp = dispositivo.type == "cuda"
+    modelo, checkpoint = carregar_modelo(pasta, dispositivo)
 
     teste = dados.montar_teste()
     tamanho = checkpoint["tamanho_entrada"]

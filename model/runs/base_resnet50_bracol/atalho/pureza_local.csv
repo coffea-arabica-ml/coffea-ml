@@ -1,0 +1,4 @@
+grupo,n,acertos,acuracia,ic95_baixo,ic95_alto,saudavel,ferrugem,bicho_mineiro,phoma,cercosporiose
+1.0,76,76,1.000000,0.951886,1.000000,20,15,8,33,0
+0.6_a_1.0,81,79,0.975309,0.914373,0.993202,2,43,19,14,3
+abaixo_de_0.6,95,84,0.884211,0.804455,0.934101,19,21,31,5,19

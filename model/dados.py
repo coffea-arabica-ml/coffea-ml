@@ -162,7 +162,7 @@ def transformacao_treino(largura: int = LARGURA_PADRAO, altura: int = ALTURA_PAD
     vai no Compose.
     """
     return A.Compose([
-        A.Resize(altura, largura, interpolation=INTERPOLACAO),
+        _redimensionar(largura, altura),
         A.HorizontalFlip(p=0.5),
         A.VerticalFlip(p=0.5),
         # Os cantos que a rotação descobre recebem o reflexo da imagem: o preto padrão não
@@ -178,10 +178,21 @@ def transformacao_treino(largura: int = LARGURA_PADRAO, altura: int = ALTURA_PAD
 def transformacao_avaliacao(largura: int = LARGURA_PADRAO, altura: int = ALTURA_PADRAO):
     """Validação e teste: só redimensiona e normaliza."""
     return A.Compose([
-        A.Resize(altura, largura, interpolation=INTERPOLACAO),
+        _redimensionar(largura, altura),
         A.Normalize(mean=MEDIA, std=DESVIO),
         ToTensorV2(),
     ])
+
+
+def transformacao_sem_normalizar(largura: int = LARGURA_PADRAO, altura: int = ALTURA_PADRAO):
+    """Só o redimensionamento da avaliação: devolve a imagem RGB uint8 (altura x largura x 3)
+    que o modelo vê antes da normalização. Serve para medir cor e para mostrar figuras."""
+    return A.Compose([_redimensionar(largura, altura)])
+
+
+def _redimensionar(largura: int, altura: int):
+    """O redimensionamento comum a todas as transformações (INTERPOLACAO)."""
+    return A.Resize(altura, largura, interpolation=INTERPOLACAO)
 
 
 def descrever_transformacao(transform) -> dict:

@@ -1,0 +1,14 @@
+id,classe_verdadeira,classe_prevista,prob_prevista,prob_verdadeira,faixa_id,pureza_local
+578,saudavel,phoma,0.727621,0.209692,401-600,0.400000
+783,bicho_mineiro,ferrugem,0.548492,0.268622,601-800,0.400000
+811,phoma,bicho_mineiro,0.770065,0.161651,801-1000,0.000000
+817,bicho_mineiro,ferrugem,0.893123,0.060393,801-1000,0.300000
+922,bicho_mineiro,cercosporiose,0.739364,0.114554,801-1000,0.300000
+1182,bicho_mineiro,cercosporiose,0.732339,0.170831,1001-1200,0.300000
+1215,cercosporiose,bicho_mineiro,0.614323,0.099456,1201-1400,0.200000
+1410,cercosporiose,bicho_mineiro,0.568748,0.249014,1401-1600,0.100000
+1488,ferrugem,cercosporiose,0.927301,0.060185,1401-1600,0.700000
+1583,ferrugem,cercosporiose,0.629057,0.361237,1401-1600,0.500000
+1642,cercosporiose,ferrugem,0.712926,0.184395,1601-1747,0.200000
+1658,cercosporiose,ferrugem,0.602363,0.378794,1601-1747,0.700000
+1736,phoma,cercosporiose,0.870069,0.010931,1601-1747,0.000000

@@ -18,6 +18,19 @@ pillow==12.3.0
 opencv-python-headless==5.0.0.93
 imagehash==4.3.2
 
+# Detector de folhas (model/detector.py; licenca AGPL-3.0 aceita pelo gestor em 10/10/2026).
+# O ultralytics fica fora desta lista. Instale-o depois, sem dependencias:
+#   pip install --no-deps ultralytics==8.4.175
+# Ele pede o opencv-python, que instalaria um segundo modulo cv2 por cima do
+# opencv-python-headless acima (os dois pacotes gravam o mesmo cv2). Por isso o pip check acusa
+# "ultralytics 8.4.175 requires opencv-python, which is not installed": e esperado, e o
+# headless atende o ultralytics. Abaixo, as dependencias dele que o resto da lista nao traz.
+polars==2.0.0
+polars-runtime-32==2.0.0
+nvidia-ml-py==13.615.71
+ultralytics-thop==2.2.2
+ultralytics-platform==0.1.83
+
 # Avaliacao e graficos
 scikit-learn==1.9.0
 matplotlib==3.11.1

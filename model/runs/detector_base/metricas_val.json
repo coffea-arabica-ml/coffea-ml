@@ -1,0 +1,85 @@
+{
+  "limiar_escolhido": 0.35,
+  "limiares": {
+    "0.35": {
+      "regiao": {
+        "limiar": 0.35,
+        "acertos": 219,
+        "erros": 27,
+        "ignoradas": 75,
+        "fora_da_regiao": 75,
+        "previstas": 321,
+        "precisao": 0.890244,
+        "recall": 0.883065,
+        "f1": 0.88664
+      },
+      "conservador": {
+        "limiar": 0.35,
+        "acertos": 219,
+        "erros": 102,
+        "ignoradas": 0,
+        "fora_da_regiao": 75,
+        "previstas": 321,
+        "precisao": 0.682243,
+        "recall": 0.883065,
+        "f1": 0.769772
+      },
+      "anotadas": 248,
+      "previstas": 321,
+      "fora_da_regiao": 75,
+      "fotos_com_previsao_fora": 38
+    }
+  },
+  "metricas": {
+    "regiao": {
+      "mascara": {
+        "ap50": 0.946643,
+        "ap50_95": 0.885192
+      },
+      "caixa": {
+        "ap50": 0.948254,
+        "ap50_95": 0.869428
+      }
+    },
+    "conservador": {
+      "mascara": {
+        "ap50": 0.881318,
+        "ap50_95": 0.828502
+      },
+      "caixa": {
+        "ap50": 0.882552,
+        "ap50_95": 0.813216
+      }
+    }
+  },
+  "n_fotos": 46,
+  "n_anotadas": 248,
+  "ultralytics_val": {
+    "caixa": {
+      "ap50": 0.885461,
+      "ap50_95": 0.813373
+    },
+    "mascara": {
+      "ap50": 0.885461,
+      "ap50_95": 0.819862
+    }
+  },
+  "rnf02": {
+    "threads_torch": 8,
+    "fotos": 46,
+    "mediana": {
+      "leitura_s": 0.0646195,
+      "deteccao_s": 0.147395,
+      "classificacao_s": 0.517567,
+      "total_s": 0.728243
+    },
+    "maximo": {
+      "leitura_s": 0.074924,
+      "deteccao_s": 0.183749,
+      "classificacao_s": 1.15015,
+      "total_s": 1.34865
+    },
+    "folhas_mediana": 6.5,
+    "acima_do_limite": 0
+  }
+}

@@ -227,3 +227,9 @@ data/tools/relatorio_*.txt
 model/runs/**/*.pt
 # Teste de fumaca do treino (python model/train.py --rapido): regravado a cada execucao
 model/runs/_rapido/
+# Pesos pre-treinados baixados (model/detector.py) e configuracao local do ultralytics
+model/pesos/
+# Saidas brutas do ultralytics nos runs do detector: o args.yaml tem caminhos absolutos da maquina
+# (os argumentos vao para o config.json) e o results.csv e copiado para o historico.csv
+model/runs/detector_*/args.yaml
+model/runs/detector_*/results.csv

@@ -65,6 +65,22 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   - Teste de classificação e de severidade (RNF01): só BRACOL. Um teste de campo com rótulo de
     classe, se vier, entra como fonte nova, com manifest próprio.
 
+## Detector de folhas (RF09)
+
+- YOLO11s-seg (ultralytics 8.4.175) ajustado no BRACOT: `model/treinar_detector.py` treina e
+  avalia; `model/detector.py` tem `detectar_folhas`, a interface do backend. Licença AGPL-3.0
+  aceita para este projeto acadêmico de repositórios públicos (decisão do gestor, 10/10/2026).
+- Instalação (decisão do gestor, 10/10/2026): OpenCV só headless; o ultralytics entra com
+  `--no-deps`, e as dependências que faltavam ficam fixadas no `requirements.txt`. O `pip check`
+  acusa o `opencv-python` que o ultralytics pede: é esperado (ver README.md).
+- Rede: o único download autorizado é o peso `yolo11s-seg.pt` da release oficial (SHA-256 em
+  `detector.py`, conferido ao treinar). `detector.importar_ultralytics()` impõe o modo offline e
+  troca a pré-carga da fonte (que baixava a Arial.ttf); o treino roda sem AMP e sem gráficos.
+- O teste do BRACOT (60 fotos) fica fechado até o gestor mandar: só `--avaliar-teste` lê as
+  anotações dele, e cada uso fica em `model/runs/uso_do_teste_detector.md`.
+- Anotação parcial (decisão do gestor, 10/10/2026): no treino, cinza (114) fora do casco das
+  folhas anotadas, com margem de 2%; as métricas saem nos modos região (principal) e conservador.
+
 ## Comandos (na raiz do repositório, com o venv ativo)
 
 ```
@@ -72,6 +88,7 @@ pip install -r requirements.txt              # CPU; no Linux (Colab) o torch do 
 pip install "torch==2.13.0+cu130" "torchvision==0.28.0+cu130" --index-url https://download.pytorch.org/whl/cu130
                                              # GPU no Windows: só troca o build (cu126 se o driver
                                              # for CUDA 12; ver README.md, seção Ambiente)
+pip install --no-deps ultralytics==8.4.175   # detector: depois do requirements.txt (ver README.md)
 python data/organize_dataset.py              # gera o manifest e o relatório de integridade
 python data/organize_dataset.py --verificar  # confere dados x manifest sem mudar o manifest
 python data/eda_bracol.py                    # figuras em data/reports/figures/
@@ -85,6 +102,10 @@ python model/train.py --avaliar-teste --run NOME   # só no fim: avalia no teste
 python evaluation/atalho.py --run NOME       # checagem de atalho (só treino e val); model/runs/NOME/atalho/
 python evaluation/diagnostico_blocos.py      # validação cruzada por blocos de ids x aleatória (só treino e
                                              # val, retomável); model/runs/diagnostico_blocos/
+python model/treinar_detector.py --nome NOME --epocas 60   # detector: prepara os dados (fora do git),
+                                             # treina e avalia na validação; model/runs/NOME/
+python model/treinar_detector.py --avaliar --run NOME      # refaz a avaliação e o relatório do detector
+python model/treinar_detector.py --avaliar-teste --run NOME   # só por ordem do gestor: teste do BRACOT
 jupyter nbconvert --clear-output --inplace notebooks/01_eda.ipynb   # antes de commitar
 python -m pytest
 ```

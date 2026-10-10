@@ -442,6 +442,8 @@ sobrepostas = [teste for teste, _ in bracot.TESTE_SOBREPOSTO]
   - lê `bracot.ler_manifest()` e os polígonos COCO de `bracot.caminho_coco(split)`;
   - valida com cenas inteiras do treino;
   - reporta o teste com e sem `TESTE_SOBREPOSTO`.
+  - Implementado em `model/treinar_detector.py` (validação com `bracol.dividir`: 46 fotos, 24
+    cenas); o run de base está em `model/runs/detector_base/`.
 
 ## Comandos (na raiz do repositório, com o venv ativo)
 

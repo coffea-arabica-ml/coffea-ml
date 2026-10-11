@@ -1,0 +1,35 @@
+# Variante `v1g`: campo: só geométrica (corte e erasing)
+
+Gerado por `python model/treinar_campo.py --triagem` em 10/10/2026 14:03. Treino: 1.180 imagens ({'bracol': 1180}); 20 épocas fixas; o `melhor.pt` é a última época (fora do git). Teste fechado.
+
+## Validação oficial do BRACOL (252 imagens)
+
+- **Acurácia:** 91,3% (230 de 252 imagens; intervalo de Wilson de 95%: 87,1% a 94,2%).
+- **F1 macro:** 88,8% (média simples do F1 das 5 classes).
+
+| classe | imagens | precisão | recall | F1 |
+|---|---:|---:|---:|---:|
+| saudavel | 41 | 100,0% | 95,1% | 97,5% |
+| ferrugem | 79 | 96,2% | 94,9% | 95,5% |
+| bicho_mineiro | 58 | 92,5% | 84,5% | 88,3% |
+| phoma | 52 | 98,0% | 94,2% | 96,1% |
+| cercosporiose | 22 | 56,2% | 81,8% | 66,7% |
+
+Matriz de confusão (linhas: classe verdadeira; colunas: classe prevista):
+
+| classe verdadeira | saudavel | ferrugem | bicho_mineiro | phoma | cercosporiose |
+|---|---:|---:|---:|---:|---:|
+| saudavel | 39 | 0 | 0 | 1 | 1 |
+| ferrugem | 0 | 75 | 0 | 0 | 4 |
+| bicho_mineiro | 0 | 2 | 49 | 0 | 7 |
+| phoma | 0 | 0 | 1 | 49 | 2 |
+| cercosporiose | 0 | 1 | 3 | 0 | 18 |
+
+**Severidade** (níveis 0 a 4; 252 imagens com alvo):
+
+- MAE (em níveis): 0,313; kappa quadrático ponderado: 0,673.
+- Acurácia exata: 73,4%; com tolerância de 1 nível: 95,2%.
+- Imagens por nível verdadeiro: 0: 41, 1: 138, 2: 49, 3: 15, 4: 9.
+
+Tempo: 3.7 min. Histórico em `historico.csv`.
+

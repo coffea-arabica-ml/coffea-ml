@@ -118,7 +118,8 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
      "cortadaNaBorda": true}
   ],
   "detalhes": {"plano": "deteccao", "regra": null, "deteccoes": 7, "abaixo_do_limiar": 4,
-               "cortadas_por_area": 0, "cortadas_por_cor": 0, "cortadas_por_limite": 0,
+               "cortadas_por_area": 0, "cortadas_por_cor": 0, "cortadas_por_fragmento": 0,
+               "cortadas_por_limite": 0,
                "abaixo_da_confianca": 5, "recorte": "A", "limiar_confianca": 0.61,
                "classificador": "base_resnet50_bracol", "detector": "detector_base"}
 }
@@ -166,6 +167,7 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
 | `cobertura_folha_unica` | 30% | regra 1: uma folha cuja caixa cobre isso da foto → a foto inteira |
 | `score_minimo_folha_unica` | 0,05 | regra 2 (decisão do gestor, 10/10/2026) |
 | `max_megapixels` | 64 | acima disso, `arquivo_muito_grande` |
+| `fracao_visivel_minima`, `preenchimento_minimo` | 0, 0 | filtro de fragmentos (folha cortada pela borda); desligado até a decisão do gestor |
 
 **Limite atual:**
 - O classificador foi treinado só com folhas do BRACOL (fundo claro). No BRACOL, a cadeia acerta
@@ -173,3 +175,24 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
 - Nas folhas do campo, porém, ele puxa quase tudo para doença, sobretudo ferrugem. O T2 está no
   relatório do `pipeline_base`.
 - Antes de usar em campo, o classificador precisa ser retreinado.
+
+## Classificador para o campo
+
+O classificador do run base acerta no BRACOL, mas no campo (fotos de validação do BRACOT) manda
+quase tudo para doença. `model/treinar_campo.py` compara variantes de treino:
+- **v0:** a augmentation atual;
+- **v1:** augmentation de campo (v1f, só fotométrica; v1g, só corte e erasing);
+- **v2:** v1 com troca do fundo pela máscara da folha;
+- **v3 e v3s:** v2 com o JMuBEN (v3s sem phoma e cercosporiose).
+
+Todas usam 20 épocas fixas e a última época. A comparação usa a validação oficial, a validação
+cruzada nas dobras do diagnóstico por blocos e o campo. `evaluation/campo.py` gera as pranchas
+cegas de rotulagem e mede o campo:
+- **proxies:** concordância entre os modos A e B, estabilidade sob perturbações e distribuição
+  das classes;
+- **rótulos de campo**, quando o CSV está preenchido.
+
+O relatório comparativo, com a regra de adoção aplicada, fica em
+`model/runs/campo_comparacao/relatorio.md`. O modelo oficial do pipeline só muda por decisão do
+gestor. Os rótulos de campo foram feitos por Claude por leitura visual das pranchas e aceitos pelo gestor em 11/10/2026; não são de especialista (120
+folhas, 2 sessões, 1 lavoura; ver `data/README.md`).

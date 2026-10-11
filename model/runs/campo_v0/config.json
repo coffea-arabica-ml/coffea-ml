@@ -1,0 +1,127 @@
+{
+  "variante": "v0",
+  "descricao": "augmentation atual",
+  "criado_em": "2026-10-10T13:51:14",
+  "commit": "451c33ab601fc6f7c1bc7a508c6ccf68e11a0c6c",
+  "commit_com_alteracoes": true,
+  "backbone": "resnet50",
+  "pretreino": true,
+  "largura": 448,
+  "altura": 224,
+  "batch": 32,
+  "lr": 0.0001,
+  "weight_decay": 0.0001,
+  "peso_sev": 1.0,
+  "epocas": 20,
+  "t_max": 20,
+  "parada_antecipada": false,
+  "modelo": "última época",
+  "seed": 42,
+  "amostragem": "WeightedRandomSampler (1/frequência da classe), como no run base",
+  "augmentation": {
+    "fotometrica": false,
+    "corte": false,
+    "apagar": false,
+    "fundo": false,
+    "jmuben": null
+  },
+  "albumentations": {
+    "__version__": "2.0.8",
+    "transform": {
+      "__class_fullname__": "Compose",
+      "p": 1.0,
+      "transforms": [
+        {
+          "__class_fullname__": "Resize",
+          "p": 1.0,
+          "area_for_downscale": null,
+          "height": 224,
+          "interpolation": 3,
+          "mask_interpolation": 0,
+          "width": 448
+        },
+        {
+          "__class_fullname__": "HorizontalFlip",
+          "p": 0.5
+        },
+        {
+          "__class_fullname__": "VerticalFlip",
+          "p": 0.5
+        },
+        {
+          "__class_fullname__": "Rotate",
+          "p": 0.5,
+          "border_mode": 4,
+          "crop_border": false,
+          "fill": 0.0,
+          "fill_mask": 0.0,
+          "interpolation": 1,
+          "limit": [
+            -15.0,
+            15.0
+          ],
+          "mask_interpolation": 0,
+          "rotate_method": "largest_box"
+        },
+        {
+          "__class_fullname__": "RandomBrightnessContrast",
+          "p": 0.5,
+          "brightness_by_max": true,
+          "brightness_limit": [
+            -0.1,
+            0.1
+          ],
+          "contrast_limit": [
+            -0.1,
+            0.1
+          ],
+          "ensure_safe_range": false
+        }
+      ],
+      "bbox_params": null,
+      "keypoint_params": null,
+      "additional_targets": {},
+      "is_check_shapes": true
+    }
+  },
+  "parametros": {
+    "p_fundo": 0.6,
+    "p_corte": 0.3,
+    "corte_maximo": 0.15,
+    "p_apagar": 0.2,
+    "apagar_area_maxima": 0.04,
+    "apagar_buracos": 2,
+    "cinza": 197
+  },
+  "treino": {
+    "n": 1180,
+    "por_fonte": {
+      "bracol": 1180
+    },
+    "por_classe": {
+      "ferrugem": 372,
+      "bicho_mineiro": 271,
+      "phoma": 244,
+      "saudavel": 190,
+      "cercosporiose": 103
+    }
+  },
+  "conjunto": "triagem: treino oficial do BRACOL (+ auxiliar) -> validação oficial",
+  "minutos": 3.4,
+  "receita_v0": {
+    "igual": true,
+    "diferentes": [],
+    "observacao": "as duas usam o WeightedRandomSampler com a semente 42, o modelo da última época e AMP; a triagem lê as imagens de um cache já em 448x224 (o mesmo INTER_AREA do primeiro passo da augmentation)."
+  },
+  "versoes": {
+    "python": "3.13.14",
+    "torch": "2.13.0+cu130",
+    "timm": "1.0.28",
+    "albumentations": "2.0.8",
+    "opencv": "5.0.0",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "scikit-learn": "1.9.0",
+    "sistema": "Windows-11-10.0.26200-SP0"
+  }
+}

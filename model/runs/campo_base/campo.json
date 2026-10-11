@@ -1,0 +1,252 @@
+{
+  "classificador": "model/runs/base_resnet50_bracol",
+  "proxies": {
+    "folhas": 318,
+    "concordancia_A_B": 0.443396,
+    "A": {
+      "classes": {
+        "saudavel": 1,
+        "ferrugem": 237,
+        "bicho_mineiro": 33,
+        "phoma": 46,
+        "cercosporiose": 1
+      },
+      "severidades": {
+        "saudavel": 1,
+        "muito_baixa": 66,
+        "baixa": 251,
+        "alta": 0,
+        "muito_alta": 0
+      },
+      "fracao_saudavel": 0.00314465,
+      "classe_mais_comum": 0.745283,
+      "confianca_media": 0.533555,
+      "estabilidade_media": 0.896619,
+      "estaveis_em_todas": 0.68239,
+      "borda": {
+        "folhas": 192,
+        "confianca_media": 0.520373,
+        "fracao_saudavel": 0.00520833
+      },
+      "inteiras": {
+        "folhas": 126,
+        "confianca_media": 0.553642,
+        "fracao_saudavel": 0.0
+      }
+    },
+    "B": {
+      "classes": {
+        "saudavel": 42,
+        "ferrugem": 126,
+        "bicho_mineiro": 70,
+        "phoma": 75,
+        "cercosporiose": 5
+      },
+      "severidades": {
+        "saudavel": 42,
+        "muito_baixa": 188,
+        "baixa": 88,
+        "alta": 0,
+        "muito_alta": 0
+      },
+      "fracao_saudavel": 0.132075,
+      "classe_mais_comum": 0.396226,
+      "confianca_media": 0.415381,
+      "estabilidade_media": 0.842767,
+      "estaveis_em_todas": 0.54717,
+      "borda": {
+        "folhas": 192,
+        "confianca_media": 0.39324,
+        "fracao_saudavel": 0.161458
+      },
+      "inteiras": {
+        "folhas": 126,
+        "confianca_media": 0.44912,
+        "fracao_saudavel": 0.0873016
+      }
+    }
+  },
+  "fragmentos": {
+    "folhas": 318,
+    "na_borda": 192,
+    "fracao_visivel": {
+      "mediana_borda": 0.642726,
+      "mediana_inteiras": 1.0
+    },
+    "cortes": [
+      {
+        "filtro": "fracao_visivel",
+        "limiar": 0.2,
+        "cortadas": 20,
+        "cortadas_na_borda": 19,
+        "nao_sei_entre_cortadas": 0.6,
+        "nao_sei_entre_mantidas": 0.290909,
+        "rotuladas_cortadas": 10
+      },
+      {
+        "filtro": "fracao_visivel",
+        "limiar": 0.3,
+        "cortadas": 37,
+        "cortadas_na_borda": 36,
+        "nao_sei_entre_cortadas": 0.5625,
+        "nao_sei_entre_mantidas": 0.278846,
+        "rotuladas_cortadas": 16
+      },
+      {
+        "filtro": "fracao_visivel",
+        "limiar": 0.5,
+        "cortadas": 79,
+        "cortadas_na_borda": 75,
+        "nao_sei_entre_cortadas": 0.514286,
+        "nao_sei_entre_mantidas": 0.235294,
+        "rotuladas_cortadas": 35
+      },
+      {
+        "filtro": "preenchimento",
+        "limiar": 0.5,
+        "cortadas": 19,
+        "cortadas_na_borda": 15,
+        "nao_sei_entre_cortadas": 0.625,
+        "nao_sei_entre_mantidas": 0.294643,
+        "rotuladas_cortadas": 8
+      },
+      {
+        "filtro": "preenchimento",
+        "limiar": 0.6,
+        "cortadas": 95,
+        "cortadas_na_borda": 63,
+        "nao_sei_entre_cortadas": 0.333333,
+        "nao_sei_entre_mantidas": 0.310345,
+        "rotuladas_cortadas": 33
+      },
+      {
+        "filtro": "preenchimento",
+        "limiar": 0.7,
+        "cortadas": 254,
+        "cortadas_na_borda": 142,
+        "nao_sei_entre_cortadas": 0.306122,
+        "nao_sei_entre_mantidas": 0.363636,
+        "rotuladas_cortadas": 98
+      }
+    ]
+  },
+  "rotulos": {
+    "casados": 120,
+    "no_csv": 120,
+    "origem": "feitos por Claude por leitura visual das pranchas e aceitos pelo gestor em 11/10/2026; não são de especialista",
+    "fragmento": {
+      "marcadas": 35,
+      "nao_sei_entre_marcadas": {
+        "n": 35,
+        "valor": 0.4,
+        "ic95": [
+          0.255507,
+          0.564273
+        ]
+      },
+      "nao_sei_entre_demais": {
+        "n": 85,
+        "valor": 0.282353,
+        "ic95": [
+          0.197689,
+          0.385839
+        ]
+      },
+      "fracao_visivel_mediana_marcadas": 0.448068,
+      "fracao_visivel_mediana_demais": 0.964398,
+      "na_borda_entre_marcadas": 34
+    },
+    "A": {
+      "rotuladas": 120,
+      "S": 36,
+      "D": 46,
+      "nao_sei": 38,
+      "doenca_dado_S": {
+        "n": 36,
+        "valor": 1.0,
+        "ic95": [
+          0.903581,
+          1.0
+        ]
+      },
+      "saudavel_dado_D": {
+        "n": 46,
+        "valor": 0.0,
+        "ic95": [
+          0.0,
+          0.0770736
+        ]
+      },
+      "classe_certa_dado_D": {
+        "n": 0,
+        "valor": null,
+        "ic95": [
+          null,
+          null
+        ]
+      },
+      "doenca_dado_S_com_brilho": {
+        "n": 14,
+        "valor": 1.0,
+        "ic95": [
+          0.784689,
+          1.0
+        ]
+      },
+      "doenca_dado_S_sem_brilho": {
+        "n": 22,
+        "valor": 1.0,
+        "ic95": [
+          0.851345,
+          1.0
+        ]
+      }
+    },
+    "B": {
+      "rotuladas": 120,
+      "S": 36,
+      "D": 46,
+      "nao_sei": 38,
+      "doenca_dado_S": {
+        "n": 36,
+        "valor": 0.694444,
+        "ic95": [
+          0.531437,
+          0.819955
+        ]
+      },
+      "saudavel_dado_D": {
+        "n": 46,
+        "valor": 0.0,
+        "ic95": [
+          0.0,
+          0.0770736
+        ]
+      },
+      "classe_certa_dado_D": {
+        "n": 0,
+        "valor": null,
+        "ic95": [
+          null,
+          null
+        ]
+      },
+      "doenca_dado_S_com_brilho": {
+        "n": 14,
+        "valor": 0.785714,
+        "ic95": [
+          0.524108,
+          0.924286
+        ]
+      },
+      "doenca_dado_S_sem_brilho": {
+        "n": 22,
+        "valor": 0.636364,
+        "ic95": [
+          0.429517,
+          0.802668
+        ]
+      }
+    }
+  }
+}

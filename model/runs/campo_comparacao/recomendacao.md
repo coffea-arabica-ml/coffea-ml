@@ -1,0 +1,28 @@
+**Recomendação (11/10/2026): ficar no v0, a receita atual; o modelo oficial do pipeline continua o `base_resnet50_bracol`.** A validação cruzada das variantes não foi rodada: fica a critério do gestor.
+
+- **Nenhuma variante tem diferença sustentada no campo.**
+  - No modo A, todas chamam de doente 100% (90–100%) das 36 folhas S.
+  - No modo B, a melhor é a v3s (JMuBEN sem phoma e cercosporiose), com 50% (34–66%) de P(prever doença | S). O v0 tem 81% (65–90%): os intervalos se tocam por 1 ponto.
+  - P(prever saudável | D) é 0% (0–8%) em todas as variantes e nos dois modos. O número quase não informa, porque quase tudo sai doente.
+- **No BRACOL, todas as variantes perderam na validação oficial**, de −1,9 (v1f) a −4,3 pontos (v1) de F1 macro contra o v0. Pela triagem (queda de mais de ~3 pontos), v1, v2 e v3 já sairiam.
+- **O que os rótulos sustentam: o modo B é melhor que o A.**
+  - No modelo atual, P(prever doença | S) cai de 100% (90–100%) para 69% (53–82%), sem aumentar P(prever saudável | D), que fica em 0%.
+  - O mesmo vale para v0, v2, v3 e v3s.
+  - Trocar o `recorte` da cadeia para "B" é uma decisão do gestor.
+  - Mesmo no B, 7 em cada 10 folhas saudáveis saem doentes: o classificador continua inutilizável no campo.
+- **A hipótese do brilho forte não se sustenta.**
+  - No modo A, as folhas S com "brilho" na observação (14) e sem (22) saem todas como doentes (100% nas duas).
+  - No modo B, os intervalos se sobrepõem: 79% (52–92%) contra 64% (43–80%) no modelo atual.
+  - O erro é mais amplo que o brilho.
+- **Filtro de fragmentos: o da fração visível tem apoio dos rótulos.**
+  - Com fração visível abaixo de 0,5, saem 79 das 318 folhas (75 cortadas pela borda).
+  - Entre as rotuladas que ele cortaria, 51% são "?" (n=35), contra 24% entre as que ficam (n=85); os intervalos de Wilson não se tocam.
+  - As folhas com "fragmento" na observação têm fração visível mediana de 45%, contra 96% das demais.
+  - O preenchimento não discrimina.
+  - A proposta, para decisão do gestor, é `fracao_visivel_minima = 0,5`.
+- **Próximo passo possível (decisão do gestor):** treinar com folhas de campo rotuladas. Os 120 rótulos daqui são só de avaliação, então seria preciso uma fonte nova de treino. Outro caminho é um classificador saudável x doente treinado com folhas de campo, que barre o falso "doente" antes do classificador de doença.
+- **Ressalvas:**
+  - Os rótulos foram feitos por Claude por leitura visual das pranchas e aceitos pelo gestor em 11/10/2026; não são de especialista.
+  - São 120 folhas, de 46 fotos de 2 sessões, numa lavoura só.
+  - Os rótulos escolhem e medem ao mesmo tempo, então a medida sai otimista.
+  - Nenhuma folha D recebeu classe: a classe da doença no campo não foi medida.

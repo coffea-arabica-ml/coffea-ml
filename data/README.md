@@ -36,6 +36,21 @@ relatórios e as figuras, sim.
 - **Validação do detector:** separa cenas inteiras do treino dos autores, nunca imagens soltas.
   O teste dos autores fica intacto.
 
+## Decisões do gestor (10/10/2026)
+
+- **Uso novo do BRACOT como fundo de augmentation do classificador** (`model/treinar_campo.py`):
+  - só as 194 fotos de treino; nunca as 46 de validação do detector nem o teste, e nenhuma cena
+    de treino aparece na validação (conferido no código);
+  - trechos que menos tocam os polígonos anotados (dilatados), com borrão forte, sem forma de
+    folha reconhecível;
+  - o fundo é sorteado independente da classe e da imagem de origem;
+  - a troca vale só para parte das imagens, misturada a fundos sintéticos (cinza neutro, cor
+    lisa, ruído);
+  - as imagens derivadas ficam em `data/processed/` (fora do git).
+- **Campo rotulado:** fonte nova, só de avaliação, nunca de treino (seção abaixo).
+- **JMuBEN:** entra na comparação de variantes do classificador (passo 4 da Frente 9), só no
+  treino, respeitando `RESSALVA_PHOMA_CERCOSPORA`.
+
 ## Fontes
 
 | fonte | papel | situação |
@@ -43,7 +58,8 @@ relatórios e as figuras, sim.
 | BRACOL, cópia completa (`data/raw/bracol/bracol_completo/`) | classificação e severidade: treino, validação e teste (RNF01) | em uso desde 07/10/2026 |
 | BRACOL, cópia parcial (`data/raw/bracol/bracol_recuperado/`) | nenhum | obsoleta: mantida, sem uso |
 | JMuBEN e JMuBEN2 (`data/raw/jmuben/`) | só treino auxiliar de classificação, nunca validação nem teste | em uso desde 09/10/2026 |
-| BRACOT (`data/raw/bracot/bracot-data/`) | detecção e segmentação de folhas (RF09), com a divisão dos autores | em uso desde 09/10/2026 |
+| BRACOT (`data/raw/bracot/bracot-data/`) | detecção e segmentação de folhas (RF09), com a divisão dos autores; as fotos de treino também dão fundos borrados à augmentation do classificador | em uso desde 09/10/2026 (fundos: 10/10/2026) |
+| Campo rotulado (`data/manifests/campo_rotulado.csv`) | só avaliação de campo do classificador, nunca treino | desde 10/10/2026; rótulos feitos por Claude e aceitos pelo gestor em 11/10/2026 |
 
 ## Procedência do BRACOL
 
@@ -412,6 +428,36 @@ treino = bracot.ler_manifest(split="treino")       # 240 fotos, com a coluna cen
 coco_treino = bracot.caminho_coco("treino")        # data/raw/.../train_annotation_coco.json
 sobrepostas = [teste for teste, _ in bracot.TESTE_SOBREPOSTO]
 ```
+
+## Campo rotulado (avaliação de campo do classificador)
+
+**O que é.** 120 folhas recortadas pela cadeia de inferência (`model/inferencia.py`) das 46 fotos
+de validação do detector (cenas inteiras do treino dos autores do BRACOT), sorteadas com a semente
+42 e espalhadas pelas fotos (2 ou 3 por foto). Gerado por `python evaluation/campo.py
+--gerar-rotulagem`.
+
+**Rotulagem cega.** As pranchas (`data/processed/campo_rotulagem/prancha_<n>.jpg`, fora do git)
+mostram o recorte B (folha isolada) grande e o A (foto em volta) pequeno, sem a previsão do
+modelo. Os rótulos de `data/manifests/campo_rotulado.csv` foram feitos por Claude por leitura visual das pranchas e aceitos pelo gestor em 11/10/2026:
+
+| coluna | conteúdo |
+|---|---|
+| `id` | `<foto>_<folha>`: a foto do BRACOT e o número da folha na cadeia (ordem de score) |
+| `foto`, `folha`, `prancha`, `numero` | onde a folha está e onde aparece nas pranchas |
+| `score`, `caixa_x0` .. `caixa_y1` | score do detector e caixa relativa (0 a 1); a avaliação confere o casamento pela caixa (IoU >= 0,5) |
+| `rotulo` | S (saudável evidente), D (doente evidente) ou ? (não sei ou recorte ruim) |
+| `classe` | opcional, só nas D: ferrugem, bicho_mineiro, phoma ou cercosporiose |
+| `observacao` | livre |
+
+O leitor (`campo.ler_rotulos`) aceita o CSV salvo pelo Excel (ponto e vírgula, cp1252).
+
+**Limites.**
+- Os rótulos foram feitos por Claude por leitura visual das pranchas e aceitos pelo gestor em 11/10/2026. Não são de especialista em fitopatologia.
+- Nenhuma folha D recebeu classe, então a acurácia de classe no campo não é medida.
+- São 120 folhas, de 46 fotos de 2 sessões, numa lavoura só.
+- As mesmas folhas escolhem as variantes finalistas e medem o resultado, então a medida sai
+  otimista.
+- Fonte só de avaliação: nunca entra em treino.
 
 ## Interface para a Frente 9
 

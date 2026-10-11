@@ -94,6 +94,22 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 - O classificador atual só funciona em folha de BRACOL (fundo claro). No campo (T2 do
   `pipeline_base`), ele puxa quase tudo para ferrugem. Não usar em campo sem retreinar.
 
+## Classificador para o campo (passo 4; decisões do gestor, 10/10/2026)
+
+- O JMuBEN entra na comparação de variantes (só treino, com `RESSALVA_PHOMA_CERCOSPORA`). Regra de
+  adoção: não piorar o BRACOL (queda de F1 macro de até ~2 pontos na validação cruzada) e melhorar
+  o campo. No campo, só os rótulos decidem, com diferença sustentada pelo Wilson; concordância e
+  estabilidade só detectam comportamento degenerado e desempatam. Sem diferença sustentada, fica
+  o v0. O modelo oficial do pipeline só muda por decisão do gestor.
+- Campo rotulado (`data/manifests/campo_rotulado.csv`): rótulos S, D e ? em 120 folhas das fotos
+  de validação do BRACOT, feitos por Claude por leitura visual das pranchas e aceitos pelo gestor
+  em 11/10/2026 (não são de especialista); fonte nova, só de avaliação, nunca de treino
+  (data/README.md).
+- Fundos de augmentation: só as 194 fotos de treino do BRACOT (nunca validação nem teste), trechos
+  borrados fora dos polígonos anotados, sorteio independente da classe; derivados em
+  `data/processed/`.
+- Nas imagens cortadas ou apagadas pela augmentation de campo, a severidade vira -1.
+
 ## Comandos (na raiz do repositório, com o venv ativo)
 
 ```
@@ -122,6 +138,13 @@ python model/treinar_detector.py --avaliar-teste --run NOME   # só por ordem do
 python model/avaliar_pipeline.py             # cadeia inteira: limiar de confiança (RF07), T1, T2 e T3;
                                              # model/runs/pipeline_base/ (--classificador, --detector e
                                              # --recortes PASTA_FORA_DO_REPO para recortes e pranchas)
+python evaluation/campo.py --gerar-rotulagem # pranchas cegas (data/processed/) e CSV-modelo do campo rotulado
+python evaluation/campo.py --avaliar --classificador PASTA --saida campo_X   # proxies e rótulos de campo
+python model/treinar_campo.py --mascaras     # máscaras das folhas do BRACOL (data/processed/, só treino e val)
+python model/treinar_campo.py --fundos       # fundos borrados das fotos de treino do BRACOT
+python model/treinar_campo.py --triagem v0 v1 ...   # variantes: treino -> validação oficial; model/runs/campo_<v>/
+python model/treinar_campo.py --cv v1 ...    # validação cruzada (5 dobras do diagnóstico); campo_<v>/cv/
+python model/treinar_campo.py --comparar     # model/runs/campo_comparacao/relatorio.md
 jupyter nbconvert --clear-output --inplace notebooks/01_eda.ipynb   # antes de commitar
 python -m pytest
 ```

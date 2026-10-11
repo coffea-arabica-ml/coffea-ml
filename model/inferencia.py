@@ -89,6 +89,11 @@ class Configuracao:
     cinza_fundo: int = 197  # cinza neutro do modo B e do que fica fora da foto
     cobertura_folha_unica: float = 0.30  # regra 1: fração da foto coberta pela caixa
     score_minimo_folha_unica: float = 0.05  # regra 2 (decisão do gestor, 10/10/2026)
+    # Filtro de fragmentos (folhas cortadas pela borda), avaliado em evaluation/campo.py e
+    # desligado (0) até a decisão do gestor: fração visível = área da folha / mediana da área das
+    # folhas inteiras da mesma foto; preenchimento = área / área do retângulo mínimo.
+    fracao_visivel_minima: float = 0.0
+    preenchimento_minimo: float = 0.0
     max_megapixels: float = 64.0
 
     def __post_init__(self):
@@ -247,10 +252,12 @@ def decidir(deteccoes, altura: int, largura: int, config: Configuracao) -> dict:
     ordenadas = sorted(deteccoes, key=lambda d: -d["score"])
     no_limiar = [d for d in ordenadas if d["score"] >= config.limiar_deteccao]
     com_area = [d for d in no_limiar if d["area"] >= config.area_minima]
-    utilizaveis = [d for d in com_area if utilizavel(d, config)]
+    coloridas = [d for d in com_area if utilizavel(d, config)]
+    utilizaveis = [d for d in coloridas if not fragmento(d, coloridas, config)]
     contagens = {"deteccoes": len(no_limiar), "abaixo_do_limiar": len(ordenadas) - len(no_limiar),
                  "cortadas_por_area": len(no_limiar) - len(com_area),
-                 "cortadas_por_cor": len(com_area) - len(utilizaveis),
+                 "cortadas_por_cor": len(com_area) - len(coloridas),
+                 "cortadas_por_fragmento": len(coloridas) - len(utilizaveis),
                  "cortadas_por_limite": max(0, len(utilizaveis) - config.max_folhas)}
     base = {"altura": altura, "largura": largura, "contagens": contagens}
     if len(utilizaveis) == 1 and cobertura_da_caixa(utilizaveis[0]["caixa"], altura,
@@ -386,6 +393,29 @@ def fracao_colorida(saturacao, poligono, saturacao_minima: int) -> float:
     return float((valores >= saturacao_minima).mean()) if valores.size else 0.0
 
 
+def fracao_visivel(folha: dict, folhas) -> float:
+    """Área da folha sobre a mediana da área das folhas inteiras (não cortadas pela borda) da
+    mesma foto; sem nenhuma inteira, sobre a mediana de todas."""
+    inteiras = [f["area"] for f in folhas if not f["borda"]]
+    referencia = float(np.median(inteiras or [f["area"] for f in folhas]))
+    return folha["area"] / referencia if referencia > 0 else 0.0
+
+
+def preenchimento(poligono) -> float:
+    """Área do polígono sobre a área do seu retângulo mínimo (cv2.minAreaRect)."""
+    pontos = np.asarray(poligono, dtype=np.float32).reshape(-1, 2)
+    _, (largura, altura), _ = cv2.minAreaRect(pontos)
+    return area_do_poligono(pontos) / (largura * altura) if largura * altura > 0 else 0.0
+
+
+def fragmento(folha: dict, folhas, config: Configuracao) -> bool:
+    """Se a folha é um fragmento pelo filtro de fragmentos (desligado com os limiares em 0)."""
+    if config.fracao_visivel_minima <= 0 and config.preenchimento_minimo <= 0:
+        return False
+    return (fracao_visivel(folha, folhas) < config.fracao_visivel_minima
+            or preenchimento(folha["poligono"]) < config.preenchimento_minimo)
+
+
 def cobertura_da_caixa(caixa, altura: int, largura: int) -> float:
     x0, y0, x1, y1 = caixa
     return max(0.0, x1 - x0) * max(0.0, y1 - y0) / (altura * largura)
@@ -422,20 +452,23 @@ def eixo_da_folha(poligono) -> tuple[tuple[float, float], float, float, float]:
     return retangulo[0], angulo, float(np.hypot(*maior)), float(np.hypot(*menor))
 
 
-def recortar_folha(imagem, poligono, modo: str, margem: float, cinza: int) -> np.ndarray:
+def recortar_folha(imagem, poligono, modo: str, margem: float, cinza: int,
+                   deslocamento: tuple[float, float] = (0.0, 0.0)) -> np.ndarray:
     """O recorte RGB de uma folha como as fotos do BRACOL: a folha deitada (o eixo maior na
     horizontal; o treino só girou até 15 graus, e os espelhamentos cobrem o sentido), centrada,
     com `margem` de cada lado e completada até a proporção 2:1, sem distorcer.
 
     Modo "A": a foto em volta da folha (o que cai fora da foto fica `cinza`). Modo "B": tudo
     fora da máscara (dilatada em DILATACAO_MASCARA do comprimento) fica `cinza`.
-    poligono em pixels da imagem recebida."""
+    poligono em pixels da imagem recebida. deslocamento: (dx, dy), em fração da largura e da
+    altura do recorte, move a folha (e a máscara) dentro dele; serve às perturbações da
+    avaliação de campo (evaluation/campo.py)."""
     centro, angulo, comprimento, espessura = eixo_da_folha(poligono)
     largura_saida = max(comprimento * (1 + 2 * margem), 2 * espessura * (1 + 2 * margem), 2.0)
     largura_saida, altura_saida = int(round(largura_saida)), max(1, int(round(largura_saida / 2)))
     matriz = cv2.getRotationMatrix2D(centro, angulo, 1.0)
-    matriz[0, 2] += largura_saida / 2 - centro[0]
-    matriz[1, 2] += altura_saida / 2 - centro[1]
+    matriz[0, 2] += largura_saida / 2 - centro[0] + deslocamento[0] * largura_saida
+    matriz[1, 2] += altura_saida / 2 - centro[1] + deslocamento[1] * altura_saida
     recorte = cv2.warpAffine(imagem, matriz, (largura_saida, altura_saida),
                              flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT,
                              borderValue=(cinza, cinza, cinza))

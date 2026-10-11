@@ -1,0 +1,7 @@
+{
+  "data": "11/10/2026",
+  "modos": {"v0": "B", "v1": "B", "v1f": "B", "v1g": "B", "v2": "B", "v3": "B", "v3s": "B"},
+  "justificativa_modos": "P(prever doença | S), 36 folhas S rotuladas: no modo A, 100% (90-100%) em todas as variantes. O modo B é melhor com intervalos de Wilson que não se tocam no v0, v2, v3 e v3s; no v1, v1f e v1g os intervalos se tocam, e o desempate pelos proxies também dá B (a classe dominante pesa menos no B em todas). O T1 não entra na escolha (o fundo do BRACOL carrega a sessão).",
+  "finalistas": [],
+  "decisao": "Nenhuma variante tem diferença sustentada pelos rótulos contra o v0 no modo B: a melhor, v3s (50%, 34-66%), toca o v0 (81%, 65-90%) por 1 ponto. Pela regra do gestor, a recomendação é ficar no v0, e a validação cruzada fica a critério do gestor."
+}

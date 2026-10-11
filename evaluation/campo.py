@@ -69,6 +69,9 @@ LOTE = 32
 # Quem rotulou (registrado a pedido do gestor em 11/10/2026).
 ORIGEM_ROTULOS = ("feitos por Claude por leitura visual das pranchas e aceitos pelo gestor em "
                   "11/10/2026; não são de especialista")
+# A cadeia da rotulagem (passo 4): o filtro de fragmentos desligado, para que a numeração das
+# 318 folhas, que casa com os rótulos, não mude quando os padrões da cadeia mudarem.
+CONFIG_ROTULAGEM = inf.Configuracao(fracao_visivel_minima=0.0)
 CREDITO_BRACOT = ("Fotos: BRACOT (Krohling, Tozzi de Souza e Tassis, 2021), CC BY 4.0, "
                   "DOI 10.17632/pmkbyjpf6k.1")
 
@@ -84,7 +87,7 @@ def percorrer_folhas(modelos, config=None):
     """Para cada foto de validação: (foto, imagem reduzida, escala, folhas). As folhas são as da
     cadeia (inferencia.decidir), numeradas de 1 em ordem de score, com a fração visível e o
     preenchimento. Uma foto por vez (as fotos têm 4032x3024)."""
-    config = config or inf.Configuracao()
+    config = config or CONFIG_ROTULAGEM
     ids, caminhos = fotos_de_validacao()
     for foto in ids:
         imagem = dados.ler_imagem(RAIZ_REPO / caminhos[foto])
@@ -132,7 +135,7 @@ def gerar_rotulagem(modelos, pasta: Path = PASTA_ROTULAGEM,
     """Pranchas cegas e CSV-modelo (ver o docstring do módulo)."""
     if manifest.is_file() and ler_rotulos(manifest) is not None:
         raise train.ErroFatal(f"{train._exibir(manifest)} já tem rótulos: não sobrescrevo")
-    config = inf.Configuracao()
+    config = CONFIG_ROTULAGEM
     todas = {foto: (reduzida, escala, folhas)
              for foto, reduzida, escala, folhas in percorrer_folhas(modelos, config)}
     escolhidas = sortear_rotulagem({f: len(v[2]) for f, v in todas.items()})
@@ -370,7 +373,7 @@ def avaliar(pasta_classificador: Path, saida: Path, dispositivo: str = "cuda") -
     """Proxies, fragmentos e (com o CSV preenchido) métricas rotuladas de um classificador nas
     folhas de validação do BRACOT. Grava campo.json, campo_folhas.csv e campo.md em `saida`."""
     modelos = inf.carregar_modelos(pasta_classificador, dispositivo=dispositivo)
-    config = inf.Configuracao()
+    config = CONFIG_ROTULAGEM
     linhas = []
     for foto, reduzida, escala, folhas in percorrer_folhas(modelos, config):
         for folha in folhas:

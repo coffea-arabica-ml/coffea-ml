@@ -118,7 +118,8 @@ def test_fracao_visivel_preenchimento_e_filtro_de_fragmentos():
     assert inf.fracao_visivel(pedaco, folhas) == pytest.approx(0.25)
     assert inf.preenchimento(inteira["poligono"]) == pytest.approx(1.0)
     assert inf.preenchimento(pedaco["poligono"]) == pytest.approx(0.5)
-    assert not inf.fragmento(pedaco, folhas, inf.Configuracao())  # desligado por padrão
+    assert inf.fragmento(pedaco, folhas, inf.Configuracao())  # ligado em 0,5 (11/10/2026)
+    assert not inf.fragmento(pedaco, folhas, inf.Configuracao(fracao_visivel_minima=0.0))
     assert inf.fragmento(pedaco, folhas, inf.Configuracao(fracao_visivel_minima=0.3))
     assert inf.fragmento(pedaco, folhas, inf.Configuracao(preenchimento_minimo=0.6))
     tabela = pd.DataFrame({"id": ["a", "b"], "borda": [False, True],

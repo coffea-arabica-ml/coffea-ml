@@ -78,13 +78,16 @@ galho ou de uma folha) e devolve o diagnóstico no contrato dos frontends (coffe
 `docs/frontend-reference/03-contrato-api-mock.md` e `src/api/types.ts`). A cadeia é:
 
 1. o detector acha as folhas;
-2. saem as detecções pequenas e os pedaços de fundo liso (filtro de cor);
+2. saem as detecções pequenas, os pedaços de fundo liso (filtro de cor) e os pedaços de folha
+   cortados pela borda (filtro de fragmentos);
 3. as regras de folha única decidem se a foto inteira vira uma folha;
 4. cada folha é recortada deitada, com margem, como nas fotos do BRACOL;
 5. o classificador avalia todas as folhas num lote só;
 6. as folhas abaixo do limiar de confiança saem.
 
-A avaliação completa, com o tempo em CPU, está em `model/runs/pipeline_base/relatorio.md`.
+A avaliação completa com os padrões atuais (recorte B e filtro de fragmentos), com o tempo em
+CPU, está em `model/runs/pipeline_padrao_b/relatorio.md`. A do passo 3 (recorte A, sem filtro)
+fica em `model/runs/pipeline_base/`.
 
 ```python
 import sys
@@ -120,7 +123,7 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
   "detalhes": {"plano": "deteccao", "regra": null, "deteccoes": 7, "abaixo_do_limiar": 4,
                "cortadas_por_area": 0, "cortadas_por_cor": 0, "cortadas_por_fragmento": 0,
                "cortadas_por_limite": 0,
-               "abaixo_da_confianca": 5, "recorte": "A", "limiar_confianca": 0.61,
+               "abaixo_da_confianca": 5, "recorte": "B", "limiar_confianca": 0.61,
                "classificador": "base_resnet50_bracol", "detector": "detector_base"}
 }
 ```
@@ -146,6 +149,7 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
 |---|---|---|
 | `planta_nao_identificada` | nenhuma folha utilizável, e nenhuma detecção com cor de folha e score >= 0,05 | "Não encontramos folhas de café na foto. Fotografe a planta ou a folha mais de perto, com boa luz." |
 | `baixa_confianca` | todas as folhas abaixo do limiar de confiança (RF07) | "Encontramos folhas, mas o diagnóstico não ficou confiável. Tente outra foto, mais nítida e com boa luz." |
+| `baixa_confianca` | o filtro de fragmentos tirou todas as folhas (`detalhes.plano` = "fragmentos") | "Só aparecem pedaços de folha na foto. Enquadre a folha inteira e tente de novo." |
 | `formato_invalido` | o arquivo não decodifica (JPG ou PNG) | "Não foi possível ler a imagem. Envie uma foto em JPG ou PNG." |
 | `arquivo_muito_grande` | mais de 64 megapixels, lidos do cabeçalho com Pillow, sem decodificar | "A imagem tem 9000 x 8000 pixels (72,0 megapixels); o limite é 64,0 megapixels." |
 
@@ -162,19 +166,36 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
 | `area_minima` | 0,5% | área mínima da máscara, em fração da foto |
 | `saturacao_minima`, `fracao_colorida_minima` | 30, 25% | filtro de cor: tira os pedaços de fundo liso |
 | `limiar_confianca` | 0,61 | RF07; **proposta, aguarda a decisão do gestor** |
-| `recorte` | "A" | "A": a foto em volta da folha; "B": fundo fora da máscara em cinza |
+| `recorte` | "B" | "B": fundo fora da máscara em cinza; "A": a foto em volta da folha. B por padrão (decisão do gestor, 11/10/2026) |
 | `margem`, `cinza_fundo` | 0,17, 197 | medidos no treino do BRACOL |
 | `cobertura_folha_unica` | 30% | regra 1: uma folha cuja caixa cobre isso da foto → a foto inteira |
 | `score_minimo_folha_unica` | 0,05 | regra 2 (decisão do gestor, 10/10/2026) |
 | `max_megapixels` | 64 | acima disso, `arquivo_muito_grande` |
-| `fracao_visivel_minima`, `preenchimento_minimo` | 0, 0 | filtro de fragmentos (folha cortada pela borda); desligado até a decisão do gestor |
+| `fracao_visivel_minima` | 0,5 | filtro de fragmentos: sai a folha com área menor que metade da mediana das folhas inteiras da foto (decisão do gestor, 11/10/2026) |
+| `preenchimento_minimo` | 0 | filtro de fragmentos pela área sobre o retângulo mínimo; desligado (não discriminou no campo) |
+
+**Filtro de fragmentos.** A fração visível é a área da folha sobre a mediana da área das folhas
+inteiras da mesma foto (ou de todas, se nenhuma for inteira). Por isso:
+- uma folha sozinha tem fração 1 e nunca sai;
+- pelo menos metade das folhas de uma foto sempre fica;
+- o erro de fragmentos só aparece com `preenchimento_minimo` ligado.
+
+**Efeito dos padrões de 11/10/2026** (`pipeline_padrao_b` contra `pipeline_base`; detalhes nas
+observações do relatório):
+- **T1 (BRACOL):** a cadeia B acerta 94,0%, contra 94,4% da A. Só o recorte, sem a regra 1, cai de
+  92,4% (A) para 88,4% (B). O filtro tira 1 folha de 1 imagem, sem mudar a classe.
+- **T2 (campo):** as folhas classificadas caem de 318 para 239 (79 fragmentos). As fotos em
+  `baixa_confianca` no limiar de 0,61 sobem de 20 para 25 de 46.
 
 **Limite atual:**
 - O classificador foi treinado só com folhas do BRACOL (fundo claro). No BRACOL, a cadeia acerta
-  tanto quanto a imagem inteira: 94,4% contra 94,8%.
-- Nas folhas do campo, porém, ele puxa quase tudo para doença, sobretudo ferrugem. O T2 está no
-  relatório do `pipeline_base`.
-- Antes de usar em campo, o classificador precisa ser retreinado.
+  quase tanto quanto a imagem inteira: 94,0% (B) e 94,4% (A), contra 94,8%.
+- No campo, ele ainda puxa a maioria das folhas para doença. No modo B, 69% das folhas S dos
+  rótulos de campo saem como doença.
+- O diagnóstico do passo 5a (seção seguinte) mostra que P(saudável) ordena bem S acima de D. O que
+  falha é a regra de decisão, e não falta sinal.
+- Antes de usar em campo, falta validar uma correção (limiar de saudável recalibrado ou
+  classificador S x D) em folhas de campo rotuladas novas.
 
 ## Classificador para o campo
 
@@ -194,5 +215,23 @@ cegas de rotulagem e mede o campo:
 
 O relatório comparativo, com a regra de adoção aplicada, fica em
 `model/runs/campo_comparacao/relatorio.md`. O modelo oficial do pipeline só muda por decisão do
-gestor. Os rótulos de campo foram feitos por Claude por leitura visual das pranchas e aceitos pelo gestor em 11/10/2026; não são de especialista (120
-folhas, 2 sessões, 1 lavoura; ver `data/README.md`).
+gestor. Os rótulos de campo foram feitos por Claude por leitura visual das pranchas e aceitos pelo
+gestor em 11/10/2026; não são de especialista (120 folhas, 2 sessões, 1 lavoura; ver
+`data/README.md`).
+
+**Decisões do gestor (11/10/2026).** Não há validação cruzada das variantes do passo 4, e o
+modelo oficial segue o `base_resnet50_bracol`. O limiar de confiança segue pendente.
+
+**Diagnóstico sem treino (passo 5a).** `evaluation/campo_diagnostico.py` usa só os checkpoints
+existentes, nas 82 folhas S ou D do campo rotulado (sem os "?"):
+- **AUC de P(saudável):** separa S de D, nos modos A e B, com bootstrap agrupado por foto. Inclui o
+  ponto de operação com no máximo 5% das D marcadas saudáveis, escolhido nas mesmas folhas
+  (otimista).
+- **Sonda linear:** regressão logística sobre os embeddings congelados, com dobras agrupadas por
+  cena. Não gera modelo.
+- **Controles:** a sessão das fotos e as folhas que ficam no filtro de fragmentos.
+- **Efeito no BRACOL:** o que o limiar de campo faria na validação do BRACOL.
+- **Auditoria das S previstas como doença:** pranchas em resolução nativa e Grad-CAM, em
+  `data/processed/campo_diagnostico/`, fora do git.
+
+O relatório, com a leitura, fica em `model/runs/campo_diagnostico/relatorio.md`.

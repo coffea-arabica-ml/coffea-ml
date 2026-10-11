@@ -63,13 +63,16 @@ MENSAGENS = {
     "formato_invalido": "Não foi possível ler a imagem. Envie uma foto em JPG ou PNG.",
     "arquivo_muito_grande": "A imagem tem {largura} x {altura} pixels ({megapixels} "
                             "megapixels); o limite é {limite} megapixels.",
+    # baixa_confianca quando o filtro de fragmentos tiraria todas as folhas
+    "fragmentos": "Só aparecem pedaços de folha na foto. Enquadre a folha inteira e tente de "
+                  "novo.",
 }
 
 
 @dataclass(frozen=True)
 class Configuracao:
     """Parâmetros da cadeia. Os padrões e a origem de cada um estão no relatório de
-    model/runs/pipeline_base/."""
+    model/runs/pipeline_padrao_b/ (o de model/runs/pipeline_base/ é o do passo 3)."""
     limiar_deteccao: float = 0.35  # decisão do gestor, 10/10/2026 (run detector_base)
     max_folhas: int = 15  # as de maior score do detector (RNF02)
     area_minima: float = 0.005  # fração da foto ocupada pela máscara
@@ -82,17 +85,23 @@ class Configuracao:
     # RF07: probabilidade mínima da classe prevista. 0,61 é a PROPOSTA da curva risco-cobertura
     # (model/runs/pipeline_base/relatorio.md) e aguarda a decisão do gestor.
     limiar_confianca: float = 0.61
-    recorte: str = "A"  # "A": a foto em volta; "B": fundo fora da máscara em cinza (ver T1)
+    # "B": fundo fora da máscara em cinza; "A": a foto em volta. B por padrão (decisão do gestor,
+    # 11/10/2026): nos rótulos de campo do passo 4, P(prever doença | S) cai de 100% (A) para 69%
+    # (B) no modelo oficial, com intervalos que não se tocam. No BRACOL (T1) o A rende mais,
+    # porque o fundo das fotos carrega a sessão.
+    recorte: str = "B"
     # Medidos no treino do BRACOL (model/avaliar_pipeline.py, 10/10/2026): a folha ocupa 74% da
     # largura da foto (margem de 17% de cada lado) e o fundo tem luminância mediana 197.
     margem: float = 0.17  # de cada lado, em fração do comprimento da folha
     cinza_fundo: int = 197  # cinza neutro do modo B e do que fica fora da foto
     cobertura_folha_unica: float = 0.30  # regra 1: fração da foto coberta pela caixa
     score_minimo_folha_unica: float = 0.05  # regra 2 (decisão do gestor, 10/10/2026)
-    # Filtro de fragmentos (folhas cortadas pela borda), avaliado em evaluation/campo.py e
-    # desligado (0) até a decisão do gestor: fração visível = área da folha / mediana da área das
-    # folhas inteiras da mesma foto; preenchimento = área / área do retângulo mínimo.
-    fracao_visivel_minima: float = 0.0
+    # Filtro de fragmentos (folhas cortadas pela borda): fração visível = área da folha / mediana
+    # da área das folhas inteiras da mesma foto. Ligado em 0,5 (decisão do gestor, 11/10/2026):
+    # nos rótulos de campo, 51% de "?" entre as que ele corta, contra 24% entre as que ficam. Uma
+    # folha sozinha tem fração visível 1 e nunca sai. O preenchimento (área / retângulo mínimo)
+    # não discriminou e fica desligado.
+    fracao_visivel_minima: float = 0.5
     preenchimento_minimo: float = 0.0
     max_megapixels: float = 64.0
 
@@ -206,6 +215,9 @@ def diagnosticar(imagem_rgb, config: Configuracao | None = None,
         return resposta_de_erro("formato_invalido")
     deteccoes = detectar(imagem, config, modelos)
     preparo = decidir(deteccoes, imagem.shape[0], imagem.shape[1], config)
+    if preparo["plano"] == "fragmentos":
+        return resposta_de_erro("baixa_confianca", MENSAGENS["fragmentos"],
+                                _detalhes(preparo, config, modelos))
     if not preparo["folhas"]:
         return resposta_de_erro("planta_nao_identificada", detalhes=_detalhes(preparo, config,
                                                                                 modelos))
@@ -246,6 +258,8 @@ def decidir(deteccoes, altura: int, largura: int, config: Configuracao) -> dict:
     - Regra 2: nenhuma folha utilizável, mas alguma detecção com cor de folha e score >=
       score_minimo_folha_unica: a foto inteira.
     - Regra 3: nenhuma das duas: sem folhas (planta_nao_identificada).
+    - Se o filtro de fragmentos tirou todas as folhas utilizáveis: plano "fragmentos" (o
+      diagnóstico vira baixa_confianca, pedindo para enquadrar a folha inteira).
     Devolve {"plano", "regra", "folhas", "contagens", "altura", "largura"}; cada folha da foto
     inteira tem "foto_inteira": True.
     """
@@ -264,6 +278,8 @@ def decidir(deteccoes, altura: int, largura: int, config: Configuracao) -> dict:
                                                     largura) >= config.cobertura_folha_unica:
         return {**base, "plano": "foto_inteira", "regra": 1,
                 "folhas": [{**utilizaveis[0], "foto_inteira": True}]}
+    if coloridas and not utilizaveis:  # o filtro de fragmentos tirou todas
+        return {**base, "plano": "fragmentos", "regra": None, "folhas": []}
     if not utilizaveis and any(d["score"] >= config.score_minimo_folha_unica
                                and d["colorida"] >= config.fracao_colorida_minima
                                for d in ordenadas):

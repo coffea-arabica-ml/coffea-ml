@@ -434,7 +434,10 @@ sobrepostas = [teste for teste, _ in bracot.TESTE_SOBREPOSTO]
 **O que é.** 120 folhas recortadas pela cadeia de inferência (`model/inferencia.py`) das 46 fotos
 de validação do detector (cenas inteiras do treino dos autores do BRACOT), sorteadas com a semente
 42 e espalhadas pelas fotos (2 ou 3 por foto). Gerado por `python evaluation/campo.py
---gerar-rotulagem`.
+--gerar-rotulagem`. A cadeia da rotulagem (`campo.CONFIG_ROTULAGEM`) fica com o filtro de
+fragmentos desligado, mesmo depois de ele ser ligado na cadeia (11/10/2026): assim os ids das
+folhas não mudam. Usado por `evaluation/campo.py --avaliar` e pelo diagnóstico do passo 5a
+(`evaluation/campo_diagnostico.py`, só as 82 folhas S ou D).
 
 **Rotulagem cega.** As pranchas (`data/processed/campo_rotulagem/prancha_<n>.jpg`, fora do git)
 mostram o recorte B (folha isolada) grande e o A (foto em volta) pequeno, sem a previsão do

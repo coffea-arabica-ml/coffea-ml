@@ -15,8 +15,10 @@ Os testes do BRACOL e do BRACOT ficam fechados: nada aqui lê o split de teste d
 as anotações de teste do BRACOT.
 
 Uso (de qualquer pasta, com o venv ativo):
-    python model/avaliar_pipeline.py                    tudo, em model/runs/pipeline_base/
+    python model/avaliar_pipeline.py                    tudo, em model/runs/pipeline_padrao_b/
     python model/avaliar_pipeline.py --so-constantes    só mede e mostra as constantes
+    python model/avaliar_pipeline.py --relatorio --nome NOME
+                                                        só refaz o relatorio.md do run
     python model/avaliar_pipeline.py --classificador PASTA --detector PESOS --nome NOME
                                                         outros modelos (recalibrar o limiar)
     python model/avaliar_pipeline.py --recortes PASTA   grava também os recortes do T2 e duas
@@ -54,7 +56,9 @@ import metrics
 import train
 import treinar_detector as td
 
-NOME_PADRAO = "pipeline_base"
+# os padrões da cadeia de 11/10/2026 (recorte B e filtro de fragmentos); o pipeline_base, do passo
+# 3 (recorte A, sem filtro), fica como registro e não é sobrescrito por uma rodada sem --nome
+NOME_PADRAO = "pipeline_padrao_b"
 PASTA_FORA_DA_DOBRA = train.PASTA_RUNS / "diagnostico_blocos"
 ALVO_ACURACIA = 0.95  # acurácia das predições mantidas que a proposta de limiar busca
 LIMIARES_CURVA = np.round(np.arange(0.30, 1.0, 0.01), 2)
@@ -85,6 +89,13 @@ DECISOES = (
                    "nenhuma, planta_nao_identificada."),
     ("10/10/2026", "arquivo_muito_grande acima de ~64 megapixels, com as dimensões lidas do "
                    "cabeçalho."),
+    ("11/10/2026", "recorte B por padrão (o A continua como opção), pelos rótulos de campo do "
+                   "passo 4."),
+    ("11/10/2026", "filtro de fragmentos ligado com fracao_visivel_minima = 0,5; folha sozinha "
+                   "inteira não é filtrada; se o filtro tirar todas as folhas, baixa_confianca "
+                   "pedindo para enquadrar a folha inteira."),
+    ("11/10/2026", "sem validação cruzada das variantes do passo 4: o modelo oficial segue o "
+                   "base_resnet50_bracol. O limiar de confiança segue pendente."),
 )
 
 
@@ -508,6 +519,8 @@ def resumo_t2(folhas: pd.DataFrame, fotos: pd.DataFrame, limiar: float) -> dict:
         }
     resultado["concordancia_A_B"] = float((folhas["classe_A"] == folhas["classe_B"]).mean())
     resultado["cortadas_por_cor"] = int(fotos["cortadas_por_cor"].sum())
+    resultado["cortadas_por_fragmento"] = int(fotos.get("cortadas_por_fragmento",
+                                                        pd.Series(dtype=int)).sum())
     maxima = folhas.groupby("foto")[[f"confianca_{m}" for m in MODOS]].max()
     resultado["fotos_baixa_confianca"] = {
         modo: {f"{t:g}": int((maxima[f"confianca_{modo}"] < t).sum())
@@ -644,8 +657,8 @@ def relatorio(config_run: dict, metricas: dict, observacoes: str | None) -> str:
         ["limiar_confianca", fmt.decimal(c["limiar_confianca"], 2),
          "proposta da curva risco-cobertura; **aguarda a decisão do gestor**"],
         ["recorte", c["recorte"],
-         "T1: só o recorte acerta "
-         f"{_pct(t1m['variantes']['recorte_A']['metricas']['acuracia'])} no A e "
+         "decisão do gestor (11/10/2026), pelos rótulos de campo do passo 4; no T1 só o recorte "
+         f"acerta {_pct(t1m['variantes']['recorte_A']['metricas']['acuracia'])} no A e "
          f"{_pct(t1m['variantes']['recorte_B']['metricas']['acuracia'])} no B (abaixo)"],
         ["margem", _pct(c["margem"]), "medida no treino do BRACOL (abaixo)"],
         ["cinza_fundo", c["cinza_fundo"], "medido no treino do BRACOL (abaixo)"],
@@ -654,6 +667,8 @@ def relatorio(config_run: dict, metricas: dict, observacoes: str | None) -> str:
         ["score_minimo_folha_unica", fmt.decimal(c["score_minimo_folha_unica"], 2),
          "decisão do gestor"],
         ["max_megapixels", fmt.decimal(c["max_megapixels"], 0), "decisão do gestor"],
+        ["fracao_visivel_minima", fmt.decimal(c["fracao_visivel_minima"], 2),
+         "filtro de fragmentos; decisão do gestor (11/10/2026)"],
     ], "lll")
     linhas += _secao_constantes(const, c)
     linhas += _secao_calibracao(cal, c)
@@ -796,6 +811,7 @@ def _secao_t2(t2m: dict, c: dict, observacoes: str | None) -> list[str]:
               f"As {t2m['fotos']} fotos de validação do detector (cenas inteiras do treino dos "
               f"autores): {t2m['deteccoes']} detecções no limiar, {t2m['cortadas_por_area']} "
               f"cortadas pela área mínima, {t2m['cortadas_por_cor']} pelo filtro de cor, "
+              f"{t2m.get('cortadas_por_fragmento', 0)} pelo filtro de fragmentos, "
               f"{t2m['cortadas_por_limite']} pelo número máximo; "
               f"{t2m['folhas']} folhas classificadas, {t2m['na_borda']} cortadas pela borda. "
               f"Planos: {t2m['planos']}. Classe igual nos dois modos em "
@@ -822,7 +838,7 @@ def _secao_t2(t2m: dict, c: dict, observacoes: str | None) -> list[str]:
           for t in t2m["fotos_baixa_confianca"]["A"]),
     ], "lrr")
     linhas += ["", "Arquivo: `t2_folhas.csv` (uma linha por folha) e `t2_fotos.csv`.", "",
-               "### O que vi nos recortes (sem imagens no repositório)", "",
+               "### Observações escritas à mão (sem imagens no repositório)", "",
                observacoes or "Ainda não descrito (falta o observacoes.md do run).", ""]
     return linhas
 
@@ -906,6 +922,27 @@ def gravar_csv(tabela: pd.DataFrame, caminho: Path) -> None:
     tabela.to_csv(caminho, index=False, float_format="%.6f", lineterminator="\n")
 
 
+def gravar_relatorio(pasta: Path, config_run: dict, metricas: dict) -> None:
+    """relatorio.md do run, com as observações escritas à mão em observacoes.md."""
+    nota = pasta / "observacoes.md"
+    (pasta / "relatorio.md").write_text(
+        relatorio(config_run, metricas,
+                  nota.read_text(encoding="utf-8").strip() if nota.is_file() else None),
+        encoding="utf-8", newline="\n")
+
+
+def refazer_relatorio(nome: str) -> int:
+    """Só refaz o relatorio.md a partir do config.json e do metricas.json gravados no run."""
+    pasta = train.PASTA_RUNS / nome
+    for arquivo in ("config.json", "metricas.json"):
+        if not (pasta / arquivo).is_file():
+            raise train.ErroFatal(f"{pasta / arquivo} não existe: rode a avaliação antes")
+    gravar_relatorio(pasta, *(json.loads((pasta / a).read_text(encoding="utf-8"))
+                              for a in ("config.json", "metricas.json")))
+    fmt.dizer(f"Relatorio refeito: {pasta / 'relatorio.md'}")
+    return 0
+
+
 def executar(args) -> int:
     import torch
 
@@ -958,11 +995,7 @@ def executar(args) -> int:
     config_run, metricas = nativo(config_run), nativo(metricas)
     train.gravar_json(config_run, pasta / "config.json")
     train.gravar_json(metricas, pasta / "metricas.json")
-    nota = pasta / "observacoes.md"
-    (pasta / "relatorio.md").write_text(
-        relatorio(config_run, metricas,
-                  nota.read_text(encoding="utf-8").strip() if nota.is_file() else None),
-        encoding="utf-8", newline="\n")
+    gravar_relatorio(pasta, config_run, metricas)
     for v in VARIANTES_T1:
         m = metricas["t1"]["variantes"][v]["metricas"]
         fmt.dizer(f"T1 {v}: acuracia {_pct(m['acuracia'])}, F1 macro {_pct(m['f1_macro'])}")
@@ -989,10 +1022,15 @@ def main(argv=None) -> int:
                     help="pasta FORA do repositorio para os recortes do T2 e as pranchas")
     ap.add_argument("--so-constantes", action="store_true",
                     help="so mede e mostra as constantes (nao grava nada)")
+    ap.add_argument("--relatorio", action="store_true",
+                    help="so refaz o relatorio.md do run (--nome) a partir do config.json e do "
+                         "metricas.json, com o observacoes.md")
     args = ap.parse_args(argv)
     if args.recortes and args.recortes.resolve().is_relative_to(RAIZ_REPO):
         ap.error("--recortes precisa ficar fora do repositorio (imagens do dataset)")
     try:
+        if args.relatorio:
+            return refazer_relatorio(args.nome)
         return executar(args)
     except (train.ErroFatal, FileNotFoundError) as e:
         fmt.dizer(f"ERRO: {e}")

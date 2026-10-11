@@ -91,8 +91,15 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   uma só folha utilizável cobrindo a foto (regra 1) ou só detecção fraca com cor de folha, score
   >= 0,05 (regra 2); sem nenhuma das duas, `planta_nao_identificada`. Mais de 64 MP (cabeçalho,
   Pillow): `arquivo_muito_grande`. `especie_incorreta` não é produzido.
-- O classificador atual só funciona em folha de BRACOL (fundo claro). No campo (T2 do
-  `pipeline_base`), ele puxa quase tudo para ferrugem. Não usar em campo sem retreinar.
+- Padrões da cadeia (decisão do gestor, 11/10/2026): recorte B por padrão (o A continua como
+  opção) e filtro de fragmentos com `fracao_visivel_minima` = 0,5. Folha sozinha inteira não é
+  filtrada. Se o filtro tirar todas as folhas, o erro é `baixa_confianca`, pedindo para enquadrar
+  a folha inteira. O run com esses padrões é o `pipeline_padrao_b`; o `pipeline_base` é o do
+  passo 3. `campo.CONFIG_ROTULAGEM` mantém o filtro desligado, para os ids do campo rotulado não
+  mudarem.
+- O classificador atual só funciona em folha de BRACOL (fundo claro). No campo, ele puxa a
+  maioria das folhas para doença (69% das S no modo B). Não usar em campo sem a correção validada
+  em folhas novas (ver o passo 5a).
 
 ## Classificador para o campo (passo 4; decisões do gestor, 10/10/2026)
 
@@ -109,6 +116,12 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   borrados fora dos polígonos anotados, sorteio independente da classe; derivados em
   `data/processed/`.
 - Nas imagens cortadas ou apagadas pela augmentation de campo, a severidade vira -1.
+- Decisões do gestor, 11/10/2026: não há validação cruzada das variantes do passo 4, e o modelo
+  oficial segue o `base_resnet50_bracol`. O limiar de confiança segue pendente.
+- Diagnóstico sem treino (passo 5a, `evaluation/campo_diagnostico.py`): usa as 82 folhas S ou D do
+  campo rotulado e só checkpoints existentes. Mede a AUC de P(saudável), a sonda linear nos
+  embeddings (dobras por cena; não gera modelo) e o efeito do limiar no BRACOL (só validação), e
+  faz a auditoria das S. O limiar de operação sai das mesmas folhas: é otimista.
 
 ## Comandos (na raiz do repositório, com o venv ativo)
 
@@ -136,8 +149,9 @@ python model/treinar_detector.py --nome NOME --epocas 60   # detector: prepara o
 python model/treinar_detector.py --avaliar --run NOME      # refaz a avaliação e o relatório do detector
 python model/treinar_detector.py --avaliar-teste --run NOME   # só por ordem do gestor: teste do BRACOT
 python model/avaliar_pipeline.py             # cadeia inteira: limiar de confiança (RF07), T1, T2 e T3;
-                                             # model/runs/pipeline_base/ (--classificador, --detector e
-                                             # --recortes PASTA_FORA_DO_REPO para recortes e pranchas)
+                                             # model/runs/pipeline_padrao_b/ (--nome, --classificador, --detector e
+                                             # --recortes PASTA_FORA_DO_REPO para recortes e pranchas;
+                                             # --relatorio --nome NOME só refaz o relatorio.md)
 python evaluation/campo.py --gerar-rotulagem # pranchas cegas (data/processed/) e CSV-modelo do campo rotulado
 python evaluation/campo.py --avaliar --classificador PASTA --saida campo_X   # proxies e rótulos de campo
 python model/treinar_campo.py --mascaras     # máscaras das folhas do BRACOL (data/processed/, só treino e val)
@@ -145,6 +159,8 @@ python model/treinar_campo.py --fundos       # fundos borrados das fotos de trei
 python model/treinar_campo.py --triagem v0 v1 ...   # variantes: treino -> validação oficial; model/runs/campo_<v>/
 python model/treinar_campo.py --cv v1 ...    # validação cruzada (5 dobras do diagnóstico); campo_<v>/cv/
 python model/treinar_campo.py --comparar     # model/runs/campo_comparacao/relatorio.md
+python evaluation/campo_diagnostico.py       # diagnóstico S x D sem treino; model/runs/campo_diagnostico/
+                                             # (--relatorio só refaz o relatorio.md do JSON)
 jupyter nbconvert --clear-output --inplace notebooks/01_eda.ipynb   # antes de commitar
 python -m pytest
 ```

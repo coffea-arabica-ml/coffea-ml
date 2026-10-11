@@ -325,3 +325,40 @@ def test_inferencia_e_avaliacao_nao_leem_os_testes():
         fonte = Path(modulo.__file__).read_text(encoding="utf-8")
         assert "montar_teste" not in fonte
         assert 'caminho_coco("teste")' not in fonte and 'ler_poligonos("teste")' not in fonte
+
+
+# ------------------------------------------------------------- padrões de 11/10/2026
+def test_padroes_do_gestor_de_11_10_2026():
+    config = inf.Configuracao()
+    assert config.recorte == "B" and config.fracao_visivel_minima == 0.5
+    assert inf.Configuracao(recorte="A").recorte == "A"  # dá para voltar ao A
+
+
+def test_folha_sozinha_cortada_pela_borda_nao_sai_e_pedaco_pequeno_sai(detectar_com):
+    sozinha = (0, 40, 300, 200)  # encosta na borda esquerda
+    detectar_com([deteccao(*sozinha, 0.9)])
+    preparo = inf.decidir(inf.detectar(foto(sozinha), inf.Configuracao(),
+                                       modelos_falsos([probs("saudavel", 0.9)], [0])),
+                          300, 600, inf.Configuracao())
+    assert preparo["plano"] in ("deteccao", "foto_inteira") and len(preparo["folhas"]) == 1
+    # a última: pedaço na borda com 2% da foto (passa na área mínima) e fração visível de 0,2
+    folhas = [(200, 30, 400, 130), (420, 150, 580, 250), (0, 220, 60, 280)]
+    detectar_com([deteccao(*f, 0.9) for f in folhas])
+    preparo = inf.decidir(inf.detectar(foto(*folhas), inf.Configuracao(),
+                                       modelos_falsos([probs("saudavel", 0.9)], [0])),
+                          300, 600, inf.Configuracao())
+    assert len(preparo["folhas"]) == 2 and preparo["contagens"]["cortadas_por_fragmento"] == 1
+
+
+def test_filtro_que_tira_todas_as_folhas_da_baixa_confianca_pedindo_a_folha_inteira(
+        detectar_com):
+    triangulo = {"poligono": [[20, 20], [140, 20], [20, 80]], "caixa": [20, 20, 140, 80],
+                 "score": 0.9}
+    imagem = foto()
+    cv2.fillPoly(imagem, [np.array(triangulo["poligono"], dtype=np.int32)], VERDE)
+    detectar_com([triangulo])
+    resposta = inf.diagnosticar(imagem, inf.Configuracao(preenchimento_minimo=0.6),
+                                modelos_falsos([probs("saudavel", 0.9)], [0]))
+    assert (resposta["status"], resposta["tipo"]) == ("erro", "baixa_confianca")
+    assert resposta["mensagem"] == inf.MENSAGENS["fragmentos"]
+    assert "Enquadre a folha inteira" in resposta["mensagem"]

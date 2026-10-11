@@ -266,6 +266,12 @@ O relatório, com a leitura, fica em `model/runs/campo_diagnostico/relatorio.md`
   contra 95,1% das mantidas, com intervalos que não se tocam). P(saudável) >= 0,083 marca 5,1%
   das doentes como saudáveis.
 - **Resultado no campo (T2, sem rótulos):** 122 das 239 folhas viram saudáveis.
-- **Validação:** só a rotulagem nas fotos de treino do detector
-  (`data/manifests/campo_rotulado_treino.csv`; ver `data/README.md`) vai dizer se a regra vale no
-  campo.
+- **Validação no campo** (`evaluation/campo_validacao.py`, em
+  `model/runs/campo_validacao_duas_etapas`): usa as 160 folhas novas das fotos de treino do
+  detector (`data/manifests/campo_rotulado_treino.csv`), com a regra fixada e sem reajuste.
+  - **Saudável dado S:** a regra chama 80,5% (66,0% a 89,8%), contra 0% do argmax com 0,61.
+  - **Saudável dado D:** 6,7% (2,6% a 15,9%), contra 0%; os intervalos se tocam.
+  - **Novas contra as 82 antigas:** as novas saem um pouco piores, sem diferença sustentada.
+  - **"?":** são 37% das folhas e a maior incerteza.
+  - **Recomendação:** ligar a regra junto com a decisão do limiar de doença. **A decisão é do
+    gestor.**

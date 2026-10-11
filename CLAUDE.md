@@ -140,6 +140,9 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 - **Rotulagem de validação:** `data/manifests/campo_rotulado_treino.csv`, com 160 folhas das 194
   fotos de treino do detector. É só avaliação. O detector treinou nessas fotos, então as máscaras
   saem mais limpas.
+  - Rótulos: 41 S, 60 D e 59 "?", feitos por Claude e aceitos pelo gestor em 11/10/2026.
+  - Avaliação: `evaluation/campo_validacao.py`, em `model/runs/campo_validacao_duas_etapas`,
+    sem reajustar t_s nem t_d.
 
 ## Comandos (na raiz do repositório, com o venv ativo)
 
@@ -175,6 +178,8 @@ python model/avaliar_pipeline.py --decisao duas_etapas   # regra em duas etapas:
 python evaluation/campo.py --gerar-rotulagem # pranchas cegas (data/processed/) e CSV-modelo do campo rotulado
 python evaluation/campo.py --gerar-rotulagem --fotos treino   # rotulagem de validação (fotos de treino do
                                              # detector): data/manifests/campo_rotulado_treino.csv
+python evaluation/campo_validacao.py         # validação da regra em duas etapas nas folhas antigas e
+                                             # novas; model/runs/campo_validacao_duas_etapas/
 python evaluation/campo.py --avaliar --classificador PASTA --saida campo_X   # proxies e rótulos de campo
 python model/treinar_campo.py --mascaras     # máscaras das folhas do BRACOL (data/processed/, só treino e val)
 python model/treinar_campo.py --fundos       # fundos borrados das fotos de treino do BRACOT

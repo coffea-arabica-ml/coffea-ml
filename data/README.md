@@ -70,7 +70,7 @@ relatórios e as figuras, sim.
 | JMuBEN e JMuBEN2 (`data/raw/jmuben/`) | só treino auxiliar de classificação, nunca validação nem teste | em uso desde 09/10/2026 |
 | BRACOT (`data/raw/bracot/bracot-data/`) | detecção e segmentação de folhas (RF09), com a divisão dos autores; as fotos de treino também dão fundos borrados à augmentation do classificador | em uso desde 09/10/2026 (fundos: 10/10/2026) |
 | Campo rotulado (`data/manifests/campo_rotulado.csv`) | só avaliação de campo do classificador, nunca treino | desde 10/10/2026; rótulos feitos por Claude e aceitos pelo gestor em 11/10/2026 |
-| Campo rotulado de validação (`data/manifests/campo_rotulado_treino.csv`) | só avaliação da regra saudável x doente, nunca treino nem ajuste de limiar | desde 11/10/2026; CSV-modelo gerado, rótulos pendentes |
+| Campo rotulado de validação (`data/manifests/campo_rotulado_treino.csv`) | só avaliação da regra saudável x doente, nunca treino nem ajuste de limiar | desde 11/10/2026; 41 S, 60 D e 59 "?", rótulos feitos por Claude e aceitos pelo gestor em 11/10/2026 |
 
 ## Procedência do BRACOL
 
@@ -497,8 +497,10 @@ teste, e o código confere que nenhuma cena aparece nos dois lados.
 - As mesmas fotos deram os fundos borrados da augmentation das variantes v2, v3 e v3s do passo 4.
   O modelo congelado (`base_resnet50_bracol`) não usou esses fundos.
 - É a mesma lavoura e as mesmas 2 sessões do campo rotulado, mas em fotos e cenas diferentes.
-- Os rótulos serão feitos por Claude por leitura visual e aceitos pelo gestor. Não são de
-  especialista.
+- Os rótulos (41 S, 60 D e 59 "?") foram feitos por Claude por leitura visual das pranchas e
+  aceitos pelo gestor em 11/10/2026. Não são de especialista. Nenhuma D recebeu classe.
+- A avaliação com eles está em `model/runs/campo_validacao_duas_etapas/`
+  (`evaluation/campo_validacao.py`).
 - Fonte só de avaliação: nunca entra em treino nem em ajuste de limiar.
 
 ## Interface para a Frente 9

@@ -10,6 +10,9 @@ Avaliação ponta a ponta da inferência (Frente 9, passo 3), gravada em model/r
 - T2: as fotos de validação do BRACOT (cenas inteiras do treino dos autores): classes,
   severidades e confiança por folha, nos recortes A e B; folhas cortadas pela borda x inteiras.
 - T3: tempo da cadeia em CPU (RNF02).
+- Com --decisao duas_etapas (passo 5b): a curva risco-cobertura do limiar de doença nas doentes
+  fora da dobra, com a proposta; o efeito do limiar de saudável no BRACOL; a regra completa
+  contra o argmax; e a sensibilidade do limiar de saudável no campo rotulado.
 
 Os testes do BRACOL e do BRACOT ficam fechados: nada aqui lê o split de teste do BRACOL nem
 as anotações de teste do BRACOT.
@@ -23,6 +26,11 @@ Uso (de qualquer pasta, com o venv ativo):
                                                         outros modelos (recalibrar o limiar)
     python model/avaliar_pipeline.py --recortes PASTA   grava também os recortes do T2 e duas
                                                         pranchas em PASTA, fora do repositório
+    python model/avaliar_pipeline.py --decisao duas_etapas
+                                                        a regra em duas etapas (passo 5b), em
+                                                        model/runs/pipeline_duas_etapas/: propõe
+                                                        o limiar de doença no BRACOL e roda T1 a
+                                                        T3 com ela, sem mudar o padrão
 
 O código de saída é 0 sem erros e 1 com erros.
 A saída de terminal fica sem acento (terminal do Windows); os arquivos gravados são UTF-8.
@@ -59,9 +67,17 @@ import treinar_detector as td
 # os padrões da cadeia de 11/10/2026 (recorte B e filtro de fragmentos); o pipeline_base, do passo
 # 3 (recorte A, sem filtro), fica como registro e não é sobrescrito por uma rodada sem --nome
 NOME_PADRAO = "pipeline_padrao_b"
+NOME_DUAS_ETAPAS = "pipeline_duas_etapas"  # o padrão de --nome com --decisao duas_etapas
 PASTA_FORA_DA_DOBRA = train.PASTA_RUNS / "diagnostico_blocos"
 ALVO_ACURACIA = 0.95  # acurácia das predições mantidas que a proposta de limiar busca
 LIMIARES_CURVA = np.round(np.arange(0.30, 1.0, 0.01), 2)
+# limiar de doença: a probabilidade renormalizada entre as 4 doenças nunca fica abaixo de 0,25
+LIMIARES_DOENCA = np.round(np.arange(0.25, 1.0, 0.01), 2)
+LIMIARES_DOENCA_DESTAQUE = (0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
+# Sensibilidade do limiar de saudável (decisão do gestor, 11/10/2026): as 82 folhas S ou D do
+# campo rotulado, com o P(saudável) do modelo atual no modo B, e as 3 S com marca na ponta.
+FOLHAS_CAMPO = train.PASTA_RUNS / "campo_diagnostico" / "folhas.csv"
+S_COM_MARCA = ("20191208_142146_02", "20191208_142156_03", "20191208_142829_05")
 LIMIARES_T2 = (0.5, 0.6, 0.7, 0.8, 0.9)
 LIMIARES_DESTAQUE = (0.5, 0.6, 0.7, 0.8, 0.9, 0.95)
 AMOSTRA_FOLHA_UNICA = 200  # imagens de treino do BRACOL para a margem e a cobertura
@@ -96,6 +112,15 @@ DECISOES = (
                    "pedindo para enquadrar a folha inteira."),
     ("11/10/2026", "sem validação cruzada das variantes do passo 4: o modelo oficial segue o "
                    "base_resnet50_bracol. O limiar de confiança segue pendente."),
+    ("11/10/2026", "base_resnet50_bracol e detector_base congelados como modelos finais, sem "
+                   "retreino final; os testes fechados medem estes modelos uma única vez, no "
+                   "fim."),
+    ("11/10/2026", "regra em duas etapas: o limiar de saudável fica fixado antes de dados novos, "
+                   "com no máximo 5% das D das 82 folhas rotuladas marcadas saudáveis (0,083 no "
+                   "modelo atual, modo B), sem reajuste com dados novos; a regra fica desligada "
+                   "por padrão até a validação."),
+    ("11/10/2026", "os 82 rótulos de campo ficam congelados, inclusive as 3 S com marca na "
+                   "ponta; o ponto de operação sem elas sai só como sensibilidade."),
 )
 
 
@@ -256,14 +281,154 @@ def calibrar(pasta_fora_da_dobra: Path, inteira_val: pd.DataFrame) -> dict:
             "proposta": None if proposta is None else proposta["limiar"]}
 
 
-def figura_risco_cobertura(calibracao: dict, limiar_em_uso: float):
+# ------------------------------------------------------- regra em duas etapas (passo 5b)
+def _proporcao(sucessos: int, n: int) -> dict:
+    """Proporção com o intervalo de Wilson de 95% (n = 0: sem valor)."""
+    if not n:
+        return {"p": None, "ic95": [None, None], "sucessos": 0, "n": 0}
+    return {"p": sucessos / n, "ic95": list(metrics.intervalo_wilson(sucessos / n, n)),
+            "sucessos": int(sucessos), "n": int(n)}
+
+
+def doenca_renormalizada(probabilidades) -> tuple[np.ndarray, np.ndarray]:
+    """Por linha: a doença de maior probabilidade (índice em CLASSES) e a probabilidade dela
+    renormalizada entre as 4 doenças (a 2ª etapa de inferencia.aplicar_decisao)."""
+    p = np.asarray(probabilidades, dtype=np.float64)[:, list(inf.DOENCAS)]
+    soma = p.sum(axis=1, keepdims=True)
+    renormalizadas = np.divide(p, soma, out=np.full_like(p, 1 / len(inf.DOENCAS)),
+                               where=soma > 0)
+    return (np.asarray(inf.DOENCAS)[renormalizadas.argmax(axis=1)],
+            renormalizadas.max(axis=1))
+
+
+def curva_das_doencas(probabilidades, verdadeiras) -> list[dict]:
+    """Curva risco-cobertura do limiar de doença, só nas folhas doentes: a doença prevista com o
+    softmax renormalizado contra a verdadeira, cortada pela probabilidade renormalizada."""
+    probabilidades = np.asarray(probabilidades, dtype=np.float64)
+    verdadeiras = np.asarray(verdadeiras)
+    doentes = verdadeiras != inf.SAUDAVEL
+    prevista, renormalizada = doenca_renormalizada(probabilidades[doentes])
+    return metrics.curva_risco_cobertura(renormalizada, prevista == verdadeiras[doentes],
+                                         LIMIARES_DOENCA, verdadeiras[doentes])
+
+
+def calibrar_doencas(pasta_fora_da_dobra: Path) -> dict:
+    """A proposta do limiar de doença (2ª etapa): o menor em que a acurácia das doentes mantidas
+    fora da dobra chega ao alvo, como na proposta do limiar de confiança. Só o BRACOL."""
+    fora = ler_fora_da_dobra(pasta_fora_da_dobra)
+    probabilidades = fora[[f"prob_{c}" for c in bracol.CLASSES]].to_numpy()
+    verdadeiras = fora["classe_verdadeira"].map(bracol.CLASSES.index).to_numpy()
+    doentes = verdadeiras != inf.SAUDAVEL
+    prevista, _ = doenca_renormalizada(probabilidades[doentes])
+    curva = curva_das_doencas(probabilidades, verdadeiras)
+    proposta = propor_limiar(curva)
+    return {"fora_da_dobra": {"pasta": train._exibir(Path(pasta_fora_da_dobra)),
+                              "n": len(fora), "n_doentes": int(doentes.sum()),
+                              "acuracia_sem_corte": float(np.mean(prevista
+                                                                  == verdadeiras[doentes])),
+                              "curva": curva},
+            "alvo": ALVO_ACURACIA,
+            "proposta": None if proposta is None else proposta["limiar"]}
+
+
+def efeito_do_limiar_saudavel(probabilidades, verdadeiras, limiar_saudavel: float) -> dict:
+    """Doentes marcadas saudáveis e recall das saudáveis: argmax contra P(saudável) >= limiar."""
+    probabilidades = np.asarray(probabilidades, dtype=np.float64)
+    doente = np.asarray(verdadeiras) != inf.SAUDAVEL
+    regras = {"argmax": probabilidades.argmax(axis=1) == inf.SAUDAVEL,
+              "limiar": probabilidades[:, inf.SAUDAVEL] >= limiar_saudavel}
+    return {nome: {"saudavel_dado_d": _proporcao(int((s & doente).sum()), int(doente.sum())),
+                   "recall_saudavel": _proporcao(int((s & ~doente).sum()), int((~doente).sum()))}
+            for nome, s in regras.items()}
+
+
+def regra_completa(probabilidades, verdadeiras, config) -> dict:
+    """A regra da configuração inteira (as duas etapas e o corte; ou argmax e o corte) em
+    predições com rótulo: cobertura, acurácia das mantidas e cobertura de saudáveis e doentes."""
+    verdadeiras = np.asarray(verdadeiras)
+    decisoes = [inf.aplicar_decisao(p, config) for p in np.asarray(probabilidades)]
+    classes = np.array([d[0] for d in decisoes])
+    mantidas = np.array([d[2] for d in decisoes]) >= inf.limiar_de_corte(config)
+    acertos = classes == verdadeiras
+    doente = verdadeiras != inf.SAUDAVEL
+    return {"acuracia_sem_corte": float(acertos.mean()),
+            "cobertura": float(mantidas.mean()),
+            "acuracia_das_mantidas": _proporcao(int(acertos[mantidas].sum()),
+                                                int(mantidas.sum())),
+            "cobertura_saudaveis": float(mantidas[~doente].mean()) if (~doente).any() else None,
+            "cobertura_doentes": float(mantidas[doente].mean()) if doente.any() else None}
+
+
+def sensibilidade_campo(limiar_saudavel: float, caminho: Path = FOLHAS_CAMPO) -> dict | None:
+    """O limiar de saudável nas 82 folhas do campo rotulado (P(saudável) do modelo atual no
+    modo B, de model/runs/campo_diagnostico), com e sem as 3 S com marca na ponta: o limiar do
+    ponto de operação recalculado (no máximo 5% das D) e, no limiar fixado, as D marcadas
+    saudáveis e o recall das S. Os rótulos não mudam (decisão do gestor, 11/10/2026)."""
+    import campo_diagnostico as cd
+
+    if not Path(caminho).is_file():
+        return None
+    folhas = pd.read_csv(caminho)
+    resultado = {}
+    for nome, manter in (("82 folhas", np.ones(len(folhas), bool)),
+                         ("sem as 3 S com marca", ~folhas["id"].isin(S_COM_MARCA).to_numpy())):
+        f = folhas[manter]
+        y = (f["rotulo"] == "S").astype(int).to_numpy()
+        p = f["p_saudavel_atual_B"].to_numpy()
+        resultado[nome] = {
+            "S": int(y.sum()), "D": int((1 - y).sum()),
+            "limiar_recalculado": cd.ponto_de_operacao(y, p)["limiar"],
+            "d_marcadas_saudaveis": _proporcao(int((p[y == 0] >= limiar_saudavel).sum()),
+                                               int((y == 0).sum())),
+            "recall_s": _proporcao(int((p[y == 1] >= limiar_saudavel).sum()), int(y.sum()))}
+    return resultado
+
+
+def completar_duas_etapas(calibracao_doencas: dict, pasta_fora_da_dobra: Path,
+                          inteira_val: pd.DataFrame, config) -> dict:
+    """O resto da análise da regra em duas etapas, com o limiar de doença em uso: a curva na
+    validação (imagem inteira, T1), o efeito do limiar de saudável no BRACOL, a regra completa
+    contra o argmax com o limiar de confiança e a sensibilidade no campo rotulado."""
+    fora = ler_fora_da_dobra(pasta_fora_da_dobra)
+    probs_fora = fora[[f"prob_{c}" for c in bracol.CLASSES]].to_numpy()
+    verdadeiras_fora = fora["classe_verdadeira"].map(bracol.CLASSES.index).to_numpy()
+    probs_val = np.stack(inteira_val["probs"])
+    verdadeiras_val = inteira_val["classe"].to_numpy()
+    argmax = inf.Configuracao(limiar_confianca=config.limiar_confianca)
+    fontes = {"fora_da_dobra": (probs_fora, verdadeiras_fora),
+              "validacao": (probs_val, verdadeiras_val)}
+    return {**calibracao_doencas,
+            "validacao": {"n": len(inteira_val),
+                          "n_doentes": int((verdadeiras_val != inf.SAUDAVEL).sum()),
+                          "curva": curva_das_doencas(probs_val, verdadeiras_val)},
+            "limiar_saudavel": config.limiar_saudavel, "limiar_doenca": config.limiar_doenca,
+            "efeito_saudavel": {fonte: efeito_do_limiar_saudavel(p, v, config.limiar_saudavel)
+                                for fonte, (p, v) in fontes.items()},
+            "regra_completa": {fonte: {"duas_etapas": regra_completa(p, v, config),
+                                       "argmax": regra_completa(p, v, argmax)}
+                               for fonte, (p, v) in fontes.items()},
+            # a regra completa em outros limiares de doença, com o limiar de saudável fixo
+            "regra_completa_por_limiar": {
+                fonte: {f"{t:g}": regra_completa(p, v, replace(config, limiar_doenca=t))
+                        for t in sorted({*LIMIARES_DOENCA_DESTAQUE, config.limiar_doenca})}
+                for fonte, (p, v) in fontes.items()},
+            "campo": sensibilidade_campo(config.limiar_saudavel)}
+
+
+def figura_risco_cobertura(calibracao: dict, limiar_em_uso: float,
+                           titulo: str = "Curva risco-cobertura do limiar de confiança (RF07)",
+                           destaques=LIMIARES_DESTAQUE, eixo_x: str = "imagens"):
     """Acurácia das mantidas x cobertura nas duas fontes, com os limiares em destaque."""
     import eda_bracol as eda
 
-    series = (("fora_da_dobra", "fora da dobra (1.432, protocolo aleatório)", eda.AZUL),
-              ("validacao", "validação do classificador (252)", eda.COR_CLASSE["ferrugem"]))
+    n_fora, n_val = (calibracao[f].get("n_doentes", calibracao[f]["n"])
+                     for f in ("fora_da_dobra", "validacao"))
+    series = (("fora_da_dobra", f"fora da dobra ({fmt.n(n_fora)}, protocolo aleatório)",
+               eda.AZUL),
+              ("validacao", f"validação do classificador ({n_val})",
+               eda.COR_CLASSE["ferrugem"]))
     with eda._estilo():
-        fig = eda._figura(7.6, 4.4, "Curva risco-cobertura do limiar de confiança (RF07)")
+        fig = eda._figura(7.6, 4.4, titulo)
         ax = fig.add_subplot()
         menor = min(p["cobertura"] for chave, _, _ in series
                     for p in calibracao[chave]["curva"])
@@ -277,7 +442,7 @@ def figura_risco_cobertura(calibracao: dict, limiar_em_uso: float):
             y = [p["acuracia"] for p in curva]
             ax.plot(x, y, color=cor, linewidth=2, label=rotulo)
             for p in curva:
-                if any(abs(p["limiar"] - d) < 1e-9 for d in LIMIARES_DESTAQUE):
+                if any(abs(p["limiar"] - d) < 1e-9 for d in destaques):
                     ax.plot(p["cobertura"], p["acuracia"], "o", color=cor, markersize=5,
                             markeredgecolor=eda.SUPERFICIE, markeredgewidth=1)
                     if chave == "fora_da_dobra":
@@ -293,13 +458,13 @@ def figura_risco_cobertura(calibracao: dict, limiar_em_uso: float):
             ax.annotate(f"proposta {fmt.decimal(proposta, 2)}", (p["cobertura"], p["acuracia"]),
                         textcoords="offset points", xytext=(8, 10), ha="left", color=eda.TINTA)
         ax.set_xlim(inicio, 1.005)
-        ax.set_xlabel("cobertura (fração das imagens mantidas)")
+        ax.set_xlabel(f"cobertura (fração das {eixo_x} mantidas)")
         ax.set_ylabel("acurácia das mantidas")
         ax.xaxis.set_major_formatter(lambda v, _: fmt.pct(v, 1, 0))
         ax.yaxis.set_major_formatter(lambda v, _: fmt.pct(v, 1, 0))
         ax.grid(axis="y")
         ax.legend(loc="lower left")
-        ax.set_title(f"pontos: limiares {', '.join(fmt.decimal(d, 2) for d in LIMIARES_DESTAQUE)};"
+        ax.set_title(f"pontos: limiares {', '.join(fmt.decimal(d, 2) for d in destaques)};"
                      f" em uso na cadeia: {fmt.decimal(limiar_em_uso, 2)}", loc="left")
     return fig
 
@@ -307,7 +472,8 @@ def figura_risco_cobertura(calibracao: dict, limiar_em_uso: float):
 # --------------------------------------------------------------------------- T1
 def t1(modelos, config) -> pd.DataFrame:
     """Cada imagem de validação do BRACOL pela imagem inteira, pela cadeia (regras completas) e
-    só pelo recorte da maior folha (sem a regra 1), nos modos A e B, sem limiar de confiança."""
+    só pelo recorte da maior folha (sem a regra 1), nos modos A e B, pela regra de decisão da
+    configuração, sem o corte (o valor de corte fica registrado e o corte entra nas métricas)."""
     val = dados.montar_val()
     cadeia = replace(config, limiar_confianca=0.0)
     so_recorte = replace(cadeia, cobertura_folha_unica=math.inf)
@@ -328,7 +494,8 @@ def t1(modelos, config) -> pd.DataFrame:
                     "cortadas_por_cor": preparo["contagens"]["cortadas_por_cor"],
                     "plano": preparo["plano"], "regra": preparo["regra"],
                     "folhas": len(preparo["folhas"])}
-        inteira = _prever([inf.recorte_da_foto_inteira(imagem, config.cinza_fundo)], modelos)[0]
+        inteira = _prever([inf.recorte_da_foto_inteira(imagem, config.cinza_fundo)], modelos,
+                          cadeia)[0]
         _registrar(registro, "inteira", inteira)
         for modo in MODOS:
             recorte = _folha_principal(imagem, preparo_recorte, cadeia, modo, modelos, inteira)
@@ -347,24 +514,33 @@ def _folha_principal(imagem, preparo, config, modo, modelos, inteira):
         return inteira
     if not preparo["folhas"]:
         return None
-    previsoes = _prever(inf.recortar(imagem, preparo, config, modo), modelos)
+    previsoes = _prever(inf.recortar(imagem, preparo, config, modo), modelos, config)
     return previsoes[int(np.argmax([f["area"] for f in preparo["folhas"]]))]
 
 
-def _prever(recortes, modelos) -> list[dict]:
+def _prever(recortes, modelos, config) -> list[dict]:
+    """As probabilidades e, pela regra de decisão da configuração (inferencia.aplicar_decisao),
+    a classe, a confiança e o valor de corte de cada recorte."""
     probabilidades, niveis = inf.classificar(recortes, modelos)
-    return [{"probs": p, "classe": int(np.argmax(p)), "confianca": float(np.max(p)),
-             "nivel": int(nivel)} for p, nivel in zip(probabilidades, niveis)]
+    previsoes = []
+    for p, nivel in zip(probabilidades, niveis):
+        classe, confianca, corte = inf.aplicar_decisao(p, config)
+        previsoes.append({"probs": p, "classe": classe, "confianca": confianca, "corte": corte,
+                          "nivel": int(nivel)})
+    return previsoes
 
 
 def _registrar(registro: dict, prefixo: str, previsao) -> None:
     registro[f"{prefixo}_classe"] = None if previsao is None else previsao["classe"]
     registro[f"{prefixo}_confianca"] = None if previsao is None else previsao["confianca"]
+    registro[f"{prefixo}_corte"] = None if previsao is None else previsao["corte"]
     registro[f"{prefixo}_nivel"] = None if previsao is None else previsao["nivel"]
     registro[f"{prefixo}_probs"] = None if previsao is None else previsao["probs"]
 
 
 def metricas_t1(tabela: pd.DataFrame, limiar: float) -> dict:
+    """Por variante: as métricas sem corte, as doentes marcadas saudáveis e o recall das
+    saudáveis, e a cobertura e a acurácia com o corte (valor de corte >= limiar)."""
     resultado = {}
     for variante in VARIANTES_T1:
         com = tabela[tabela[f"{variante}_classe"].notna()]
@@ -373,9 +549,14 @@ def metricas_t1(tabela: pd.DataFrame, limiar: float) -> dict:
         ms = metrics.calcular_metricas_severidade(
             com["severidade"].to_numpy(),
             np.where(previstas == 0, 0, np.maximum(com[f"{variante}_nivel"].astype(int), 1)))
-        mantidas = com[f"{variante}_confianca"] >= limiar
+        mantidas = com[f"{variante}_corte"].astype(float) >= limiar
+        doente = com["classe"].to_numpy() != inf.SAUDAVEL
+        saudavel = previstas == inf.SAUDAVEL
         resultado[variante] = {
             "cobertura_sem_limiar": len(com) / len(tabela), "metricas": m, "severidade": ms,
+            "saudavel_dado_d": _proporcao(int((saudavel & doente).sum()), int(doente.sum())),
+            "recall_saudavel": _proporcao(int((saudavel & ~doente).sum()),
+                                          int((~doente).sum())),
             "limiar": limiar, "mantidas": int(mantidas.sum()),
             "cobertura_no_limiar": float(mantidas.sum() / len(tabela)),
             "acuracia_no_limiar": float(np.mean(previstas[mantidas.to_numpy()]
@@ -402,7 +583,7 @@ def t2(modelos, config, pasta_recortes: Path | None = None):
         if not preparo["folhas"]:
             continue
         recortes = {modo: inf.recortar(imagem, preparo, cadeia, modo) for modo in MODOS}
-        previsoes = {modo: _prever(recortes[modo], modelos) for modo in MODOS}
+        previsoes = {modo: _prever(recortes[modo], modelos, cadeia) for modo in MODOS}
         for k, folha in enumerate(preparo["folhas"]):
             linha = {"foto": foto, "folha": k + 1, "plano": preparo["plano"],
                      "score": folha["score"], "area": folha["area"], "borda": folha["borda"]}
@@ -410,6 +591,7 @@ def t2(modelos, config, pasta_recortes: Path | None = None):
                 p = previsoes[modo][k]
                 categoria = inf.CATEGORIAS[p["classe"]]
                 linha.update({f"classe_{modo}": categoria, f"confianca_{modo}": p["confianca"],
+                              f"corte_{modo}": p["corte"],
                               f"severidade_{modo}": inf.severidade_do_contrato(categoria,
                                                                               p["nivel"])})
             folhas.append(linha)
@@ -494,6 +676,8 @@ def gravar_pranchas(folhas_escolhidas: pd.DataFrame, pasta: Path) -> list[Path]:
 
 
 def resumo_t2(folhas: pd.DataFrame, fotos: pd.DataFrame, limiar: float) -> dict:
+    """Classes, severidades e confiança por modo; o corte (valor de corte >= limiar) por folha
+    e por foto (foto sem nenhuma folha mantida: baixa_confianca)."""
     resultado = {"fotos": len(fotos), "folhas": len(folhas),
                  "planos": fotos["plano"].value_counts().to_dict(),
                  "cortadas_por_area": int(fotos["cortadas_por_area"].sum()),
@@ -502,28 +686,31 @@ def resumo_t2(folhas: pd.DataFrame, fotos: pd.DataFrame, limiar: float) -> dict:
                  "na_borda": int(folhas["borda"].sum())}
     for modo in MODOS:
         conf = folhas[f"confianca_{modo}"]
+        corte = folhas[f"corte_{modo}"].astype(float)
         borda = folhas["borda"].astype(bool)
         resultado[modo] = {
             "classes": folhas[f"classe_{modo}"].value_counts().reindex(
                 bracol.CLASSES, fill_value=0).to_dict(),
+            "classes_mantidas": folhas.loc[corte >= limiar, f"classe_{modo}"].value_counts()
+            .reindex(bracol.CLASSES, fill_value=0).to_dict(),
             "severidades": folhas[f"severidade_{modo}"].value_counts().reindex(
                 inf.NIVEIS_CONTRATO, fill_value=0).to_dict(),
             "confianca_media": float(conf.mean()), "confianca_mediana": float(conf.median()),
-            "abaixo": {f"{t:g}": float((conf < t).mean())
+            "abaixo": {f"{t:g}": float((corte < t).mean())
                        for t in sorted({*LIMIARES_T2, limiar})},
             "borda": {"folhas": int(borda.sum()), "confianca_media": float(conf[borda].mean()),
-                      "abaixo_do_limiar": float((conf[borda] < limiar).mean())},
+                      "abaixo_do_limiar": float((corte[borda] < limiar).mean())},
             "inteiras": {"folhas": int((~borda).sum()),
                          "confianca_media": float(conf[~borda].mean()),
-                         "abaixo_do_limiar": float((conf[~borda] < limiar).mean())},
+                         "abaixo_do_limiar": float((corte[~borda] < limiar).mean())},
         }
     resultado["concordancia_A_B"] = float((folhas["classe_A"] == folhas["classe_B"]).mean())
     resultado["cortadas_por_cor"] = int(fotos["cortadas_por_cor"].sum())
     resultado["cortadas_por_fragmento"] = int(fotos.get("cortadas_por_fragmento",
                                                         pd.Series(dtype=int)).sum())
-    maxima = folhas.groupby("foto")[[f"confianca_{m}" for m in MODOS]].max()
+    maxima = folhas.groupby("foto")[[f"corte_{m}" for m in MODOS]].max()
     resultado["fotos_baixa_confianca"] = {
-        modo: {f"{t:g}": int((maxima[f"confianca_{modo}"] < t).sum())
+        modo: {f"{t:g}": int((maxima[f"corte_{modo}"] < t).sum())
                for t in sorted({*LIMIARES_T2, limiar})} for modo in MODOS}
     return resultado
 
@@ -669,9 +856,18 @@ def relatorio(config_run: dict, metricas: dict, observacoes: str | None) -> str:
         ["max_megapixels", fmt.decimal(c["max_megapixels"], 0), "decisão do gestor"],
         ["fracao_visivel_minima", fmt.decimal(c["fracao_visivel_minima"], 2),
          "filtro de fragmentos; decisão do gestor (11/10/2026)"],
+        ["decisao", c.get("decisao", "argmax"),
+         "argmax: o padrão; duas_etapas: proposta do passo 5b, desligada por padrão"],
+        *([["limiar_saudavel", fmt.decimal(c["limiar_saudavel"], 3),
+            "decisão do gestor (11/10/2026): fixado antes de dados novos (abaixo)"],
+           ["limiar_doenca", fmt.decimal(c["limiar_doenca"], 2),
+            "proposta da curva das doenças (abaixo); **aguarda a decisão do gestor**"]]
+          if c.get("decisao") == "duas_etapas" else []),
     ], "lll")
     linhas += _secao_constantes(const, c)
     linhas += _secao_calibracao(cal, c)
+    if "duas_etapas" in metricas:
+        linhas += _secao_duas_etapas(metricas["duas_etapas"], c)
     linhas += _secao_t1(t1m, c)
     linhas += _secao_t2(t2m, c, observacoes)
     linhas += _secao_t3(t3m, c)
@@ -766,21 +962,141 @@ def _secao_calibracao(cal: dict, c: dict) -> list[str]:
     return linhas
 
 
+def _corte(c: dict) -> str:
+    """O corte da regra de decisão do run, para os títulos das tabelas."""
+    if c.get("decisao", "argmax") == "duas_etapas":
+        return (f"na regra em duas etapas (saudável com P >= {fmt.decimal(c['limiar_saudavel'], 3)}"
+                f"; doença com P renormalizada >= {fmt.decimal(c['limiar_doenca'], 2)})")
+    return f"no limiar {fmt.decimal(c['limiar_confianca'], 2)}"
+
+
+def _valor_de_corte(c: dict) -> str:
+    if c.get("decisao", "argmax") == "duas_etapas":
+        return "P renormalizada da doença (as saudáveis da 1ª etapa não têm corte)"
+    return "confiança"
+
+
+def _prop(p: dict | None) -> str:
+    """Proporção com o IC de Wilson e a contagem, ou "-"."""
+    if not p or p.get("p") is None:
+        return "-"
+    return (f"{_pct(p['p'])} ({_pct(p['ic95'][0])} a {_pct(p['ic95'][1])}; {p['sucessos']} de "
+            f"{p['n']})")
+
+
+def _secao_duas_etapas(de: dict, c: dict) -> list[str]:
+    fora = de["fora_da_dobra"]
+    t_s, t_d = de["limiar_saudavel"], de["limiar_doenca"]
+    linhas = [
+        "## Regra em duas etapas (passo 5b): proposta, desligada por padrão", "",
+        "**1ª etapa:** P(saudável) >= limiar_saudavel faz a folha saudável, sem o corte de "
+        "confiança. **2ª etapa:** senão, a doença de maior probabilidade com o softmax "
+        "renormalizado entre as 4 doenças, cortada por limiar_doenca (abaixo dele a folha sai, "
+        "como hoje). O padrão da cadeia continua o argmax com o limiar de confiança "
+        "(`inferencia.Configuracao.decisao`).", "",
+        f"**Limiar de saudável: {fmt.decimal(t_s, 3)}**, fixado pelo gestor em 11/10/2026 antes "
+        "de dados novos e sem reajuste: no máximo 5% das 46 D do campo rotulado marcadas "
+        "saudáveis (modelo atual, modo B; `model/runs/campo_diagnostico`). Com >=, 0,083 deixa "
+        "passar 2 das 46 D; o valor exato da 3ª D (0,08277) deixaria passar 3 (6,5%). O limiar "
+        "saiu das mesmas folhas em que foi medido.", ""]
+    if de.get("campo"):
+        linhas += ["Sensibilidade (decisão do gestor, 11/10/2026: rótulos congelados, nenhum CSV "
+                   "alterado). Sem as 3 S com marca na ponta (" + ", ".join(S_COM_MARCA) + "):",
+                   ""]
+        linhas += fmt.tabela(
+            ["folhas", "S", "D", "limiar recalculado (no máximo 5% das D)",
+             f"D com P(saudável) >= {fmt.decimal(t_s, 3)}",
+             f"recall de S com P(saudável) >= {fmt.decimal(t_s, 3)}"],
+            [[nome, str(r["S"]), str(r["D"]), fmt.decimal(r["limiar_recalculado"], 4),
+              _prop(r["d_marcadas_saudaveis"]), _prop(r["recall_s"])]
+             for nome, r in de["campo"].items()], "lrrlll")
+        linhas += ["", "O limiar recalculado só depende das D, então tirar S não o muda; só o "
+                   "recall de S muda.", ""]
+    linhas += ["### Efeito do limiar de saudável no BRACOL", "",
+               f"As {fmt.n(fora['n'])} predições fora da dobra (protocolo aleatório, modelos de "
+               "20 épocas, imagem inteira) e as "
+               f"{de['validacao']['n']} imagens de validação no classificador avaliado (imagem "
+               "inteira, T1): o argmax contra P(saudável) >= "
+               f"{fmt.decimal(t_s, 3)}.", ""]
+    nomes = {"fora_da_dobra": "fora da dobra", "validacao": "validação (imagem inteira)"}
+    linhas += fmt.tabela(
+        ["fonte", "regra", "doentes marcadas saudáveis (IC 95%)", "recall das saudáveis (IC 95%)"],
+        [[nomes[fonte], "argmax" if regra == "argmax" else f"P(saudável) >= {fmt.decimal(t_s, 3)}",
+          _prop(r["saudavel_dado_d"]), _prop(r["recall_saudavel"])]
+         for fonte, por_regra in de["efeito_saudavel"].items()
+         for regra, r in por_regra.items()], "llll")
+    linhas += ["", "### Limiar de doença (2ª etapa): curva risco-cobertura nas doentes", "",
+               f"Só no BRACOL: as {fmt.n(fora['n_doentes'])} folhas doentes das predições fora "
+               "da dobra (acurácia da doença renormalizada sem corte: "
+               f"{_pct(fora['acuracia_sem_corte'])}). Com o limiar t, a doente com probabilidade "
+               "renormalizada abaixo de t sai. Conferência: as "
+               f"{de['validacao']['n_doentes']} doentes da validação (imagem inteira, T1).", "",
+               "![Curva risco-cobertura do limiar de doença](risco_cobertura_doencas.png)", ""]
+    pontos_fora = {round(p["limiar"], 2): p for p in fora["curva"]}
+    pontos_val = {round(p["limiar"], 2): p for p in de["validacao"]["curva"]}
+    destaque = sorted({*LIMIARES_DOENCA_DESTAQUE, *(x for x in (de["proposta"], t_d)
+                                                    if x is not None)})
+    doencas = [cl for cl in bracol.CLASSES if cl != "saudavel"]
+    linhas += fmt.tabela(
+        ["limiar", "cobertura (fora da dobra)", "acurácia das mantidas (IC 95%)",
+         *(f"cobertura {cl}" for cl in doencas), "cobertura (val)", "acurácia (val)"],
+        [[fmt.decimal(t, 2), _pct(pontos_fora[round(t, 2)]["cobertura"]),
+          f"{_pct(pontos_fora[round(t, 2)]['acuracia'])} "
+          f"({_pct(pontos_fora[round(t, 2)]['acuracia_ic95'][0])} a "
+          f"{_pct(pontos_fora[round(t, 2)]['acuracia_ic95'][1])})",
+          *(_pct(pontos_fora[round(t, 2)]["cobertura_por_classe"][cl]) for cl in doencas),
+          _pct(pontos_val[round(t, 2)]["cobertura"]), _pct(pontos_val[round(t, 2)]["acuracia"])]
+         for t in destaque])
+    proposta = de["proposta"]
+    linhas += ["", (f"**Proposta: {fmt.decimal(proposta, 2)}**, o menor limiar em que a "
+                    f"acurácia das doentes mantidas fora da dobra chega a {_pct(de['alvo'], 0)} "
+                    "(o mesmo critério da proposta do limiar de confiança). **Não adotada: a "
+                    "decisão é do gestor.**" if proposta is not None else
+                    f"Nenhum limiar chega a {_pct(de['alvo'], 0)} de acurácia."),
+               f"Em uso nesta avaliação: {fmt.decimal(t_d, 2)}. Arquivo: "
+               "`risco_cobertura_doencas.csv`.", "",
+               "### A regra completa contra o argmax com o limiar de confiança", "",
+               "Todas as predições, saudáveis e doentes: uma saudável com P(saudável) abaixo do "
+               "limiar vai para a 2ª etapa e conta como erro.", ""]
+    linhas += fmt.tabela(
+        ["fonte", "regra", "acurácia sem corte", "cobertura", "acurácia das mantidas (IC 95%)",
+         "cobertura das saudáveis", "cobertura das doentes"],
+        [[nomes[fonte], (f"duas etapas ({fmt.decimal(t_s, 3)}; {fmt.decimal(t_d, 2)})"
+                         if regra == "duas_etapas" else
+                         f"argmax ({fmt.decimal(c['limiar_confianca'], 2)})"),
+          _pct(r["acuracia_sem_corte"]), _pct(r["cobertura"]), _prop(r["acuracia_das_mantidas"]),
+          _pct(r["cobertura_saudaveis"]), _pct(r["cobertura_doentes"])]
+         for fonte, por_regra in de["regra_completa"].items()
+         for regra, r in por_regra.items()], "lllllll")
+    por_limiar = de["regra_completa_por_limiar"]
+    linhas += ["", f"A regra completa em outros limiares de doença, com o de saudável fixo em "
+               f"{fmt.decimal(t_s, 3)} (cobertura / acurácia das mantidas):", ""]
+    linhas += fmt.tabela(
+        ["limiar de doença", *(f"{nomes[f]}" for f in por_limiar)],
+        [[fmt.decimal(float(t), 2), *(f"{_pct(por_limiar[f][t]['cobertura'])} / "
+                                      f"{_pct(por_limiar[f][t]['acuracia_das_mantidas']['p'])}"
+                                      for f in por_limiar)]
+         for t in por_limiar["fora_da_dobra"]], "lll")
+    return linhas + [""]
+
+
 def _secao_t1(t1m: dict, c: dict) -> list[str]:
     tabela = t1m["variantes"]
     linhas = ["## T1: validação do BRACOL pela cadeia", "",
               f"As {t1m['imagens']} imagens de validação do BRACOL (uma folha por foto, rótulo "
               "conhecido) pela cadeia inteira e pela imagem inteira, com o mesmo código "
               "(`inferencia.classificar`). A folha avaliada é a de maior área. \"Só o recorte\" "
-              "desliga a regra 1, para medir o recorte numa folha com rótulo. Sem limiar de "
-              "confiança.", ""]
+              "desliga a regra 1, para medir o recorte numa folha com rótulo. Regra de decisão: "
+              f"{c.get('decisao', 'argmax')}, sem corte; a última coluna aplica o corte "
+              f"({_corte(c)}).", ""]
     linhas += fmt.tabela(
         ["variante", "com previsão", "acurácia (IC 95%)", "F1 macro",
-         *(f"recall {cl}" for cl in bracol.CLASSES), "severidade: exata / ±1",
-         f"no limiar {fmt.decimal(c['limiar_confianca'], 2)}: cobertura / acurácia"],
+         *(f"recall {cl}" for cl in bracol.CLASSES), "doentes previstas saudáveis",
+         "severidade: exata / ±1", "no corte: cobertura / acurácia"],
         [[DESCRICAO_T1[v], _pct(r["cobertura_sem_limiar"]),
           f"{_pct(r['metricas']['acuracia'])} ({_ic(r['metricas'])})",
           _pct(r["metricas"]["f1_macro"]), *(_pct(x) for x in r["metricas"]["recall"]),
+          _prop(r.get("saudavel_dado_d")),
           f"{_pct(r['severidade']['acuracia_exata'])} / "
           f"{_pct(r['severidade']['acuracia_tolerancia_1'])}",
           f"{_pct(r['cobertura_no_limiar'])} / {_pct(r['acuracia_no_limiar'])}"]
@@ -815,7 +1131,9 @@ def _secao_t2(t2m: dict, c: dict, observacoes: str | None) -> list[str]:
               f"{t2m['cortadas_por_limite']} pelo número máximo; "
               f"{t2m['folhas']} folhas classificadas, {t2m['na_borda']} cortadas pela borda. "
               f"Planos: {t2m['planos']}. Classe igual nos dois modos em "
-              f"{_pct(t2m['concordancia_A_B'])} das folhas.", ""]
+              f"{_pct(t2m['concordancia_A_B'])} das folhas. Regra de decisão: "
+              f"{c.get('decisao', 'argmax')}; corte {_corte(c)}; valor de corte: "
+              f"{_valor_de_corte(c)}.", ""]
     linhas += fmt.tabela(["", *(f"modo {m}" for m in MODOS)], [
         *([f"folhas {cl}", *(str(t2m[m]["classes"][cl]) for m in MODOS)]
           for cl in bracol.CLASSES),
@@ -823,17 +1141,21 @@ def _secao_t2(t2m: dict, c: dict, observacoes: str | None) -> list[str]:
           for s in inf.NIVEIS_CONTRATO),
         ["confiança média / mediana", *(f"{_pct(t2m[m]['confianca_media'])} / "
                                         f"{_pct(t2m[m]['confianca_mediana'])}" for m in MODOS)],
-        *([f"abaixo de {fmt.decimal(float(t), 2)}", *(_pct(t2m[m]["abaixo"][t]) for m in MODOS)]
+        *([f"mantidas no corte: {cl}", *(str(t2m[m]["classes_mantidas"][cl]) for m in MODOS)]
+          for cl in bracol.CLASSES if "classes_mantidas" in t2m["A"]),
+        *([f"valor de corte abaixo de {fmt.decimal(float(t), 2)}",
+           *(_pct(t2m[m]["abaixo"][t]) for m in MODOS)]
           for t in t2m["A"]["abaixo"]),
         ["cortadas pela borda: confiança média", *(_pct(t2m[m]["borda"]["confianca_media"])
                                                    for m in MODOS)],
         ["inteiras: confiança média", *(_pct(t2m[m]["inteiras"]["confianca_media"])
                                         for m in MODOS)],
-        [f"cortadas pela borda abaixo de {fmt.decimal(c['limiar_confianca'], 2)}",
+        ["cortadas pela borda: saem no corte",
          *(_pct(t2m[m]["borda"]["abaixo_do_limiar"]) for m in MODOS)],
-        [f"inteiras abaixo de {fmt.decimal(c['limiar_confianca'], 2)}",
+        ["inteiras: saem no corte",
          *(_pct(t2m[m]["inteiras"]["abaixo_do_limiar"]) for m in MODOS)],
-        *([f"fotos sem nenhuma folha acima de {fmt.decimal(float(t), 2)} (baixa_confianca)",
+        *([f"fotos sem nenhuma folha com valor de corte >= {fmt.decimal(float(t), 2)} "
+           "(baixa_confianca)",
            *(f"{t2m['fotos_baixa_confianca'][m][t]} de {t2m['fotos']}" for m in MODOS)]
           for t in t2m["fotos_baixa_confianca"]["A"]),
     ], "lrr")
@@ -896,7 +1218,8 @@ def conferir_inteira(tabela: pd.DataFrame, pasta_classificador: Path) -> str:
 def resumir_t1(tabela: pd.DataFrame, config, pasta_classificador) -> dict:
     regras = tabela["regra"].fillna(0).astype(int)
     contagem = tabela["deteccoes"].value_counts().sort_index()
-    return {"imagens": len(tabela), "variantes": metricas_t1(tabela, config.limiar_confianca),
+    return {"imagens": len(tabela),
+            "variantes": metricas_t1(tabela, inf.limiar_de_corte(config)),
             "regras": {"regra_1": int((regras == 1).sum()), "regra_2": int((regras == 2).sum()),
                        "regra_3": int((regras == 3).sum()),
                        "deteccao": int((tabela["plano"] == "deteccao").sum()),
@@ -943,10 +1266,34 @@ def refazer_relatorio(nome: str) -> int:
     return 0
 
 
+def curva_em_tabela(calibracao: dict) -> pd.DataFrame:
+    """Os pontos das curvas risco-cobertura (fora da dobra e validação) numa tabela."""
+    return pd.DataFrame([{"fonte": fonte, **{k: v for k, v in p.items()
+                                             if k not in ("acuracia_ic95", "cobertura_por_classe")},
+                          "ic95_baixo": p["acuracia_ic95"][0], "ic95_alto": p["acuracia_ic95"][1],
+                          **{f"cobertura_{c}": v for c, v in p["cobertura_por_classe"].items()}}
+                         for fonte in ("fora_da_dobra", "validacao")
+                         for p in calibracao[fonte]["curva"]])
+
+
+def configurar(args) -> tuple[inf.Configuracao, dict | None]:
+    """A configuração do run: a padrão ou, com --decisao duas_etapas, a regra em duas etapas com
+    o limiar de doença de --limiar-doenca ou, sem ele, o proposto pela curva das doenças fora da
+    dobra (a proposta não muda o padrão da cadeia)."""
+    if args.decisao != "duas_etapas":
+        return inf.Configuracao(), None
+    calibracao = calibrar_doencas(args.fora_da_dobra)
+    limiar = args.limiar_doenca if args.limiar_doenca is not None else calibracao["proposta"]
+    if limiar is None:
+        raise train.ErroFatal("nenhum limiar de doença chega ao alvo: passe --limiar-doenca")
+    fmt.dizer(f"Limiar de doenca proposto: {calibracao['proposta']}; em uso: {limiar}")
+    return inf.Configuracao(decisao="duas_etapas", limiar_doenca=limiar), calibracao
+
+
 def executar(args) -> int:
     import torch
 
-    config = inf.Configuracao()
+    config, calibracao_doencas = configurar(args)
     dispositivo = "cuda" if torch.cuda.is_available() else "cpu"
     modelos = inf.carregar_modelos(args.classificador, args.detector, dispositivo)
     constantes = medir_constantes(modelos, config)
@@ -964,6 +1311,8 @@ def executar(args) -> int:
     inteira = tabela_t1[["classe", "inteira_probs"]].rename(columns={"inteira_probs": "probs"})
     calibracao = calibrar(args.fora_da_dobra, inteira)
     fmt.dizer(f"Limiar proposto: {calibracao['proposta']}")
+    duas_etapas = (None if calibracao_doencas is None else
+                   completar_duas_etapas(calibracao_doencas, args.fora_da_dobra, inteira, config))
     fmt.dizer("T2: validacao do BRACOT...")
     folhas_t2, fotos_t2 = t2(modelos, config, args.recortes)
     pranchas = []
@@ -973,17 +1322,19 @@ def executar(args) -> int:
     fmt.dizer("T3: tempo em CPU...")
     tabela_t3, resumo_t3 = t3(args.classificador, args.detector, config)
     metricas = {"calibracao": calibracao, "t1": resumir_t1(tabela_t1, config, args.classificador),
-                "t2": resumo_t2(folhas_t2, fotos_t2, config.limiar_confianca), "t3": resumo_t3}
-    curva = pd.DataFrame([{"fonte": fonte, **{k: v for k, v in p.items()
-                                              if k not in ("acuracia_ic95",
-                                                           "cobertura_por_classe")},
-                           "ic95_baixo": p["acuracia_ic95"][0], "ic95_alto": p["acuracia_ic95"][1],
-                           **{f"cobertura_{c}": v for c, v in p["cobertura_por_classe"].items()}}
-                          for fonte in ("fora_da_dobra", "validacao")
-                          for p in calibracao[fonte]["curva"]])
-    gravar_csv(curva, pasta / "risco_cobertura.csv")
+                "t2": resumo_t2(folhas_t2, fotos_t2, inf.limiar_de_corte(config)),
+                "t3": resumo_t3}
+    gravar_csv(curva_em_tabela(calibracao), pasta / "risco_cobertura.csv")
     metrics.salvar_figura(figura_risco_cobertura(calibracao, config.limiar_confianca),
                           pasta / "risco_cobertura.png")
+    if duas_etapas is not None:
+        metricas["duas_etapas"] = duas_etapas
+        gravar_csv(curva_em_tabela(duas_etapas), pasta / "risco_cobertura_doencas.csv")
+        metrics.salvar_figura(
+            figura_risco_cobertura(duas_etapas, config.limiar_doenca,
+                                   "Curva risco-cobertura do limiar de doença (2ª etapa)",
+                                   LIMIARES_DOENCA_DESTAQUE, "folhas doentes"),
+            pasta / "risco_cobertura_doencas.png")
     gravar_csv(tabela_t1.drop(columns=[c for c in tabela_t1.columns if c.endswith("_probs")])
                .assign(classe=lambda t: t["classe"].map(lambda k: bracol.CLASSES[k])),
                pasta / "t1_imagens.csv")
@@ -1010,8 +1361,14 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
         description="Avaliacao ponta a ponta da inferencia (detector + recorte + classificador). "
                     "Detalhes no docstring de model/avaliar_pipeline.py.")
-    ap.add_argument("--nome", default=NOME_PADRAO, help=f"pasta em model/runs (padrao: "
-                                                        f"{NOME_PADRAO})")
+    ap.add_argument("--nome", help=f"pasta em model/runs (padrao: {NOME_PADRAO}; com "
+                                   f"--decisao duas_etapas, {NOME_DUAS_ETAPAS})")
+    ap.add_argument("--decisao", choices=inf.DECISOES, default="argmax",
+                    help="regra de decisao do run (o padrao da cadeia e argmax; duas_etapas e a "
+                         "proposta do passo 5b, que nao muda o padrao)")
+    ap.add_argument("--limiar-doenca", type=float,
+                    help="com --decisao duas_etapas: o limiar de doenca (sem ele, o proposto "
+                         "pela curva das doencas fora da dobra)")
     ap.add_argument("--classificador", type=Path, default=inf.PASTA_CLASSIFICADOR,
                     help="pasta do run do classificador (com o melhor.pt)")
     ap.add_argument("--detector", type=Path, default=detector.PESOS_PADRAO,
@@ -1026,6 +1383,10 @@ def main(argv=None) -> int:
                     help="so refaz o relatorio.md do run (--nome) a partir do config.json e do "
                          "metricas.json, com o observacoes.md")
     args = ap.parse_args(argv)
+    if args.limiar_doenca is not None and args.decisao != "duas_etapas":
+        ap.error("--limiar-doenca so vale com --decisao duas_etapas")
+    if args.nome is None:
+        args.nome = NOME_DUAS_ETAPAS if args.decisao == "duas_etapas" else NOME_PADRAO
     if args.recortes and args.recortes.resolve().is_relative_to(RAIZ_REPO):
         ap.error("--recortes precisa ficar fora do repositorio (imagens do dataset)")
     try:

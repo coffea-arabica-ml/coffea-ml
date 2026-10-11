@@ -83,7 +83,8 @@ galho ou de uma folha) e devolve o diagnóstico no contrato dos frontends (coffe
 3. as regras de folha única decidem se a foto inteira vira uma folha;
 4. cada folha é recortada deitada, com margem, como nas fotos do BRACOL;
 5. o classificador avalia todas as folhas num lote só;
-6. as folhas abaixo do limiar de confiança saem.
+6. a regra de decisão dá a classe, e as folhas abaixo do corte saem. O padrão é o argmax com o
+   limiar de confiança; a regra em duas etapas é uma opção desligada (ver abaixo).
 
 A avaliação completa com os padrões atuais (recorte B e filtro de fragmentos), com o tempo em
 CPU, está em `model/runs/pipeline_padrao_b/relatorio.md`. A do passo 3 (recorte A, sem filtro)
@@ -123,7 +124,8 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
   "detalhes": {"plano": "deteccao", "regra": null, "deteccoes": 7, "abaixo_do_limiar": 4,
                "cortadas_por_area": 0, "cortadas_por_cor": 0, "cortadas_por_fragmento": 0,
                "cortadas_por_limite": 0,
-               "abaixo_da_confianca": 5, "recorte": "B", "limiar_confianca": 0.61,
+               "abaixo_da_confianca": 5, "recorte": "B", "decisao": "argmax",
+               "limiar_confianca": 0.61,
                "classificador": "base_resnet50_bracol", "detector": "detector_base"}
 }
 ```
@@ -138,7 +140,8 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
   - O raio é o do círculo de mesma área, relativo à menor dimensão, limitado a [0,01; 0,5].
   - Quando a foto inteira vira uma folha, a região é a da detecção na regra 1 e o meio da foto, com
     raio 0,5, na regra 2.
-- **Extras:** `confianca` (probabilidade da classe prevista), `scoreDeteccao` (nulo sem detecção),
+- **Extras:** `confianca` (probabilidade da classe prevista; na regra em duas etapas, ver os
+  parâmetros), `scoreDeteccao` (nulo sem detecção),
   `caixa` (relativa, [x0, y0, x1, y1]), `cortadaNaBorda` e `detalhes`. São campos extras, e o
   normalizador do frontend os ignora.
 - **imagemUrl:** fica com o backend, que guarda a foto. Sem ela, o frontend usa a foto local.
@@ -173,6 +176,20 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
 | `max_megapixels` | 64 | acima disso, `arquivo_muito_grande` |
 | `fracao_visivel_minima` | 0,5 | filtro de fragmentos: sai a folha com área menor que metade da mediana das folhas inteiras da foto (decisão do gestor, 11/10/2026) |
 | `preenchimento_minimo` | 0 | filtro de fragmentos pela área sobre o retângulo mínimo; desligado (não discriminou no campo) |
+| `decisao` | "argmax" | regra de decisão; "duas_etapas" é a proposta do passo 5b, desligada até a validação no campo |
+| `limiar_saudavel` | 0,083 | 1ª etapa da regra em duas etapas; fixado pelo gestor em 11/10/2026, sem reajuste |
+| `limiar_doenca` | sem padrão | 2ª etapa; a proposta está no run `pipeline_duas_etapas` e aguarda a decisão do gestor |
+
+**Regra em duas etapas** (`Configuracao(decisao="duas_etapas", limiar_doenca=...)`, desligada
+por padrão):
+- **1ª etapa:** com P(saudável) >= `limiar_saudavel`, a folha é "saudavel", e o corte de
+  confiança não se aplica a ela. A `confianca` dela é P(saudável), que pode ser baixa (0,1, por
+  exemplo).
+- **2ª etapa:** senão, a classe é a doença de maior probabilidade, com o softmax renormalizado
+  entre as 4 doenças. Abaixo de `limiar_doenca` (sobre a probabilidade renormalizada), a folha
+  sai, como hoje. A `confianca` é a probabilidade renormalizada.
+- **`detalhes`:** traz `decisao`, `limiar_saudavel` e `limiar_doenca` no lugar de
+  `limiar_confianca`.
 
 **Filtro de fragmentos.** A fração visível é a área da folha sobre a mediana da área das folhas
 inteiras da mesma foto (ou de todas, se nenhuma for inteira). Por isso:
@@ -235,3 +252,20 @@ existentes, nas 82 folhas S ou D do campo rotulado (sem os "?"):
   `data/processed/campo_diagnostico/`, fora do git.
 
 O relatório, com a leitura, fica em `model/runs/campo_diagnostico/relatorio.md`.
+
+**Regra saudável x doente (passo 5b; decisões do gestor, 11/10/2026).**
+- **Modelos finais:** o `base_resnet50_bracol` e o `detector_base` ficam congelados, sem retreino
+  final. Os testes fechados medem estes modelos uma única vez, no fim.
+- **Regra em duas etapas:** opção desligada por padrão (ver os parâmetros). O limiar de saudável,
+  0,083, foi fixado antes de dados novos e não se reajusta.
+- **Limiar de doença:** proposto em 0,65, só no BRACOL. É o menor limiar com 95% de acerto nas
+  doentes fora da dobra. Não foi adotado.
+- **Rótulos:** os das 82 folhas ficam congelados.
+- **Run `model/runs/pipeline_duas_etapas`:** roda T1 a T3 com a regra ligada.
+- **Resultado no BRACOL:** fora da dobra, a regra completa fica abaixo do argmax com 0,61 (91,7%
+  contra 95,1% das mantidas, com intervalos que não se tocam). P(saudável) >= 0,083 marca 5,1%
+  das doentes como saudáveis.
+- **Resultado no campo (T2, sem rótulos):** 122 das 239 folhas viram saudáveis.
+- **Validação:** só a rotulagem nas fotos de treino do detector
+  (`data/manifests/campo_rotulado_treino.csv`; ver `data/README.md`) vai dizer se a regra vale no
+  campo.

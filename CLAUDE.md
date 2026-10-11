@@ -123,6 +123,24 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   embeddings (dobras por cena; não gera modelo) e o efeito do limiar no BRACOL (só validação), e
   faz a auditoria das S. O limiar de operação sai das mesmas folhas: é otimista.
 
+## Regra saudável x doente (passo 5b; decisões do gestor, 11/10/2026)
+
+- **Modelos finais:** o `base_resnet50_bracol` e o `detector_base` ficam congelados, sem retreino
+  final. Os testes fechados medem estes modelos uma única vez, no fim.
+- **Regra em duas etapas:** opção em `inferencia.Configuracao` (`decisao="duas_etapas"`),
+  desligada por padrão até a validação. A 1ª etapa é P(saudável) >= `limiar_saudavel`: a folha
+  vira saudável, sem o corte de 0,61. Na 2ª, a classe é a doença de maior probabilidade, com o
+  softmax renormalizado entre as 4 doenças e corte em `limiar_doenca`.
+- **Limiar de saudável:** 0,083, fixado antes de dados novos, com no máximo 5% das D das 82 folhas
+  marcadas saudáveis. Não se reajusta com dados novos.
+- **Limiar de doença:** só se calibra no BRACOL, com as predições fora da dobra. É proposto, não
+  adotado.
+- **Rótulos:** as 82 folhas ficam congeladas, inclusive as 3 S com marca na ponta. A conta sem
+  elas é só sensibilidade.
+- **Rotulagem de validação:** `data/manifests/campo_rotulado_treino.csv`, com 160 folhas das 194
+  fotos de treino do detector. É só avaliação. O detector treinou nessas fotos, então as máscaras
+  saem mais limpas.
+
 ## Comandos (na raiz do repositório, com o venv ativo)
 
 ```
@@ -152,7 +170,11 @@ python model/avaliar_pipeline.py             # cadeia inteira: limiar de confian
                                              # model/runs/pipeline_padrao_b/ (--nome, --classificador, --detector e
                                              # --recortes PASTA_FORA_DO_REPO para recortes e pranchas;
                                              # --relatorio --nome NOME só refaz o relatorio.md)
+python model/avaliar_pipeline.py --decisao duas_etapas   # regra em duas etapas: propõe o limiar de doença
+                                             # no BRACOL e roda T1 a T3; model/runs/pipeline_duas_etapas/
 python evaluation/campo.py --gerar-rotulagem # pranchas cegas (data/processed/) e CSV-modelo do campo rotulado
+python evaluation/campo.py --gerar-rotulagem --fotos treino   # rotulagem de validação (fotos de treino do
+                                             # detector): data/manifests/campo_rotulado_treino.csv
 python evaluation/campo.py --avaliar --classificador PASTA --saida campo_X   # proxies e rótulos de campo
 python model/treinar_campo.py --mascaras     # máscaras das folhas do BRACOL (data/processed/, só treino e val)
 python model/treinar_campo.py --fundos       # fundos borrados das fotos de treino do BRACOT

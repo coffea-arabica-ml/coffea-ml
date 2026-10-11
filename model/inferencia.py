@@ -17,7 +17,8 @@ planta, de um galho ou de uma folha e devolve o diagnóstico no contrato dos fro
 
 Cadeia: detector (model/detector.py) -> área mínima e número máximo de folhas -> regras de folha
 única -> recorte de cada folha, deitada e com margem como no BRACOL -> classificador, num lote só
--> corte por confiança -> contrato.
+-> regra de decisão e corte (argmax com limiar de confiança; ou, desligada por padrão, as duas
+etapas: saudável por P(saudável), senão a doença com o softmax renormalizado) -> contrato.
 
 Uso (com model/ no sys.path):
     import inferencia
@@ -50,6 +51,9 @@ CATEGORIAS = tuple(bracol.CLASSES)  # os nomes de CLASSES já são os do contrat
 # Níveis 0 a 4 do modelo (bracol.SEVERIDADES) no contrato. O BRACOL só tem nível 0 nas folhas
 # saudáveis e só 1 a 4 nas doentes (data/reports/eda_bracol.md, seção 3).
 NIVEIS_CONTRATO = ("saudavel", "muito_baixa", "baixa", "alta", "muito_alta")
+SAUDAVEL = CATEGORIAS.index("saudavel")
+DOENCAS = tuple(i for i in range(len(CATEGORIAS)) if i != SAUDAVEL)
+DECISOES = ("argmax", "duas_etapas")  # regras de decisão (Configuracao.decisao)
 RAIO_MINIMO, RAIO_MAXIMO = 0.01, 0.5  # o mesmo limite do normalizador do frontend
 LADO_TRABALHO = 2048  # a foto é reduzida a este lado maior antes dos recortes (o do BRACOL)
 LADO_COR = 1024  # lado maior da cópia reduzida em que se mede a cor das máscaras
@@ -104,10 +108,28 @@ class Configuracao:
     fracao_visivel_minima: float = 0.5
     preenchimento_minimo: float = 0.0
     max_megapixels: float = 64.0
+    # Regra de decisão (passo 5b; decisões do gestor de 11/10/2026). "argmax" (padrão): a classe
+    # de maior probabilidade, cortada por limiar_confianca. "duas_etapas", desligada até a
+    # validação no campo: P(saudável) >= limiar_saudavel faz a folha "saudavel", sem corte;
+    # senão, a doença de maior probabilidade com o softmax renormalizado entre as 4 doenças,
+    # cortada por limiar_doenca (abaixo dele a folha sai, como hoje). Ver aplicar_decisao.
+    decisao: str = "argmax"
+    # Fixado em 11/10/2026, antes de dados novos, e não se reajusta: no máximo 5% das 46 D do
+    # campo rotulado marcadas saudáveis (modelo atual, modo B; model/runs/campo_diagnostico).
+    # Com >=, 0,083 deixa passar 2 das 46 D e 30 das 36 S; o valor exato da 3ª D (0,08277)
+    # deixaria passar 3 D (6,5%).
+    limiar_saudavel: float = 0.083
+    # Sem padrão: a proposta sai da curva risco-cobertura das doenças no BRACOL
+    # (model/avaliar_pipeline.py --decisao duas_etapas) e espera a decisão do gestor.
+    limiar_doenca: float | None = None
 
     def __post_init__(self):
         if self.recorte not in ("A", "B"):
             raise ValueError(f"recorte desconhecido: {self.recorte!r} (use 'A' ou 'B')")
+        if self.decisao not in DECISOES:
+            raise ValueError(f"decisão desconhecida: {self.decisao!r} (use {DECISOES})")
+        if self.decisao == "duas_etapas" and self.limiar_doenca is None:
+            raise ValueError("a decisão em duas etapas precisa de limiar_doenca")
 
 
 @dataclass(frozen=True)
@@ -313,16 +335,45 @@ def classificar(recortes, modelos: Modelos) -> tuple[np.ndarray, np.ndarray]:
             logits_sev.argmax(dim=1).cpu().numpy())
 
 
+def aplicar_decisao(probs, config: Configuracao) -> tuple[int, float, float]:
+    """A regra de decisão de uma folha (puro): (classe em CATEGORIAS, confiança informada no
+    contrato, valor comparado com limiar_de_corte(config); a folha sai se ele ficar abaixo).
+
+    - argmax: a classe de maior probabilidade; a confiança e o valor de corte são essa
+      probabilidade.
+    - duas_etapas: com P(saudável) >= limiar_saudavel, "saudavel", com confiança P(saudável) e
+      sem corte (valor de corte infinito); senão, a doença de maior probabilidade entre as 4,
+      com as probabilidades delas renormalizadas para somar 1; a confiança e o valor de corte
+      são essa probabilidade renormalizada.
+    """
+    probs = np.asarray(probs, dtype=np.float64)
+    if config.decisao == "argmax":
+        classe = int(np.argmax(probs))
+        return classe, float(probs[classe]), float(probs[classe])
+    if probs[SAUDAVEL] >= config.limiar_saudavel:
+        return SAUDAVEL, float(probs[SAUDAVEL]), math.inf
+    doencas = probs[list(DOENCAS)]
+    renormalizadas = doencas / doencas.sum() if doencas.sum() > 0 else np.full(len(DOENCAS),
+                                                                             1 / len(DOENCAS))
+    k = int(np.argmax(renormalizadas))
+    return DOENCAS[k], float(renormalizadas[k]), float(renormalizadas[k])
+
+
+def limiar_de_corte(config: Configuracao) -> float:
+    """O limiar que a regra de decisão aplica ao valor de corte de aplicar_decisao."""
+    return config.limiar_doenca if config.decisao == "duas_etapas" else config.limiar_confianca
+
+
 def montar_resposta(preparo: dict, probabilidades, niveis, config: Configuracao,
                     modelos: Modelos | None = None) -> dict:
-    """O contrato a partir das folhas do preparo e das saídas do classificador: corta pelo
-    limiar de confiança e numera as folhas que ficam, na ordem de score."""
+    """O contrato a partir das folhas do preparo e das saídas do classificador: aplica a regra
+    de decisão com o corte dela (aplicar_decisao) e numera as folhas que ficam, na ordem de
+    score."""
     altura, largura = preparo["altura"], preparo["largura"]
     folhas = []
     for folha, probs, nivel in zip(preparo["folhas"], probabilidades, niveis):
-        classe = int(np.argmax(probs))
-        confianca = float(probs[classe])
-        if confianca < config.limiar_confianca:
+        classe, confianca, corte = aplicar_decisao(probs, config)
+        if corte < limiar_de_corte(config):
             continue
         categoria = CATEGORIAS[classe]
         folhas.append({
@@ -350,9 +401,12 @@ def resposta_de_erro(tipo: str, mensagem: str | None = None, detalhes: dict | No
 
 
 def _detalhes(preparo: dict, config: Configuracao, modelos, abaixo_da_confianca: int = 0):
+    limiares = ({"limiar_saudavel": config.limiar_saudavel,
+                 "limiar_doenca": config.limiar_doenca} if config.decisao == "duas_etapas"
+                else {"limiar_confianca": config.limiar_confianca})
     return {"plano": preparo["plano"], "regra": preparo["regra"], **preparo["contagens"],
             "abaixo_da_confianca": abaixo_da_confianca, "recorte": config.recorte,
-            "limiar_confianca": config.limiar_confianca,
+            "decisao": config.decisao, **limiares,
             "classificador": modelos.nome_classificador if modelos else None,
             "detector": modelos.nome_detector if modelos else None}
 

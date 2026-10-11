@@ -1,0 +1,6472 @@
+{
+  "calibracao": {
+    "fora_da_dobra": {
+      "pasta": "model/runs/diagnostico_blocos",
+      "n": 1432,
+      "acuracia": 0.907123,
+      "curva": [
+        {
+          "limiar": 0.3,
+          "mantidas": 1431,
+          "cobertura": 0.999302,
+          "acuracia": 0.907757,
+          "acuracia_ic95": [
+            0.891653,
+            0.921678
+          ],
+          "risco": 0.0922432,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 0.996622,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.31,
+          "mantidas": 1430,
+          "cobertura": 0.998603,
+          "acuracia": 0.907692,
+          "acuracia_ic95": [
+            0.891578,
+            0.921622
+          ],
+          "risco": 0.0923077,
+          "cobertura_por_classe": {
+            "saudavel": 0.995671,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 0.996622,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.32,
+          "mantidas": 1428,
+          "cobertura": 0.997207,
+          "acuracia": 0.907563,
+          "acuracia_ic95": [
+            0.891427,
+            0.921512
+          ],
+          "risco": 0.092437,
+          "cobertura_por_classe": {
+            "saudavel": 0.995671,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.99696,
+            "phoma": 0.993243,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.33,
+          "mantidas": 1427,
+          "cobertura": 0.996508,
+          "acuracia": 0.908199,
+          "acuracia_ic95": [
+            0.892102,
+            0.922104
+          ],
+          "risco": 0.091801,
+          "cobertura_por_classe": {
+            "saudavel": 0.995671,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.99696,
+            "phoma": 0.989865,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.34,
+          "mantidas": 1426,
+          "cobertura": 0.99581,
+          "acuracia": 0.908836,
+          "acuracia_ic95": [
+            0.892777,
+            0.922698
+          ],
+          "risco": 0.0911641,
+          "cobertura_por_classe": {
+            "saudavel": 0.995671,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.993921,
+            "phoma": 0.989865,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.35,
+          "mantidas": 1426,
+          "cobertura": 0.99581,
+          "acuracia": 0.908836,
+          "acuracia_ic95": [
+            0.892777,
+            0.922698
+          ],
+          "risco": 0.0911641,
+          "cobertura_por_classe": {
+            "saudavel": 0.995671,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.993921,
+            "phoma": 0.989865,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.36,
+          "mantidas": 1424,
+          "cobertura": 0.994413,
+          "acuracia": 0.90941,
+          "acuracia_ic95": [
+            0.89338,
+            0.923237
+          ],
+          "risco": 0.0905899,
+          "cobertura_por_classe": {
+            "saudavel": 0.991342,
+            "ferrugem": 0.997783,
+            "bicho_mineiro": 0.993921,
+            "phoma": 0.989865,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.37,
+          "mantidas": 1423,
+          "cobertura": 0.993715,
+          "acuracia": 0.910049,
+          "acuracia_ic95": [
+            0.894059,
+            0.923832
+          ],
+          "risco": 0.0899508,
+          "cobertura_por_classe": {
+            "saudavel": 0.991342,
+            "ferrugem": 0.995565,
+            "bicho_mineiro": 0.993921,
+            "phoma": 0.989865,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.38,
+          "mantidas": 1422,
+          "cobertura": 0.993017,
+          "acuracia": 0.910689,
+          "acuracia_ic95": [
+            0.894738,
+            0.924427
+          ],
+          "risco": 0.0893108,
+          "cobertura_por_classe": {
+            "saudavel": 0.991342,
+            "ferrugem": 0.995565,
+            "bicho_mineiro": 0.990881,
+            "phoma": 0.989865,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.39,
+          "mantidas": 1417,
+          "cobertura": 0.989525,
+          "acuracia": 0.913197,
+          "acuracia_ic95": [
+            0.897398,
+            0.926762
+          ],
+          "risco": 0.0868031,
+          "cobertura_por_classe": {
+            "saudavel": 0.991342,
+            "ferrugem": 0.991131,
+            "bicho_mineiro": 0.984802,
+            "phoma": 0.989865,
+            "cercosporiose": 0.992
+          }
+        },
+        {
+          "limiar": 0.4,
+          "mantidas": 1416,
+          "cobertura": 0.988827,
+          "acuracia": 0.913842,
+          "acuracia_ic95": [
+            0.898084,
+            0.92736
+          ],
+          "risco": 0.0861582,
+          "cobertura_por_classe": {
+            "saudavel": 0.991342,
+            "ferrugem": 0.988914,
+            "bicho_mineiro": 0.984802,
+            "phoma": 0.989865,
+            "cercosporiose": 0.992
+          }
+        },
+        {
+          "limiar": 0.41,
+          "mantidas": 1414,
+          "cobertura": 0.98743,
+          "acuracia": 0.91372,
+          "acuracia_ic95": [
+            0.897941,
+            0.927257
+          ],
+          "risco": 0.0862801,
+          "cobertura_por_classe": {
+            "saudavel": 0.991342,
+            "ferrugem": 0.988914,
+            "bicho_mineiro": 0.981763,
+            "phoma": 0.989865,
+            "cercosporiose": 0.984
+          }
+        },
+        {
+          "limiar": 0.42,
+          "mantidas": 1410,
+          "cobertura": 0.984637,
+          "acuracia": 0.914894,
+          "acuracia_ic95": [
+            0.899178,
+            0.928355
+          ],
+          "risco": 0.0851064,
+          "cobertura_por_classe": {
+            "saudavel": 0.991342,
+            "ferrugem": 0.986696,
+            "bicho_mineiro": 0.978723,
+            "phoma": 0.986486,
+            "cercosporiose": 0.976
+          }
+        },
+        {
+          "limiar": 0.43,
+          "mantidas": 1401,
+          "cobertura": 0.978352,
+          "acuracia": 0.919343,
+          "acuracia_ic95": [
+            0.903911,
+            0.932482
+          ],
+          "risco": 0.0806567,
+          "cobertura_por_classe": {
+            "saudavel": 0.991342,
+            "ferrugem": 0.982262,
+            "bicho_mineiro": 0.960486,
+            "phoma": 0.986486,
+            "cercosporiose": 0.968
+          }
+        },
+        {
+          "limiar": 0.44,
+          "mantidas": 1398,
+          "cobertura": 0.976257,
+          "acuracia": 0.919886,
+          "acuracia_ic95": [
+            0.904478,
+            0.932992
+          ],
+          "risco": 0.0801144,
+          "cobertura_por_classe": {
+            "saudavel": 0.991342,
+            "ferrugem": 0.977827,
+            "bicho_mineiro": 0.957447,
+            "phoma": 0.986486,
+            "cercosporiose": 0.968
+          }
+        },
+        {
+          "limiar": 0.45,
+          "mantidas": 1391,
+          "cobertura": 0.971369,
+          "acuracia": 0.922358,
+          "acuracia_ic95": [
+            0.907103,
+            0.935287
+          ],
+          "risco": 0.077642,
+          "cobertura_por_classe": {
+            "saudavel": 0.991342,
+            "ferrugem": 0.973392,
+            "bicho_mineiro": 0.945289,
+            "phoma": 0.986486,
+            "cercosporiose": 0.96
+          }
+        },
+        {
+          "limiar": 0.46,
+          "mantidas": 1388,
+          "cobertura": 0.969274,
+          "acuracia": 0.922911,
+          "acuracia_ic95": [
+            0.907682,
+            0.935805
+          ],
+          "risco": 0.0770893,
+          "cobertura_por_classe": {
+            "saudavel": 0.991342,
+            "ferrugem": 0.971175,
+            "bicho_mineiro": 0.93921,
+            "phoma": 0.986486,
+            "cercosporiose": 0.96
+          }
+        },
+        {
+          "limiar": 0.47,
+          "mantidas": 1380,
+          "cobertura": 0.963687,
+          "acuracia": 0.925362,
+          "acuracia_ic95": [
+            0.910285,
+            0.938078
+          ],
+          "risco": 0.0746377,
+          "cobertura_por_classe": {
+            "saudavel": 0.987013,
+            "ferrugem": 0.966741,
+            "bicho_mineiro": 0.933131,
+            "phoma": 0.983108,
+            "cercosporiose": 0.944
+          }
+        },
+        {
+          "limiar": 0.48,
+          "mantidas": 1374,
+          "cobertura": 0.959497,
+          "acuracia": 0.926492,
+          "acuracia_ic95": [
+            0.911472,
+            0.939134
+          ],
+          "risco": 0.073508,
+          "cobertura_por_classe": {
+            "saudavel": 0.987013,
+            "ferrugem": 0.960089,
+            "bicho_mineiro": 0.930091,
+            "phoma": 0.97973,
+            "cercosporiose": 0.936
+          }
+        },
+        {
+          "limiar": 0.49,
+          "mantidas": 1367,
+          "cobertura": 0.954609,
+          "acuracia": 0.930505,
+          "acuracia_ic95": [
+            0.915783,
+            0.942814
+          ],
+          "risco": 0.0694952,
+          "cobertura_por_classe": {
+            "saudavel": 0.987013,
+            "ferrugem": 0.955654,
+            "bicho_mineiro": 0.920973,
+            "phoma": 0.97973,
+            "cercosporiose": 0.92
+          }
+        },
+        {
+          "limiar": 0.5,
+          "mantidas": 1365,
+          "cobertura": 0.953212,
+          "acuracia": 0.930403,
+          "acuracia_ic95": [
+            0.915661,
+            0.942729
+          ],
+          "risco": 0.0695971,
+          "cobertura_por_classe": {
+            "saudavel": 0.987013,
+            "ferrugem": 0.953437,
+            "bicho_mineiro": 0.920973,
+            "phoma": 0.97973,
+            "cercosporiose": 0.912
+          }
+        },
+        {
+          "limiar": 0.51,
+          "mantidas": 1356,
+          "cobertura": 0.946927,
+          "acuracia": 0.932891,
+          "acuracia_ic95": [
+            0.918313,
+            0.945023
+          ],
+          "risco": 0.0671091,
+          "cobertura_por_classe": {
+            "saudavel": 0.987013,
+            "ferrugem": 0.949002,
+            "bicho_mineiro": 0.917933,
+            "phoma": 0.97973,
+            "cercosporiose": 0.864
+          }
+        },
+        {
+          "limiar": 0.52,
+          "mantidas": 1345,
+          "cobertura": 0.939246,
+          "acuracia": 0.936803,
+          "acuracia_ic95": [
+            0.922515,
+            0.948603
+          ],
+          "risco": 0.063197,
+          "cobertura_por_classe": {
+            "saudavel": 0.987013,
+            "ferrugem": 0.937916,
+            "bicho_mineiro": 0.902736,
+            "phoma": 0.97973,
+            "cercosporiose": 0.856
+          }
+        },
+        {
+          "limiar": 0.53,
+          "mantidas": 1337,
+          "cobertura": 0.933659,
+          "acuracia": 0.938669,
+          "acuracia_ic95": [
+            0.924508,
+            0.950316
+          ],
+          "risco": 0.0613313,
+          "cobertura_por_classe": {
+            "saudavel": 0.987013,
+            "ferrugem": 0.926829,
+            "bicho_mineiro": 0.899696,
+            "phoma": 0.97973,
+            "cercosporiose": 0.84
+          }
+        },
+        {
+          "limiar": 0.54,
+          "mantidas": 1331,
+          "cobertura": 0.929469,
+          "acuracia": 0.939895,
+          "acuracia_ic95": [
+            0.925816,
+            0.951442
+          ],
+          "risco": 0.0601052,
+          "cobertura_por_classe": {
+            "saudavel": 0.982684,
+            "ferrugem": 0.924612,
+            "bicho_mineiro": 0.890578,
+            "phoma": 0.97973,
+            "cercosporiose": 0.832
+          }
+        },
+        {
+          "limiar": 0.55,
+          "mantidas": 1316,
+          "cobertura": 0.918994,
+          "acuracia": 0.942249,
+          "acuracia_ic95": [
+            0.928312,
+            0.953613
+          ],
+          "risco": 0.0577508,
+          "cobertura_por_classe": {
+            "saudavel": 0.982684,
+            "ferrugem": 0.909091,
+            "bicho_mineiro": 0.881459,
+            "phoma": 0.97973,
+            "cercosporiose": 0.792
+          }
+        },
+        {
+          "limiar": 0.56,
+          "mantidas": 1304,
+          "cobertura": 0.910615,
+          "acuracia": 0.944018,
+          "acuracia_ic95": [
+            0.930187,
+            0.955241
+          ],
+          "risco": 0.0559816,
+          "cobertura_por_classe": {
+            "saudavel": 0.982684,
+            "ferrugem": 0.898004,
+            "bicho_mineiro": 0.87234,
+            "phoma": 0.969595,
+            "cercosporiose": 0.784
+          }
+        },
+        {
+          "limiar": 0.57,
+          "mantidas": 1296,
+          "cobertura": 0.905028,
+          "acuracia": 0.944444,
+          "acuracia_ic95": [
+            0.930609,
+            0.955652
+          ],
+          "risco": 0.0555556,
+          "cobertura_por_classe": {
+            "saudavel": 0.974026,
+            "ferrugem": 0.89357,
+            "bicho_mineiro": 0.863222,
+            "phoma": 0.969595,
+            "cercosporiose": 0.776
+          }
+        },
+        {
+          "limiar": 0.58,
+          "mantidas": 1288,
+          "cobertura": 0.899441,
+          "acuracia": 0.944876,
+          "acuracia_ic95": [
+            0.931038,
+            0.956068
+          ],
+          "risco": 0.0551242,
+          "cobertura_por_classe": {
+            "saudavel": 0.974026,
+            "ferrugem": 0.889135,
+            "bicho_mineiro": 0.857143,
+            "phoma": 0.969595,
+            "cercosporiose": 0.744
+          }
+        },
+        {
+          "limiar": 0.59,
+          "mantidas": 1278,
+          "cobertura": 0.892458,
+          "acuracia": 0.946792,
+          "acuracia_ic95": [
+            0.933093,
+            0.957813
+          ],
+          "risco": 0.0532081,
+          "cobertura_por_classe": {
+            "saudavel": 0.965368,
+            "ferrugem": 0.886918,
+            "bicho_mineiro": 0.848024,
+            "phoma": 0.969595,
+            "cercosporiose": 0.712
+          }
+        },
+        {
+          "limiar": 0.6,
+          "mantidas": 1271,
+          "cobertura": 0.88757,
+          "acuracia": 0.948859,
+          "acuracia_ic95": [
+            0.935339,
+            0.959674
+          ],
+          "risco": 0.0511408,
+          "cobertura_por_classe": {
+            "saudavel": 0.965368,
+            "ferrugem": 0.878049,
+            "bicho_mineiro": 0.841945,
+            "phoma": 0.966216,
+            "cercosporiose": 0.712
+          }
+        },
+        {
+          "limiar": 0.61,
+          "mantidas": 1261,
+          "cobertura": 0.880587,
+          "acuracia": 0.950833,
+          "acuracia_ic95": [
+            0.937469,
+            0.961458
+          ],
+          "risco": 0.0491673,
+          "cobertura_por_classe": {
+            "saudavel": 0.961039,
+            "ferrugem": 0.86918,
+            "bicho_mineiro": 0.835866,
+            "phoma": 0.959459,
+            "cercosporiose": 0.704
+          }
+        },
+        {
+          "limiar": 0.62,
+          "mantidas": 1251,
+          "cobertura": 0.873603,
+          "acuracia": 0.955236,
+          "acuracia_ic95": [
+            0.942316,
+            0.965368
+          ],
+          "risco": 0.0447642,
+          "cobertura_por_classe": {
+            "saudavel": 0.95671,
+            "ferrugem": 0.864745,
+            "bicho_mineiro": 0.826748,
+            "phoma": 0.952703,
+            "cercosporiose": 0.688
+          }
+        },
+        {
+          "limiar": 0.63,
+          "mantidas": 1244,
+          "cobertura": 0.868715,
+          "acuracia": 0.954984,
+          "acuracia_ic95": [
+            0.941994,
+            0.965172
+          ],
+          "risco": 0.0450161,
+          "cobertura_por_classe": {
+            "saudavel": 0.952381,
+            "ferrugem": 0.855876,
+            "bicho_mineiro": 0.820669,
+            "phoma": 0.952703,
+            "cercosporiose": 0.688
+          }
+        },
+        {
+          "limiar": 0.64,
+          "mantidas": 1236,
+          "cobertura": 0.863128,
+          "acuracia": 0.956311,
+          "acuracia_ic95": [
+            0.943432,
+            0.966362
+          ],
+          "risco": 0.0436893,
+          "cobertura_por_classe": {
+            "saudavel": 0.952381,
+            "ferrugem": 0.844789,
+            "bicho_mineiro": 0.81459,
+            "phoma": 0.952703,
+            "cercosporiose": 0.68
+          }
+        },
+        {
+          "limiar": 0.65,
+          "mantidas": 1228,
+          "cobertura": 0.857542,
+          "acuracia": 0.95684,
+          "acuracia_ic95": [
+            0.943978,
+            0.966853
+          ],
+          "risco": 0.0431596,
+          "cobertura_por_classe": {
+            "saudavel": 0.952381,
+            "ferrugem": 0.844789,
+            "bicho_mineiro": 0.799392,
+            "phoma": 0.952703,
+            "cercosporiose": 0.656
+          }
+        },
+        {
+          "limiar": 0.66,
+          "mantidas": 1218,
+          "cobertura": 0.850559,
+          "acuracia": 0.961412,
+          "acuracia_ic95": [
+            0.949065,
+            0.970858
+          ],
+          "risco": 0.0385878,
+          "cobertura_por_classe": {
+            "saudavel": 0.952381,
+            "ferrugem": 0.83592,
+            "bicho_mineiro": 0.793313,
+            "phoma": 0.942568,
+            "cercosporiose": 0.648
+          }
+        },
+        {
+          "limiar": 0.67,
+          "mantidas": 1205,
+          "cobertura": 0.84148,
+          "acuracia": 0.962656,
+          "acuracia_ic95": [
+            0.950396,
+            0.971974
+          ],
+          "risco": 0.0373444,
+          "cobertura_por_classe": {
+            "saudavel": 0.952381,
+            "ferrugem": 0.820399,
+            "bicho_mineiro": 0.784195,
+            "phoma": 0.935811,
+            "cercosporiose": 0.64
+          }
+        },
+        {
+          "limiar": 0.68,
+          "mantidas": 1198,
+          "cobertura": 0.836592,
+          "acuracia": 0.964942,
+          "acuracia_ic95": [
+            0.952951,
+            0.97396
+          ],
+          "risco": 0.0350584,
+          "cobertura_por_classe": {
+            "saudavel": 0.948052,
+            "ferrugem": 0.818182,
+            "bicho_mineiro": 0.778116,
+            "phoma": 0.929054,
+            "cercosporiose": 0.632
+          }
+        },
+        {
+          "limiar": 0.69,
+          "mantidas": 1183,
+          "cobertura": 0.826117,
+          "acuracia": 0.968724,
+          "acuracia_ic95": [
+            0.957188,
+            0.977225
+          ],
+          "risco": 0.0312764,
+          "cobertura_por_classe": {
+            "saudavel": 0.948052,
+            "ferrugem": 0.804878,
+            "bicho_mineiro": 0.765957,
+            "phoma": 0.925676,
+            "cercosporiose": 0.6
+          }
+        },
+        {
+          "limiar": 0.7,
+          "mantidas": 1171,
+          "cobertura": 0.817737,
+          "acuracia": 0.972673,
+          "acuracia_ic95": [
+            0.961678,
+            0.980577
+          ],
+          "risco": 0.0273271,
+          "cobertura_por_classe": {
+            "saudavel": 0.939394,
+            "ferrugem": 0.800443,
+            "bicho_mineiro": 0.75076,
+            "phoma": 0.922297,
+            "cercosporiose": 0.584
+          }
+        },
+        {
+          "limiar": 0.71,
+          "mantidas": 1162,
+          "cobertura": 0.811453,
+          "acuracia": 0.973322,
+          "acuracia_ic95": [
+            0.962382,
+            0.981143
+          ],
+          "risco": 0.0266781,
+          "cobertura_por_classe": {
+            "saudavel": 0.939394,
+            "ferrugem": 0.793792,
+            "bicho_mineiro": 0.741641,
+            "phoma": 0.918919,
+            "cercosporiose": 0.568
+          }
+        },
+        {
+          "limiar": 0.72,
+          "mantidas": 1150,
+          "cobertura": 0.803073,
+          "acuracia": 0.974783,
+          "acuracia_ic95": [
+            0.964018,
+            0.982385
+          ],
+          "risco": 0.0252174,
+          "cobertura_por_classe": {
+            "saudavel": 0.926407,
+            "ferrugem": 0.789357,
+            "bicho_mineiro": 0.738602,
+            "phoma": 0.912162,
+            "cercosporiose": 0.536
+          }
+        },
+        {
+          "limiar": 0.73,
+          "mantidas": 1136,
+          "cobertura": 0.793296,
+          "acuracia": 0.974472,
+          "acuracia_ic95": [
+            0.963578,
+            0.982168
+          ],
+          "risco": 0.0255282,
+          "cobertura_por_classe": {
+            "saudavel": 0.922078,
+            "ferrugem": 0.778271,
+            "bicho_mineiro": 0.729483,
+            "phoma": 0.905405,
+            "cercosporiose": 0.512
+          }
+        },
+        {
+          "limiar": 0.74,
+          "mantidas": 1117,
+          "cobertura": 0.780028,
+          "acuracia": 0.977619,
+          "acuracia_ic95": [
+            0.967169,
+            0.984795
+          ],
+          "risco": 0.0223814,
+          "cobertura_por_classe": {
+            "saudavel": 0.91342,
+            "ferrugem": 0.764967,
+            "bicho_mineiro": 0.711246,
+            "phoma": 0.898649,
+            "cercosporiose": 0.488
+          }
+        },
+        {
+          "limiar": 0.75,
+          "mantidas": 1106,
+          "cobertura": 0.772346,
+          "acuracia": 0.9783,
+          "acuracia_ic95": [
+            0.967914,
+            0.985375
+          ],
+          "risco": 0.0216998,
+          "cobertura_por_classe": {
+            "saudavel": 0.91342,
+            "ferrugem": 0.751663,
+            "bicho_mineiro": 0.702128,
+            "phoma": 0.89527,
+            "cercosporiose": 0.48
+          }
+        },
+        {
+          "limiar": 0.76,
+          "mantidas": 1089,
+          "cobertura": 0.760475,
+          "acuracia": 0.981635,
+          "acuracia_ic95": [
+            0.971803,
+            0.98808
+          ],
+          "risco": 0.0183655,
+          "cobertura_por_classe": {
+            "saudavel": 0.904762,
+            "ferrugem": 0.747228,
+            "bicho_mineiro": 0.680851,
+            "phoma": 0.888514,
+            "cercosporiose": 0.448
+          }
+        },
+        {
+          "limiar": 0.77,
+          "mantidas": 1078,
+          "cobertura": 0.752793,
+          "acuracia": 0.981447,
+          "acuracia_ic95": [
+            0.971517,
+            0.987958
+          ],
+          "risco": 0.0185529,
+          "cobertura_por_classe": {
+            "saudavel": 0.900433,
+            "ferrugem": 0.740576,
+            "bicho_mineiro": 0.662614,
+            "phoma": 0.888514,
+            "cercosporiose": 0.44
+          }
+        },
+        {
+          "limiar": 0.78,
+          "mantidas": 1063,
+          "cobertura": 0.742318,
+          "acuracia": 0.982126,
+          "acuracia_ic95": [
+            0.972252,
+            0.988528
+          ],
+          "risco": 0.0178739,
+          "cobertura_por_classe": {
+            "saudavel": 0.900433,
+            "ferrugem": 0.727273,
+            "bicho_mineiro": 0.647416,
+            "phoma": 0.878378,
+            "cercosporiose": 0.432
+          }
+        },
+        {
+          "limiar": 0.79,
+          "mantidas": 1038,
+          "cobertura": 0.72486,
+          "acuracia": 0.984586,
+          "acuracia_ic95": [
+            0.975108,
+            0.99049
+          ],
+          "risco": 0.0154143,
+          "cobertura_por_classe": {
+            "saudavel": 0.896104,
+            "ferrugem": 0.698448,
+            "bicho_mineiro": 0.62614,
+            "phoma": 0.875,
+            "cercosporiose": 0.408
+          }
+        },
+        {
+          "limiar": 0.8,
+          "mantidas": 1018,
+          "cobertura": 0.710894,
+          "acuracia": 0.985265,
+          "acuracia_ic95": [
+            0.975831,
+            0.99105
+          ],
+          "risco": 0.0147348,
+          "cobertura_por_classe": {
+            "saudavel": 0.887446,
+            "ferrugem": 0.68071,
+            "bicho_mineiro": 0.607903,
+            "phoma": 0.868243,
+            "cercosporiose": 0.392
+          }
+        },
+        {
+          "limiar": 0.81,
+          "mantidas": 1007,
+          "cobertura": 0.703212,
+          "acuracia": 0.985104,
+          "acuracia_ic95": [
+            0.975569,
+            0.990952
+          ],
+          "risco": 0.0148957,
+          "cobertura_por_classe": {
+            "saudavel": 0.887446,
+            "ferrugem": 0.67184,
+            "bicho_mineiro": 0.592705,
+            "phoma": 0.864865,
+            "cercosporiose": 0.384
+          }
+        },
+        {
+          "limiar": 0.82,
+          "mantidas": 984,
+          "cobertura": 0.687151,
+          "acuracia": 0.986789,
+          "acuracia_ic95": [
+            0.977528,
+            0.992263
+          ],
+          "risco": 0.0132114,
+          "cobertura_por_classe": {
+            "saudavel": 0.878788,
+            "ferrugem": 0.651885,
+            "bicho_mineiro": 0.571429,
+            "phoma": 0.858108,
+            "cercosporiose": 0.36
+          }
+        },
+        {
+          "limiar": 0.83,
+          "mantidas": 967,
+          "cobertura": 0.675279,
+          "acuracia": 0.986556,
+          "acuracia_ic95": [
+            0.977135,
+            0.992127
+          ],
+          "risco": 0.0134436,
+          "cobertura_por_classe": {
+            "saudavel": 0.874459,
+            "ferrugem": 0.636364,
+            "bicho_mineiro": 0.553191,
+            "phoma": 0.851351,
+            "cercosporiose": 0.352
+          }
+        },
+        {
+          "limiar": 0.84,
+          "mantidas": 949,
+          "cobertura": 0.662709,
+          "acuracia": 0.987355,
+          "acuracia_ic95": [
+            0.978029,
+            0.992752
+          ],
+          "risco": 0.0126449,
+          "cobertura_por_classe": {
+            "saudavel": 0.857143,
+            "ferrugem": 0.62306,
+            "bicho_mineiro": 0.541033,
+            "phoma": 0.841216,
+            "cercosporiose": 0.344
+          }
+        },
+        {
+          "limiar": 0.85,
+          "mantidas": 931,
+          "cobertura": 0.65014,
+          "acuracia": 0.987111,
+          "acuracia_ic95": [
+            0.977606,
+            0.992612
+          ],
+          "risco": 0.0128894,
+          "cobertura_por_classe": {
+            "saudavel": 0.848485,
+            "ferrugem": 0.600887,
+            "bicho_mineiro": 0.534954,
+            "phoma": 0.837838,
+            "cercosporiose": 0.32
+          }
+        },
+        {
+          "limiar": 0.86,
+          "mantidas": 914,
+          "cobertura": 0.638268,
+          "acuracia": 0.989059,
+          "acuracia_ic95": [
+            0.979978,
+            0.994046
+          ],
+          "risco": 0.0109409,
+          "cobertura_por_classe": {
+            "saudavel": 0.848485,
+            "ferrugem": 0.5898,
+            "bicho_mineiro": 0.519757,
+            "phoma": 0.824324,
+            "cercosporiose": 0.296
+          }
+        },
+        {
+          "limiar": 0.87,
+          "mantidas": 884,
+          "cobertura": 0.617318,
+          "acuracia": 0.989819,
+          "acuracia_ic95": [
+            0.980765,
+            0.994635
+          ],
+          "risco": 0.010181,
+          "cobertura_por_classe": {
+            "saudavel": 0.839827,
+            "ferrugem": 0.56541,
+            "bicho_mineiro": 0.486322,
+            "phoma": 0.807432,
+            "cercosporiose": 0.288
+          }
+        },
+        {
+          "limiar": 0.88,
+          "mantidas": 858,
+          "cobertura": 0.599162,
+          "acuracia": 0.990676,
+          "acuracia_ic95": [
+            0.98171,
+            0.995268
+          ],
+          "risco": 0.00932401,
+          "cobertura_por_classe": {
+            "saudavel": 0.839827,
+            "ferrugem": 0.547672,
+            "bicho_mineiro": 0.449848,
+            "phoma": 0.793919,
+            "cercosporiose": 0.272
+          }
+        },
+        {
+          "limiar": 0.89,
+          "mantidas": 822,
+          "cobertura": 0.574022,
+          "acuracia": 0.992701,
+          "acuracia_ic95": [
+            0.984167,
+            0.996651
+          ],
+          "risco": 0.00729927,
+          "cobertura_por_classe": {
+            "saudavel": 0.835498,
+            "ferrugem": 0.527716,
+            "bicho_mineiro": 0.419453,
+            "phoma": 0.77027,
+            "cercosporiose": 0.2
+          }
+        },
+        {
+          "limiar": 0.9,
+          "mantidas": 792,
+          "cobertura": 0.553073,
+          "acuracia": 0.992424,
+          "acuracia_ic95": [
+            0.983571,
+            0.996523
+          ],
+          "risco": 0.00757576,
+          "cobertura_por_classe": {
+            "saudavel": 0.813853,
+            "ferrugem": 0.503326,
+            "bicho_mineiro": 0.389058,
+            "phoma": 0.763514,
+            "cercosporiose": 0.184
+          }
+        },
+        {
+          "limiar": 0.91,
+          "mantidas": 747,
+          "cobertura": 0.521648,
+          "acuracia": 0.993307,
+          "acuracia_ic95": [
+            0.984428,
+            0.997138
+          ],
+          "risco": 0.00669344,
+          "cobertura_por_classe": {
+            "saudavel": 0.792208,
+            "ferrugem": 0.472284,
+            "bicho_mineiro": 0.349544,
+            "phoma": 0.733108,
+            "cercosporiose": 0.152
+          }
+        },
+        {
+          "limiar": 0.92,
+          "mantidas": 702,
+          "cobertura": 0.490223,
+          "acuracia": 0.992877,
+          "acuracia_ic95": [
+            0.983436,
+            0.996954
+          ],
+          "risco": 0.00712251,
+          "cobertura_por_classe": {
+            "saudavel": 0.757576,
+            "ferrugem": 0.436807,
+            "bicho_mineiro": 0.322188,
+            "phoma": 0.706081,
+            "cercosporiose": 0.12
+          }
+        },
+        {
+          "limiar": 0.93,
+          "mantidas": 666,
+          "cobertura": 0.465084,
+          "acuracia": 0.993994,
+          "acuracia_ic95": [
+            0.98466,
+            0.997662
+          ],
+          "risco": 0.00600601,
+          "cobertura_por_classe": {
+            "saudavel": 0.744589,
+            "ferrugem": 0.405765,
+            "bicho_mineiro": 0.300912,
+            "phoma": 0.668919,
+            "cercosporiose": 0.112
+          }
+        },
+        {
+          "limiar": 0.94,
+          "mantidas": 617,
+          "cobertura": 0.430866,
+          "acuracia": 0.996759,
+          "acuracia_ic95": [
+            0.988259,
+            0.999111
+          ],
+          "risco": 0.00324149,
+          "cobertura_por_classe": {
+            "saudavel": 0.69697,
+            "ferrugem": 0.372506,
+            "bicho_mineiro": 0.279635,
+            "phoma": 0.621622,
+            "cercosporiose": 0.096
+          }
+        },
+        {
+          "limiar": 0.95,
+          "mantidas": 545,
+          "cobertura": 0.380587,
+          "acuracia": 0.998165,
+          "acuracia_ic95": [
+            0.989681,
+            0.999676
+          ],
+          "risco": 0.00183486,
+          "cobertura_por_classe": {
+            "saudavel": 0.649351,
+            "ferrugem": 0.32816,
+            "bicho_mineiro": 0.209726,
+            "phoma": 0.570946,
+            "cercosporiose": 0.072
+          }
+        },
+        {
+          "limiar": 0.96,
+          "mantidas": 482,
+          "cobertura": 0.336592,
+          "acuracia": 0.997925,
+          "acuracia_ic95": [
+            0.988343,
+            0.999634
+          ],
+          "risco": 0.00207469,
+          "cobertura_por_classe": {
+            "saudavel": 0.588745,
+            "ferrugem": 0.286031,
+            "bicho_mineiro": 0.164134,
+            "phoma": 0.530405,
+            "cercosporiose": 0.048
+          }
+        },
+        {
+          "limiar": 0.97,
+          "mantidas": 370,
+          "cobertura": 0.25838,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.989724,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": 0.497835,
+            "ferrugem": 0.18847,
+            "bicho_mineiro": 0.121581,
+            "phoma": 0.432432,
+            "cercosporiose": 0.016
+          }
+        },
+        {
+          "limiar": 0.98,
+          "mantidas": 259,
+          "cobertura": 0.180866,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.985385,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": 0.354978,
+            "ferrugem": 0.128603,
+            "bicho_mineiro": 0.0820669,
+            "phoma": 0.307432,
+            "cercosporiose": 0.008
+          }
+        },
+        {
+          "limiar": 0.99,
+          "mantidas": 91,
+          "cobertura": 0.0635475,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.959496,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": 0.108225,
+            "ferrugem": 0.0465632,
+            "bicho_mineiro": 0.0303951,
+            "phoma": 0.118243,
+            "cercosporiose": 0.0
+          }
+        }
+      ]
+    },
+    "validacao": {
+      "n": 252,
+      "curva": [
+        {
+          "limiar": 0.3,
+          "mantidas": 252,
+          "cobertura": 1.0,
+          "acuracia": 0.948413,
+          "acuracia_ic95": [
+            0.913752,
+            0.969607
+          ],
+          "risco": 0.0515873,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.31,
+          "mantidas": 252,
+          "cobertura": 1.0,
+          "acuracia": 0.948413,
+          "acuracia_ic95": [
+            0.913752,
+            0.969607
+          ],
+          "risco": 0.0515873,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.32,
+          "mantidas": 252,
+          "cobertura": 1.0,
+          "acuracia": 0.948413,
+          "acuracia_ic95": [
+            0.913752,
+            0.969607
+          ],
+          "risco": 0.0515873,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.33,
+          "mantidas": 252,
+          "cobertura": 1.0,
+          "acuracia": 0.948413,
+          "acuracia_ic95": [
+            0.913752,
+            0.969607
+          ],
+          "risco": 0.0515873,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.34,
+          "mantidas": 252,
+          "cobertura": 1.0,
+          "acuracia": 0.948413,
+          "acuracia_ic95": [
+            0.913752,
+            0.969607
+          ],
+          "risco": 0.0515873,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.35,
+          "mantidas": 252,
+          "cobertura": 1.0,
+          "acuracia": 0.948413,
+          "acuracia_ic95": [
+            0.913752,
+            0.969607
+          ],
+          "risco": 0.0515873,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.36,
+          "mantidas": 252,
+          "cobertura": 1.0,
+          "acuracia": 0.948413,
+          "acuracia_ic95": [
+            0.913752,
+            0.969607
+          ],
+          "risco": 0.0515873,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.37,
+          "mantidas": 251,
+          "cobertura": 0.996032,
+          "acuracia": 0.948207,
+          "acuracia_ic95": [
+            0.913416,
+            0.969485
+          ],
+          "risco": 0.0517928,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.982759,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.38,
+          "mantidas": 251,
+          "cobertura": 0.996032,
+          "acuracia": 0.948207,
+          "acuracia_ic95": [
+            0.913416,
+            0.969485
+          ],
+          "risco": 0.0517928,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.982759,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.39,
+          "mantidas": 251,
+          "cobertura": 0.996032,
+          "acuracia": 0.948207,
+          "acuracia_ic95": [
+            0.913416,
+            0.969485
+          ],
+          "risco": 0.0517928,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.982759,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.4,
+          "mantidas": 251,
+          "cobertura": 0.996032,
+          "acuracia": 0.948207,
+          "acuracia_ic95": [
+            0.913416,
+            0.969485
+          ],
+          "risco": 0.0517928,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.982759,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.41,
+          "mantidas": 250,
+          "cobertura": 0.992063,
+          "acuracia": 0.948,
+          "acuracia_ic95": [
+            0.913078,
+            0.969362
+          ],
+          "risco": 0.052,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.982759,
+            "phoma": 1.0,
+            "cercosporiose": 0.954545
+          }
+        },
+        {
+          "limiar": 0.42,
+          "mantidas": 249,
+          "cobertura": 0.988095,
+          "acuracia": 0.947791,
+          "acuracia_ic95": [
+            0.912737,
+            0.969238
+          ],
+          "risco": 0.0522088,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.965517,
+            "phoma": 1.0,
+            "cercosporiose": 0.954545
+          }
+        },
+        {
+          "limiar": 0.43,
+          "mantidas": 248,
+          "cobertura": 0.984127,
+          "acuracia": 0.947581,
+          "acuracia_ic95": [
+            0.912394,
+            0.969113
+          ],
+          "risco": 0.0524194,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.965517,
+            "phoma": 1.0,
+            "cercosporiose": 0.909091
+          }
+        },
+        {
+          "limiar": 0.44,
+          "mantidas": 246,
+          "cobertura": 0.97619,
+          "acuracia": 0.947154,
+          "acuracia_ic95": [
+            0.911698,
+            0.96886
+          ],
+          "risco": 0.0528455,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.45,
+          "mantidas": 245,
+          "cobertura": 0.972222,
+          "acuracia": 0.946939,
+          "acuracia_ic95": [
+            0.911347,
+            0.968732
+          ],
+          "risco": 0.0530612,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.46,
+          "mantidas": 245,
+          "cobertura": 0.972222,
+          "acuracia": 0.946939,
+          "acuracia_ic95": [
+            0.911347,
+            0.968732
+          ],
+          "risco": 0.0530612,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.47,
+          "mantidas": 245,
+          "cobertura": 0.972222,
+          "acuracia": 0.946939,
+          "acuracia_ic95": [
+            0.911347,
+            0.968732
+          ],
+          "risco": 0.0530612,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.48,
+          "mantidas": 245,
+          "cobertura": 0.972222,
+          "acuracia": 0.946939,
+          "acuracia_ic95": [
+            0.911347,
+            0.968732
+          ],
+          "risco": 0.0530612,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.49,
+          "mantidas": 245,
+          "cobertura": 0.972222,
+          "acuracia": 0.946939,
+          "acuracia_ic95": [
+            0.911347,
+            0.968732
+          ],
+          "risco": 0.0530612,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.5,
+          "mantidas": 245,
+          "cobertura": 0.972222,
+          "acuracia": 0.946939,
+          "acuracia_ic95": [
+            0.911347,
+            0.968732
+          ],
+          "risco": 0.0530612,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.51,
+          "mantidas": 244,
+          "cobertura": 0.968254,
+          "acuracia": 0.946721,
+          "acuracia_ic95": [
+            0.910992,
+            0.968603
+          ],
+          "risco": 0.0532787,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.948276,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.52,
+          "mantidas": 244,
+          "cobertura": 0.968254,
+          "acuracia": 0.946721,
+          "acuracia_ic95": [
+            0.910992,
+            0.968603
+          ],
+          "risco": 0.0532787,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.948276,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.53,
+          "mantidas": 243,
+          "cobertura": 0.964286,
+          "acuracia": 0.946502,
+          "acuracia_ic95": [
+            0.910634,
+            0.968472
+          ],
+          "risco": 0.0534979,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 0.974684,
+            "bicho_mineiro": 0.948276,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.54,
+          "mantidas": 243,
+          "cobertura": 0.964286,
+          "acuracia": 0.946502,
+          "acuracia_ic95": [
+            0.910634,
+            0.968472
+          ],
+          "risco": 0.0534979,
+          "cobertura_por_classe": {
+            "saudavel": 1.0,
+            "ferrugem": 0.974684,
+            "bicho_mineiro": 0.948276,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.55,
+          "mantidas": 242,
+          "cobertura": 0.960317,
+          "acuracia": 0.946281,
+          "acuracia_ic95": [
+            0.910274,
+            0.968341
+          ],
+          "risco": 0.053719,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.974684,
+            "bicho_mineiro": 0.948276,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.56,
+          "mantidas": 240,
+          "cobertura": 0.952381,
+          "acuracia": 0.95,
+          "acuracia_ic95": [
+            0.914652,
+            0.97117
+          ],
+          "risco": 0.05,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.962025,
+            "bicho_mineiro": 0.931034,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.57,
+          "mantidas": 239,
+          "cobertura": 0.948413,
+          "acuracia": 0.953975,
+          "acuracia_ic95": [
+            0.919478,
+            0.974109
+          ],
+          "risco": 0.0460251,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.962025,
+            "bicho_mineiro": 0.931034,
+            "phoma": 0.980769,
+            "cercosporiose": 0.818182
+          }
+        },
+        {
+          "limiar": 0.58,
+          "mantidas": 238,
+          "cobertura": 0.944444,
+          "acuracia": 0.953782,
+          "acuracia_ic95": [
+            0.919148,
+            0.973999
+          ],
+          "risco": 0.0462185,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.962025,
+            "bicho_mineiro": 0.913793,
+            "phoma": 0.980769,
+            "cercosporiose": 0.818182
+          }
+        },
+        {
+          "limiar": 0.59,
+          "mantidas": 235,
+          "cobertura": 0.93254,
+          "acuracia": 0.953191,
+          "acuracia_ic95": [
+            0.91814,
+            0.973665
+          ],
+          "risco": 0.0468085,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.936709,
+            "bicho_mineiro": 0.896552,
+            "phoma": 0.980769,
+            "cercosporiose": 0.818182
+          }
+        },
+        {
+          "limiar": 0.6,
+          "mantidas": 235,
+          "cobertura": 0.93254,
+          "acuracia": 0.953191,
+          "acuracia_ic95": [
+            0.91814,
+            0.973665
+          ],
+          "risco": 0.0468085,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.936709,
+            "bicho_mineiro": 0.896552,
+            "phoma": 0.980769,
+            "cercosporiose": 0.818182
+          }
+        },
+        {
+          "limiar": 0.61,
+          "mantidas": 232,
+          "cobertura": 0.920635,
+          "acuracia": 0.961207,
+          "acuracia_ic95": [
+            0.92793,
+            0.979459
+          ],
+          "risco": 0.0387931,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.924051,
+            "bicho_mineiro": 0.896552,
+            "phoma": 0.980769,
+            "cercosporiose": 0.727273
+          }
+        },
+        {
+          "limiar": 0.62,
+          "mantidas": 232,
+          "cobertura": 0.920635,
+          "acuracia": 0.961207,
+          "acuracia_ic95": [
+            0.92793,
+            0.979459
+          ],
+          "risco": 0.0387931,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.924051,
+            "bicho_mineiro": 0.896552,
+            "phoma": 0.980769,
+            "cercosporiose": 0.727273
+          }
+        },
+        {
+          "limiar": 0.63,
+          "mantidas": 232,
+          "cobertura": 0.920635,
+          "acuracia": 0.961207,
+          "acuracia_ic95": [
+            0.92793,
+            0.979459
+          ],
+          "risco": 0.0387931,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.924051,
+            "bicho_mineiro": 0.896552,
+            "phoma": 0.980769,
+            "cercosporiose": 0.727273
+          }
+        },
+        {
+          "limiar": 0.64,
+          "mantidas": 229,
+          "cobertura": 0.90873,
+          "acuracia": 0.965066,
+          "acuracia_ic95": [
+            0.932592,
+            0.982194
+          ],
+          "risco": 0.0349345,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.898734,
+            "bicho_mineiro": 0.896552,
+            "phoma": 0.980769,
+            "cercosporiose": 0.681818
+          }
+        },
+        {
+          "limiar": 0.65,
+          "mantidas": 227,
+          "cobertura": 0.900794,
+          "acuracia": 0.964758,
+          "acuracia_ic95": [
+            0.932011,
+            0.982036
+          ],
+          "risco": 0.0352423,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.898734,
+            "bicho_mineiro": 0.862069,
+            "phoma": 0.980769,
+            "cercosporiose": 0.681818
+          }
+        },
+        {
+          "limiar": 0.66,
+          "mantidas": 227,
+          "cobertura": 0.900794,
+          "acuracia": 0.964758,
+          "acuracia_ic95": [
+            0.932011,
+            0.982036
+          ],
+          "risco": 0.0352423,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.898734,
+            "bicho_mineiro": 0.862069,
+            "phoma": 0.980769,
+            "cercosporiose": 0.681818
+          }
+        },
+        {
+          "limiar": 0.67,
+          "mantidas": 226,
+          "cobertura": 0.896825,
+          "acuracia": 0.964602,
+          "acuracia_ic95": [
+            0.931717,
+            0.981956
+          ],
+          "risco": 0.0353982,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.898734,
+            "bicho_mineiro": 0.862069,
+            "phoma": 0.980769,
+            "cercosporiose": 0.636364
+          }
+        },
+        {
+          "limiar": 0.68,
+          "mantidas": 225,
+          "cobertura": 0.892857,
+          "acuracia": 0.964444,
+          "acuracia_ic95": [
+            0.931421,
+            0.981875
+          ],
+          "risco": 0.0355556,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.898734,
+            "bicho_mineiro": 0.844828,
+            "phoma": 0.980769,
+            "cercosporiose": 0.636364
+          }
+        },
+        {
+          "limiar": 0.69,
+          "mantidas": 223,
+          "cobertura": 0.884921,
+          "acuracia": 0.964126,
+          "acuracia_ic95": [
+            0.93082,
+            0.981712
+          ],
+          "risco": 0.0358744,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.886076,
+            "bicho_mineiro": 0.827586,
+            "phoma": 0.980769,
+            "cercosporiose": 0.636364
+          }
+        },
+        {
+          "limiar": 0.7,
+          "mantidas": 223,
+          "cobertura": 0.884921,
+          "acuracia": 0.964126,
+          "acuracia_ic95": [
+            0.93082,
+            0.981712
+          ],
+          "risco": 0.0358744,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.886076,
+            "bicho_mineiro": 0.827586,
+            "phoma": 0.980769,
+            "cercosporiose": 0.636364
+          }
+        },
+        {
+          "limiar": 0.71,
+          "mantidas": 223,
+          "cobertura": 0.884921,
+          "acuracia": 0.964126,
+          "acuracia_ic95": [
+            0.93082,
+            0.981712
+          ],
+          "risco": 0.0358744,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.886076,
+            "bicho_mineiro": 0.827586,
+            "phoma": 0.980769,
+            "cercosporiose": 0.636364
+          }
+        },
+        {
+          "limiar": 0.72,
+          "mantidas": 222,
+          "cobertura": 0.880952,
+          "acuracia": 0.968468,
+          "acuracia_ic95": [
+            0.936356,
+            0.984644
+          ],
+          "risco": 0.0315315,
+          "cobertura_por_classe": {
+            "saudavel": 0.97561,
+            "ferrugem": 0.886076,
+            "bicho_mineiro": 0.827586,
+            "phoma": 0.980769,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.73,
+          "mantidas": 220,
+          "cobertura": 0.873016,
+          "acuracia": 0.972727,
+          "acuracia_ic95": [
+            0.941787,
+            0.987442
+          ],
+          "risco": 0.0272727,
+          "cobertura_por_classe": {
+            "saudavel": 0.95122,
+            "ferrugem": 0.873418,
+            "bicho_mineiro": 0.827586,
+            "phoma": 0.980769,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.74,
+          "mantidas": 216,
+          "cobertura": 0.857143,
+          "acuracia": 0.981481,
+          "acuracia_ic95": [
+            0.953361,
+            0.992776
+          ],
+          "risco": 0.0185185,
+          "cobertura_por_classe": {
+            "saudavel": 0.95122,
+            "ferrugem": 0.860759,
+            "bicho_mineiro": 0.793103,
+            "phoma": 0.961538,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.75,
+          "mantidas": 215,
+          "cobertura": 0.853175,
+          "acuracia": 0.981395,
+          "acuracia_ic95": [
+            0.953148,
+            0.992742
+          ],
+          "risco": 0.0186047,
+          "cobertura_por_classe": {
+            "saudavel": 0.95122,
+            "ferrugem": 0.860759,
+            "bicho_mineiro": 0.775862,
+            "phoma": 0.961538,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.76,
+          "mantidas": 215,
+          "cobertura": 0.853175,
+          "acuracia": 0.981395,
+          "acuracia_ic95": [
+            0.953148,
+            0.992742
+          ],
+          "risco": 0.0186047,
+          "cobertura_por_classe": {
+            "saudavel": 0.95122,
+            "ferrugem": 0.860759,
+            "bicho_mineiro": 0.775862,
+            "phoma": 0.961538,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.77,
+          "mantidas": 214,
+          "cobertura": 0.849206,
+          "acuracia": 0.981308,
+          "acuracia_ic95": [
+            0.952934,
+            0.992708
+          ],
+          "risco": 0.0186916,
+          "cobertura_por_classe": {
+            "saudavel": 0.95122,
+            "ferrugem": 0.860759,
+            "bicho_mineiro": 0.758621,
+            "phoma": 0.961538,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.78,
+          "mantidas": 210,
+          "cobertura": 0.833333,
+          "acuracia": 0.985714,
+          "acuracia_ic95": [
+            0.958848,
+            0.99513
+          ],
+          "risco": 0.0142857,
+          "cobertura_por_classe": {
+            "saudavel": 0.95122,
+            "ferrugem": 0.835443,
+            "bicho_mineiro": 0.741379,
+            "phoma": 0.942308,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.79,
+          "mantidas": 210,
+          "cobertura": 0.833333,
+          "acuracia": 0.985714,
+          "acuracia_ic95": [
+            0.958848,
+            0.99513
+          ],
+          "risco": 0.0142857,
+          "cobertura_por_classe": {
+            "saudavel": 0.95122,
+            "ferrugem": 0.835443,
+            "bicho_mineiro": 0.741379,
+            "phoma": 0.942308,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.8,
+          "mantidas": 208,
+          "cobertura": 0.825397,
+          "acuracia": 0.985577,
+          "acuracia_ic95": [
+            0.95846,
+            0.995083
+          ],
+          "risco": 0.0144231,
+          "cobertura_por_classe": {
+            "saudavel": 0.926829,
+            "ferrugem": 0.822785,
+            "bicho_mineiro": 0.741379,
+            "phoma": 0.942308,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.81,
+          "mantidas": 207,
+          "cobertura": 0.821429,
+          "acuracia": 0.985507,
+          "acuracia_ic95": [
+            0.958264,
+            0.995059
+          ],
+          "risco": 0.0144928,
+          "cobertura_por_classe": {
+            "saudavel": 0.926829,
+            "ferrugem": 0.822785,
+            "bicho_mineiro": 0.741379,
+            "phoma": 0.942308,
+            "cercosporiose": 0.545455
+          }
+        },
+        {
+          "limiar": 0.82,
+          "mantidas": 203,
+          "cobertura": 0.805556,
+          "acuracia": 0.985222,
+          "acuracia_ic95": [
+            0.957459,
+            0.994962
+          ],
+          "risco": 0.0147783,
+          "cobertura_por_classe": {
+            "saudavel": 0.926829,
+            "ferrugem": 0.797468,
+            "bicho_mineiro": 0.741379,
+            "phoma": 0.942308,
+            "cercosporiose": 0.454545
+          }
+        },
+        {
+          "limiar": 0.83,
+          "mantidas": 201,
+          "cobertura": 0.797619,
+          "acuracia": 0.985075,
+          "acuracia_ic95": [
+            0.957044,
+            0.994911
+          ],
+          "risco": 0.0149254,
+          "cobertura_por_classe": {
+            "saudavel": 0.926829,
+            "ferrugem": 0.797468,
+            "bicho_mineiro": 0.741379,
+            "phoma": 0.923077,
+            "cercosporiose": 0.409091
+          }
+        },
+        {
+          "limiar": 0.84,
+          "mantidas": 201,
+          "cobertura": 0.797619,
+          "acuracia": 0.985075,
+          "acuracia_ic95": [
+            0.957044,
+            0.994911
+          ],
+          "risco": 0.0149254,
+          "cobertura_por_classe": {
+            "saudavel": 0.926829,
+            "ferrugem": 0.797468,
+            "bicho_mineiro": 0.741379,
+            "phoma": 0.923077,
+            "cercosporiose": 0.409091
+          }
+        },
+        {
+          "limiar": 0.85,
+          "mantidas": 198,
+          "cobertura": 0.785714,
+          "acuracia": 0.984848,
+          "acuracia_ic95": [
+            0.956408,
+            0.994834
+          ],
+          "risco": 0.0151515,
+          "cobertura_por_classe": {
+            "saudavel": 0.926829,
+            "ferrugem": 0.797468,
+            "bicho_mineiro": 0.724138,
+            "phoma": 0.903846,
+            "cercosporiose": 0.363636
+          }
+        },
+        {
+          "limiar": 0.86,
+          "mantidas": 196,
+          "cobertura": 0.777778,
+          "acuracia": 0.984694,
+          "acuracia_ic95": [
+            0.955973,
+            0.994781
+          ],
+          "risco": 0.0153061,
+          "cobertura_por_classe": {
+            "saudavel": 0.926829,
+            "ferrugem": 0.78481,
+            "bicho_mineiro": 0.706897,
+            "phoma": 0.903846,
+            "cercosporiose": 0.363636
+          }
+        },
+        {
+          "limiar": 0.87,
+          "mantidas": 193,
+          "cobertura": 0.765873,
+          "acuracia": 0.984456,
+          "acuracia_ic95": [
+            0.955303,
+            0.9947
+          ],
+          "risco": 0.015544,
+          "cobertura_por_classe": {
+            "saudavel": 0.926829,
+            "ferrugem": 0.772152,
+            "bicho_mineiro": 0.706897,
+            "phoma": 0.884615,
+            "cercosporiose": 0.318182
+          }
+        },
+        {
+          "limiar": 0.88,
+          "mantidas": 188,
+          "cobertura": 0.746032,
+          "acuracia": 0.989362,
+          "acuracia_ic95": [
+            0.962048,
+            0.997078
+          ],
+          "risco": 0.0106383,
+          "cobertura_por_classe": {
+            "saudavel": 0.878049,
+            "ferrugem": 0.759494,
+            "bicho_mineiro": 0.689655,
+            "phoma": 0.865385,
+            "cercosporiose": 0.318182
+          }
+        },
+        {
+          "limiar": 0.89,
+          "mantidas": 183,
+          "cobertura": 0.72619,
+          "acuracia": 0.989071,
+          "acuracia_ic95": [
+            0.961034,
+            0.996998
+          ],
+          "risco": 0.010929,
+          "cobertura_por_classe": {
+            "saudavel": 0.853659,
+            "ferrugem": 0.746835,
+            "bicho_mineiro": 0.672414,
+            "phoma": 0.846154,
+            "cercosporiose": 0.272727
+          }
+        },
+        {
+          "limiar": 0.9,
+          "mantidas": 178,
+          "cobertura": 0.706349,
+          "acuracia": 0.994382,
+          "acuracia_ic95": [
+            0.968868,
+            0.999008
+          ],
+          "risco": 0.00561798,
+          "cobertura_por_classe": {
+            "saudavel": 0.853659,
+            "ferrugem": 0.708861,
+            "bicho_mineiro": 0.637931,
+            "phoma": 0.846154,
+            "cercosporiose": 0.272727
+          }
+        },
+        {
+          "limiar": 0.91,
+          "mantidas": 177,
+          "cobertura": 0.702381,
+          "acuracia": 0.99435,
+          "acuracia_ic95": [
+            0.968696,
+            0.999002
+          ],
+          "risco": 0.00564972,
+          "cobertura_por_classe": {
+            "saudavel": 0.853659,
+            "ferrugem": 0.708861,
+            "bicho_mineiro": 0.637931,
+            "phoma": 0.846154,
+            "cercosporiose": 0.227273
+          }
+        },
+        {
+          "limiar": 0.92,
+          "mantidas": 173,
+          "cobertura": 0.686508,
+          "acuracia": 0.99422,
+          "acuracia_ic95": [
+            0.967989,
+            0.998979
+          ],
+          "risco": 0.00578035,
+          "cobertura_por_classe": {
+            "saudavel": 0.853659,
+            "ferrugem": 0.658228,
+            "bicho_mineiro": 0.637931,
+            "phoma": 0.846154,
+            "cercosporiose": 0.227273
+          }
+        },
+        {
+          "limiar": 0.93,
+          "mantidas": 167,
+          "cobertura": 0.662698,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.977514,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": 0.853659,
+            "ferrugem": 0.620253,
+            "bicho_mineiro": 0.586207,
+            "phoma": 0.846154,
+            "cercosporiose": 0.227273
+          }
+        },
+        {
+          "limiar": 0.94,
+          "mantidas": 163,
+          "cobertura": 0.646825,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.976975,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": 0.829268,
+            "ferrugem": 0.607595,
+            "bicho_mineiro": 0.568966,
+            "phoma": 0.846154,
+            "cercosporiose": 0.181818
+          }
+        },
+        {
+          "limiar": 0.95,
+          "mantidas": 152,
+          "cobertura": 0.603175,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.97535,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": 0.780488,
+            "ferrugem": 0.582278,
+            "bicho_mineiro": 0.482759,
+            "phoma": 0.826923,
+            "cercosporiose": 0.136364
+          }
+        },
+        {
+          "limiar": 0.96,
+          "mantidas": 141,
+          "cobertura": 0.559524,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.973478,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": 0.707317,
+            "ferrugem": 0.556962,
+            "bicho_mineiro": 0.413793,
+            "phoma": 0.788462,
+            "cercosporiose": 0.136364
+          }
+        },
+        {
+          "limiar": 0.97,
+          "mantidas": 123,
+          "cobertura": 0.488095,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.969714,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": 0.634146,
+            "ferrugem": 0.493671,
+            "bicho_mineiro": 0.327586,
+            "phoma": 0.711538,
+            "cercosporiose": 0.0909091
+          }
+        },
+        {
+          "limiar": 0.98,
+          "mantidas": 97,
+          "cobertura": 0.384921,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.961906,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": 0.487805,
+            "ferrugem": 0.405063,
+            "bicho_mineiro": 0.224138,
+            "phoma": 0.576923,
+            "cercosporiose": 0.0909091
+          }
+        },
+        {
+          "limiar": 0.99,
+          "mantidas": 63,
+          "cobertura": 0.25,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.942529,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": 0.219512,
+            "ferrugem": 0.227848,
+            "bicho_mineiro": 0.172414,
+            "phoma": 0.480769,
+            "cercosporiose": 0.0454545
+          }
+        }
+      ]
+    },
+    "alvo": 0.95,
+    "proposta": 0.61
+  },
+  "t1": {
+    "imagens": 252,
+    "variantes": {
+      "inteira": {
+        "cobertura_sem_limiar": 1.0,
+        "metricas": {
+          "classes": [
+            "saudavel",
+            "ferrugem",
+            "bicho_mineiro",
+            "phoma",
+            "cercosporiose"
+          ],
+          "n": 252,
+          "acertos": 237,
+          "acuracia": 0.940476,
+          "acuracia_ic95": [
+            0.904125,
+            0.963599
+          ],
+          "precisao": [
+            0.911111,
+            0.95,
+            0.963636,
+            1.0,
+            0.772727
+          ],
+          "recall": [
+            1.0,
+            0.962025,
+            0.913793,
+            0.961538,
+            0.772727
+          ],
+          "f1": [
+            0.953488,
+            0.955975,
+            0.938053,
+            0.980392,
+            0.772727
+          ],
+          "suporte": [
+            41,
+            79,
+            58,
+            52,
+            22
+          ],
+          "f1_macro": 0.920127,
+          "matriz_confusao": [
+            [
+              41,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              76,
+              0,
+              0,
+              2
+            ],
+            [
+              1,
+              2,
+              53,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              1,
+              50,
+              1
+            ],
+            [
+              2,
+              2,
+              1,
+              0,
+              17
+            ]
+          ]
+        },
+        "severidade": {
+          "n": 252,
+          "mae": 0.285714,
+          "kappa_quadratico": 0.699686,
+          "acuracia_exata": 0.761905,
+          "acuracia_tolerancia_1": 0.956349,
+          "suporte": [
+            41,
+            138,
+            49,
+            15,
+            9
+          ]
+        },
+        "saudavel_dado_d": {
+          "p": 0.0189573,
+          "ic95": [
+            0.00739623,
+            0.047721
+          ],
+          "sucessos": 4,
+          "n": 211
+        },
+        "recall_saudavel": {
+          "p": 1.0,
+          "ic95": [
+            0.914332,
+            1.0
+          ],
+          "sucessos": 41,
+          "n": 41
+        },
+        "limiar": 0.65,
+        "mantidas": 233,
+        "cobertura_no_limiar": 0.924603,
+        "acuracia_no_limiar": 0.95279
+      },
+      "cadeia_A": {
+        "cobertura_sem_limiar": 0.996032,
+        "metricas": {
+          "classes": [
+            "saudavel",
+            "ferrugem",
+            "bicho_mineiro",
+            "phoma",
+            "cercosporiose"
+          ],
+          "n": 251,
+          "acertos": 235,
+          "acuracia": 0.936255,
+          "acuracia_ic95": [
+            0.898973,
+            0.960385
+          ],
+          "precisao": [
+            0.911111,
+            0.95,
+            0.980769,
+            1.0,
+            0.730769
+          ],
+          "recall": [
+            1.0,
+            0.962025,
+            0.87931,
+            0.941176,
+            0.863636
+          ],
+          "f1": [
+            0.953488,
+            0.955975,
+            0.927273,
+            0.969697,
+            0.791667
+          ],
+          "suporte": [
+            41,
+            79,
+            58,
+            51,
+            22
+          ],
+          "f1_macro": 0.91962,
+          "matriz_confusao": [
+            [
+              41,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              76,
+              0,
+              0,
+              2
+            ],
+            [
+              1,
+              3,
+              51,
+              0,
+              3
+            ],
+            [
+              0,
+              0,
+              1,
+              48,
+              2
+            ],
+            [
+              2,
+              1,
+              0,
+              0,
+              19
+            ]
+          ]
+        },
+        "severidade": {
+          "n": 251,
+          "mae": 0.290837,
+          "kappa_quadratico": 0.696664,
+          "acuracia_exata": 0.756972,
+          "acuracia_tolerancia_1": 0.956175,
+          "suporte": [
+            41,
+            138,
+            48,
+            15,
+            9
+          ]
+        },
+        "saudavel_dado_d": {
+          "p": 0.0190476,
+          "ic95": [
+            0.00743156,
+            0.0479434
+          ],
+          "sucessos": 4,
+          "n": 210
+        },
+        "recall_saudavel": {
+          "p": 1.0,
+          "ic95": [
+            0.914332,
+            1.0
+          ],
+          "sucessos": 41,
+          "n": 41
+        },
+        "limiar": 0.65,
+        "mantidas": 235,
+        "cobertura_no_limiar": 0.93254,
+        "acuracia_no_limiar": 0.953191
+      },
+      "cadeia_B": {
+        "cobertura_sem_limiar": 0.996032,
+        "metricas": {
+          "classes": [
+            "saudavel",
+            "ferrugem",
+            "bicho_mineiro",
+            "phoma",
+            "cercosporiose"
+          ],
+          "n": 251,
+          "acertos": 232,
+          "acuracia": 0.924303,
+          "acuracia_ic95": [
+            0.884807,
+            0.951007
+          ],
+          "precisao": [
+            0.87234,
+            0.948052,
+            0.961538,
+            1.0,
+            0.740741
+          ],
+          "recall": [
+            1.0,
+            0.924051,
+            0.862069,
+            0.941176,
+            0.909091
+          ],
+          "f1": [
+            0.931818,
+            0.935897,
+            0.909091,
+            0.969697,
+            0.816327
+          ],
+          "suporte": [
+            41,
+            79,
+            58,
+            51,
+            22
+          ],
+          "f1_macro": 0.912566,
+          "matriz_confusao": [
+            [
+              41,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              73,
+              1,
+              0,
+              3
+            ],
+            [
+              3,
+              3,
+              50,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              1,
+              48,
+              2
+            ],
+            [
+              1,
+              1,
+              0,
+              0,
+              20
+            ]
+          ]
+        },
+        "severidade": {
+          "n": 251,
+          "mae": 0.306773,
+          "kappa_quadratico": 0.666105,
+          "acuracia_exata": 0.749004,
+          "acuracia_tolerancia_1": 0.952191,
+          "suporte": [
+            41,
+            138,
+            48,
+            15,
+            9
+          ]
+        },
+        "saudavel_dado_d": {
+          "p": 0.0285714,
+          "ic95": [
+            0.0131589,
+            0.0609214
+          ],
+          "sucessos": 6,
+          "n": 210
+        },
+        "recall_saudavel": {
+          "p": 1.0,
+          "ic95": [
+            0.914332,
+            1.0
+          ],
+          "sucessos": 41,
+          "n": 41
+        },
+        "limiar": 0.65,
+        "mantidas": 231,
+        "cobertura_no_limiar": 0.916667,
+        "acuracia_no_limiar": 0.939394
+      },
+      "recorte_A": {
+        "cobertura_sem_limiar": 0.996032,
+        "metricas": {
+          "classes": [
+            "saudavel",
+            "ferrugem",
+            "bicho_mineiro",
+            "phoma",
+            "cercosporiose"
+          ],
+          "n": 251,
+          "acertos": 229,
+          "acuracia": 0.912351,
+          "acuracia_ic95": [
+            0.870864,
+            0.941406
+          ],
+          "precisao": [
+            0.891304,
+            0.961039,
+            0.944444,
+            0.96,
+            0.625
+          ],
+          "recall": [
+            1.0,
+            0.936709,
+            0.87931,
+            0.941176,
+            0.681818
+          ],
+          "f1": [
+            0.942529,
+            0.948718,
+            0.910714,
+            0.950495,
+            0.652174
+          ],
+          "suporte": [
+            41,
+            79,
+            58,
+            51,
+            22
+          ],
+          "f1_macro": 0.880926,
+          "matriz_confusao": [
+            [
+              41,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              74,
+              0,
+              0,
+              4
+            ],
+            [
+              2,
+              2,
+              51,
+              0,
+              3
+            ],
+            [
+              0,
+              0,
+              1,
+              48,
+              2
+            ],
+            [
+              2,
+              1,
+              2,
+              2,
+              15
+            ]
+          ]
+        },
+        "severidade": {
+          "n": 251,
+          "mae": 0.2749,
+          "kappa_quadratico": 0.72037,
+          "acuracia_exata": 0.768924,
+          "acuracia_tolerancia_1": 0.956175,
+          "suporte": [
+            41,
+            138,
+            48,
+            15,
+            9
+          ]
+        },
+        "saudavel_dado_d": {
+          "p": 0.0238095,
+          "ic95": [
+            0.0102119,
+            0.0545158
+          ],
+          "sucessos": 5,
+          "n": 210
+        },
+        "recall_saudavel": {
+          "p": 1.0,
+          "ic95": [
+            0.914332,
+            1.0
+          ],
+          "sucessos": 41,
+          "n": 41
+        },
+        "limiar": 0.65,
+        "mantidas": 230,
+        "cobertura_no_limiar": 0.912698,
+        "acuracia_no_limiar": 0.952174
+      },
+      "recorte_B": {
+        "cobertura_sem_limiar": 0.996032,
+        "metricas": {
+          "classes": [
+            "saudavel",
+            "ferrugem",
+            "bicho_mineiro",
+            "phoma",
+            "cercosporiose"
+          ],
+          "n": 251,
+          "acertos": 217,
+          "acuracia": 0.864542,
+          "acuracia_ic95": [
+            0.816674,
+            0.90142
+          ],
+          "precisao": [
+            0.82,
+            0.918919,
+            0.918367,
+            1.0,
+            0.5
+          ],
+          "recall": [
+            1.0,
+            0.860759,
+            0.775862,
+            0.941176,
+            0.681818
+          ],
+          "f1": [
+            0.901099,
+            0.888889,
+            0.841121,
+            0.969697,
+            0.576923
+          ],
+          "suporte": [
+            41,
+            79,
+            58,
+            51,
+            22
+          ],
+          "f1_macro": 0.835546,
+          "matriz_confusao": [
+            [
+              41,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              68,
+              1,
+              0,
+              7
+            ],
+            [
+              3,
+              4,
+              45,
+              0,
+              6
+            ],
+            [
+              0,
+              0,
+              1,
+              48,
+              2
+            ],
+            [
+              3,
+              2,
+              2,
+              0,
+              15
+            ]
+          ]
+        },
+        "severidade": {
+          "n": 251,
+          "mae": 0.302789,
+          "kappa_quadratico": 0.678788,
+          "acuracia_exata": 0.752988,
+          "acuracia_tolerancia_1": 0.948207,
+          "suporte": [
+            41,
+            138,
+            48,
+            15,
+            9
+          ]
+        },
+        "saudavel_dado_d": {
+          "p": 0.0428571,
+          "ic95": [
+            0.0227085,
+            0.07943
+          ],
+          "sucessos": 9,
+          "n": 210
+        },
+        "recall_saudavel": {
+          "p": 1.0,
+          "ic95": [
+            0.914332,
+            1.0
+          ],
+          "sucessos": 41,
+          "n": 41
+        },
+        "limiar": 0.65,
+        "mantidas": 221,
+        "cobertura_no_limiar": 0.876984,
+        "acuracia_no_limiar": 0.927602
+      }
+    },
+    "regras": {
+      "regra_1": 191,
+      "regra_2": 12,
+      "regra_3": 1,
+      "deteccao": 48,
+      "mais_de_uma": 38
+    },
+    "deteccoes_por_imagem": "0: 13, 1: 201, 2: 31, 3: 7",
+    "cortadas_por_cor": 173,
+    "conferencia": "diferença máxima das probabilidades 7.1e-03 (o treino usou AMP), classe prevista igual em 252 de 252"
+  },
+  "t2": {
+    "fotos": 46,
+    "folhas": 239,
+    "planos": {
+      "deteccao": 46
+    },
+    "cortadas_por_area": 1,
+    "cortadas_por_limite": 0,
+    "deteccoes": 321,
+    "na_borda": 117,
+    "A": {
+      "classes": {
+        "saudavel": 20,
+        "ferrugem": 161,
+        "bicho_mineiro": 23,
+        "phoma": 35,
+        "cercosporiose": 0
+      },
+      "classes_mantidas": {
+        "saudavel": 20,
+        "ferrugem": 66,
+        "bicho_mineiro": 2,
+        "phoma": 2,
+        "cercosporiose": 0
+      },
+      "severidades": {
+        "saudavel": 20,
+        "muito_baixa": 35,
+        "baixa": 184,
+        "alta": 0,
+        "muito_alta": 0
+      },
+      "confianca_media": 0.525419,
+      "confianca_mediana": 0.517077,
+      "abaixo": {
+        "0.5": 0.389121,
+        "0.6": 0.543933,
+        "0.65": 0.623431,
+        "0.7": 0.686192,
+        "0.8": 0.799163,
+        "0.9": 0.887029
+      },
+      "borda": {
+        "folhas": 117,
+        "confianca_media": 0.495744,
+        "abaixo_do_limiar": 0.598291
+      },
+      "inteiras": {
+        "folhas": 122,
+        "confianca_media": 0.553878,
+        "abaixo_do_limiar": 0.647541
+      }
+    },
+    "B": {
+      "classes": {
+        "saudavel": 122,
+        "ferrugem": 67,
+        "bicho_mineiro": 23,
+        "phoma": 23,
+        "cercosporiose": 4
+      },
+      "classes_mantidas": {
+        "saudavel": 122,
+        "ferrugem": 24,
+        "bicho_mineiro": 4,
+        "phoma": 2,
+        "cercosporiose": 0
+      },
+      "severidades": {
+        "saudavel": 122,
+        "muito_baixa": 63,
+        "baixa": 54,
+        "alta": 0,
+        "muito_alta": 0
+      },
+      "confianca_media": 0.364856,
+      "confianca_mediana": 0.33818,
+      "abaixo": {
+        "0.5": 0.225941,
+        "0.6": 0.343096,
+        "0.65": 0.364017,
+        "0.7": 0.393305,
+        "0.8": 0.422594,
+        "0.9": 0.472803
+      },
+      "borda": {
+        "folhas": 117,
+        "confianca_media": 0.329087,
+        "abaixo_do_limiar": 0.247863
+      },
+      "inteiras": {
+        "folhas": 122,
+        "confianca_media": 0.399159,
+        "abaixo_do_limiar": 0.47541
+      }
+    },
+    "concordancia_A_B": 0.351464,
+    "cortadas_por_cor": 2,
+    "cortadas_por_fragmento": 79,
+    "fotos_baixa_confianca": {
+      "A": {
+        "0.5": 3,
+        "0.6": 5,
+        "0.65": 7,
+        "0.7": 9,
+        "0.8": 19,
+        "0.9": 28
+      },
+      "B": {
+        "0.5": 0,
+        "0.6": 1,
+        "0.65": 1,
+        "0.7": 2,
+        "0.8": 4,
+        "0.9": 7
+      }
+    }
+  },
+  "t3": {
+    "threads_torch": 8,
+    "fotos": 46,
+    "carga_dos_modelos_s": 0.359999,
+    "mediana": {
+      "leitura_s": 0.0737152,
+      "deteccao_s": 0.212295,
+      "recortes_s": 0.178436,
+      "classificacao_s": 0.416605,
+      "contrato_s": 0.0008173,
+      "total_s": 0.885616
+    },
+    "maximo": {
+      "leitura_s": 0.0824113,
+      "deteccao_s": 0.250424,
+      "recortes_s": 0.366537,
+      "classificacao_s": 0.971943,
+      "contrato_s": 0.0021733,
+      "total_s": 1.5396
+    },
+    "folhas_mediana": 5.0,
+    "folhas_maximo": 11,
+    "pior_caso": {
+      "folhas": 15,
+      "classificacao_mediana_s": 1.38466,
+      "classificacao_maximo_s": 1.51877,
+      "total_estimado_s": 2.3901
+    },
+    "acima_de_5s": 0
+  },
+  "duas_etapas": {
+    "fora_da_dobra": {
+      "pasta": "model/runs/diagnostico_blocos",
+      "n": 1432,
+      "n_doentes": 1201,
+      "acuracia_sem_corte": 0.898418,
+      "curva": [
+        {
+          "limiar": 0.25,
+          "mantidas": 1201,
+          "cobertura": 1.0,
+          "acuracia": 0.898418,
+          "acuracia_ic95": [
+            0.880042,
+            0.914253
+          ],
+          "risco": 0.101582,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.26,
+          "mantidas": 1201,
+          "cobertura": 1.0,
+          "acuracia": 0.898418,
+          "acuracia_ic95": [
+            0.880042,
+            0.914253
+          ],
+          "risco": 0.101582,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.27,
+          "mantidas": 1201,
+          "cobertura": 1.0,
+          "acuracia": 0.898418,
+          "acuracia_ic95": [
+            0.880042,
+            0.914253
+          ],
+          "risco": 0.101582,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.28,
+          "mantidas": 1201,
+          "cobertura": 1.0,
+          "acuracia": 0.898418,
+          "acuracia_ic95": [
+            0.880042,
+            0.914253
+          ],
+          "risco": 0.101582,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.29,
+          "mantidas": 1201,
+          "cobertura": 1.0,
+          "acuracia": 0.898418,
+          "acuracia_ic95": [
+            0.880042,
+            0.914253
+          ],
+          "risco": 0.101582,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.3,
+          "mantidas": 1201,
+          "cobertura": 1.0,
+          "acuracia": 0.898418,
+          "acuracia_ic95": [
+            0.880042,
+            0.914253
+          ],
+          "risco": 0.101582,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.31,
+          "mantidas": 1201,
+          "cobertura": 1.0,
+          "acuracia": 0.898418,
+          "acuracia_ic95": [
+            0.880042,
+            0.914253
+          ],
+          "risco": 0.101582,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.32,
+          "mantidas": 1200,
+          "cobertura": 0.999167,
+          "acuracia": 0.898333,
+          "acuracia_ic95": [
+            0.879944,
+            0.914181
+          ],
+          "risco": 0.101667,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 0.996622,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.33,
+          "mantidas": 1200,
+          "cobertura": 0.999167,
+          "acuracia": 0.898333,
+          "acuracia_ic95": [
+            0.879944,
+            0.914181
+          ],
+          "risco": 0.101667,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 0.996622,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.34,
+          "mantidas": 1199,
+          "cobertura": 0.998335,
+          "acuracia": 0.899083,
+          "acuracia_ic95": [
+            0.880738,
+            0.914878
+          ],
+          "risco": 0.100917,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.99696,
+            "phoma": 0.996622,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.35,
+          "mantidas": 1197,
+          "cobertura": 0.996669,
+          "acuracia": 0.899749,
+          "acuracia_ic95": [
+            0.881436,
+            0.915505
+          ],
+          "risco": 0.100251,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.993921,
+            "phoma": 0.993243,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.36,
+          "mantidas": 1197,
+          "cobertura": 0.996669,
+          "acuracia": 0.899749,
+          "acuracia_ic95": [
+            0.881436,
+            0.915505
+          ],
+          "risco": 0.100251,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.993921,
+            "phoma": 0.993243,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.37,
+          "mantidas": 1197,
+          "cobertura": 0.996669,
+          "acuracia": 0.899749,
+          "acuracia_ic95": [
+            0.881436,
+            0.915505
+          ],
+          "risco": 0.100251,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.993921,
+            "phoma": 0.993243,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.38,
+          "mantidas": 1196,
+          "cobertura": 0.995837,
+          "acuracia": 0.900502,
+          "acuracia_ic95": [
+            0.882234,
+            0.916205
+          ],
+          "risco": 0.0994983,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.997783,
+            "bicho_mineiro": 0.993921,
+            "phoma": 0.993243,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.39,
+          "mantidas": 1194,
+          "cobertura": 0.994172,
+          "acuracia": 0.90201,
+          "acuracia_ic95": [
+            0.883835,
+            0.917606
+          ],
+          "risco": 0.0979899,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.995565,
+            "bicho_mineiro": 0.993921,
+            "phoma": 0.993243,
+            "cercosporiose": 0.992
+          }
+        },
+        {
+          "limiar": 0.4,
+          "mantidas": 1192,
+          "cobertura": 0.992506,
+          "acuracia": 0.902685,
+          "acuracia_ic95": [
+            0.884543,
+            0.918239
+          ],
+          "risco": 0.0973154,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.995565,
+            "bicho_mineiro": 0.987842,
+            "phoma": 0.993243,
+            "cercosporiose": 0.992
+          }
+        },
+        {
+          "limiar": 0.41,
+          "mantidas": 1190,
+          "cobertura": 0.990841,
+          "acuracia": 0.903361,
+          "acuracia_ic95": [
+            0.885253,
+            0.918874
+          ],
+          "risco": 0.0966387,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.993348,
+            "bicho_mineiro": 0.984802,
+            "phoma": 0.993243,
+            "cercosporiose": 0.992
+          }
+        },
+        {
+          "limiar": 0.42,
+          "mantidas": 1187,
+          "cobertura": 0.988343,
+          "acuracia": 0.904802,
+          "acuracia_ic95": [
+            0.886776,
+            0.920216
+          ],
+          "risco": 0.095198,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.991131,
+            "bicho_mineiro": 0.981763,
+            "phoma": 0.989865,
+            "cercosporiose": 0.992
+          }
+        },
+        {
+          "limiar": 0.43,
+          "mantidas": 1183,
+          "cobertura": 0.985012,
+          "acuracia": 0.907016,
+          "acuracia_ic95": [
+            0.889124,
+            0.922273
+          ],
+          "risco": 0.0929839,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.988914,
+            "bicho_mineiro": 0.978723,
+            "phoma": 0.986486,
+            "cercosporiose": 0.984
+          }
+        },
+        {
+          "limiar": 0.44,
+          "mantidas": 1178,
+          "cobertura": 0.980849,
+          "acuracia": 0.909168,
+          "acuracia_ic95": [
+            0.891401,
+            0.924276
+          ],
+          "risco": 0.0908319,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.986696,
+            "bicho_mineiro": 0.969605,
+            "phoma": 0.986486,
+            "cercosporiose": 0.976
+          }
+        },
+        {
+          "limiar": 0.45,
+          "mantidas": 1171,
+          "cobertura": 0.975021,
+          "acuracia": 0.912895,
+          "acuracia_ic95": [
+            0.895364,
+            0.927726
+          ],
+          "risco": 0.087105,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.982262,
+            "bicho_mineiro": 0.957447,
+            "phoma": 0.986486,
+            "cercosporiose": 0.968
+          }
+        },
+        {
+          "limiar": 0.46,
+          "mantidas": 1166,
+          "cobertura": 0.970858,
+          "acuracia": 0.913379,
+          "acuracia_ic95": [
+            0.895846,
+            0.928197
+          ],
+          "risco": 0.0866209,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.97561,
+            "bicho_mineiro": 0.957447,
+            "phoma": 0.986486,
+            "cercosporiose": 0.952
+          }
+        },
+        {
+          "limiar": 0.47,
+          "mantidas": 1164,
+          "cobertura": 0.969192,
+          "acuracia": 0.91323,
+          "acuracia_ic95": [
+            0.895669,
+            0.928073
+          ],
+          "risco": 0.0867698,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.973392,
+            "bicho_mineiro": 0.954407,
+            "phoma": 0.986486,
+            "cercosporiose": 0.952
+          }
+        },
+        {
+          "limiar": 0.48,
+          "mantidas": 1159,
+          "cobertura": 0.965029,
+          "acuracia": 0.914582,
+          "acuracia_ic95": [
+            0.897089,
+            0.929335
+          ],
+          "risco": 0.0854185,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.966741,
+            "bicho_mineiro": 0.951368,
+            "phoma": 0.986486,
+            "cercosporiose": 0.944
+          }
+        },
+        {
+          "limiar": 0.49,
+          "mantidas": 1153,
+          "cobertura": 0.960033,
+          "acuracia": 0.918474,
+          "acuracia_ic95": [
+            0.901254,
+            0.932914
+          ],
+          "risco": 0.0815265,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.962306,
+            "bicho_mineiro": 0.948328,
+            "phoma": 0.983108,
+            "cercosporiose": 0.928
+          }
+        },
+        {
+          "limiar": 0.5,
+          "mantidas": 1149,
+          "cobertura": 0.956703,
+          "acuracia": 0.920801,
+          "acuracia_ic95": [
+            0.903747,
+            0.93505
+          ],
+          "risco": 0.0791993,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.962306,
+            "bicho_mineiro": 0.93617,
+            "phoma": 0.983108,
+            "cercosporiose": 0.928
+          }
+        },
+        {
+          "limiar": 0.51,
+          "mantidas": 1142,
+          "cobertura": 0.950874,
+          "acuracia": 0.922942,
+          "acuracia_ic95": [
+            0.906018,
+            0.93703
+          ],
+          "risco": 0.0770578,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.953437,
+            "bicho_mineiro": 0.930091,
+            "phoma": 0.983108,
+            "cercosporiose": 0.92
+          }
+        },
+        {
+          "limiar": 0.52,
+          "mantidas": 1132,
+          "cobertura": 0.942548,
+          "acuracia": 0.923145,
+          "acuracia_ic95": [
+            0.906157,
+            0.93727
+          ],
+          "risco": 0.0768551,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.946785,
+            "bicho_mineiro": 0.917933,
+            "phoma": 0.983108,
+            "cercosporiose": 0.896
+          }
+        },
+        {
+          "limiar": 0.53,
+          "mantidas": 1124,
+          "cobertura": 0.935887,
+          "acuracia": 0.927936,
+          "acuracia_ic95": [
+            0.911316,
+            0.94164
+          ],
+          "risco": 0.0720641,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.935698,
+            "bicho_mineiro": 0.917933,
+            "phoma": 0.97973,
+            "cercosporiose": 0.88
+          }
+        },
+        {
+          "limiar": 0.54,
+          "mantidas": 1119,
+          "cobertura": 0.931724,
+          "acuracia": 0.928508,
+          "acuracia_ic95": [
+            0.911901,
+            0.942183
+          ],
+          "risco": 0.0714924,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.931264,
+            "bicho_mineiro": 0.911854,
+            "phoma": 0.97973,
+            "cercosporiose": 0.872
+          }
+        },
+        {
+          "limiar": 0.55,
+          "mantidas": 1106,
+          "cobertura": 0.920899,
+          "acuracia": 0.933092,
+          "acuracia_ic95": [
+            0.916817,
+            0.946369
+          ],
+          "risco": 0.0669078,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.920177,
+            "bicho_mineiro": 0.902736,
+            "phoma": 0.97973,
+            "cercosporiose": 0.832
+          }
+        },
+        {
+          "limiar": 0.56,
+          "mantidas": 1097,
+          "cobertura": 0.913405,
+          "acuracia": 0.93619,
+          "acuracia_ic95": [
+            0.920149,
+            0.949186
+          ],
+          "risco": 0.0638104,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.913525,
+            "bicho_mineiro": 0.896657,
+            "phoma": 0.97973,
+            "cercosporiose": 0.8
+          }
+        },
+        {
+          "limiar": 0.57,
+          "mantidas": 1089,
+          "cobertura": 0.906744,
+          "acuracia": 0.937557,
+          "acuracia_ic95": [
+            0.921592,
+            0.950447
+          ],
+          "risco": 0.0624426,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.906874,
+            "bicho_mineiro": 0.887538,
+            "phoma": 0.976351,
+            "cercosporiose": 0.792
+          }
+        },
+        {
+          "limiar": 0.58,
+          "mantidas": 1080,
+          "cobertura": 0.899251,
+          "acuracia": 0.937963,
+          "acuracia_ic95": [
+            0.921966,
+            0.950855
+          ],
+          "risco": 0.062037,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.900222,
+            "bicho_mineiro": 0.878419,
+            "phoma": 0.972973,
+            "cercosporiose": 0.776
+          }
+        },
+        {
+          "limiar": 0.59,
+          "mantidas": 1071,
+          "cobertura": 0.891757,
+          "acuracia": 0.940243,
+          "acuracia_ic95": [
+            0.924412,
+            0.952927
+          ],
+          "risco": 0.0597572,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.895787,
+            "bicho_mineiro": 0.869301,
+            "phoma": 0.969595,
+            "cercosporiose": 0.752
+          }
+        },
+        {
+          "limiar": 0.6,
+          "mantidas": 1061,
+          "cobertura": 0.88343,
+          "acuracia": 0.941565,
+          "acuracia_ic95": [
+            0.925793,
+            0.95415
+          ],
+          "risco": 0.0584354,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.886918,
+            "bicho_mineiro": 0.863222,
+            "phoma": 0.969595,
+            "cercosporiose": 0.72
+          }
+        },
+        {
+          "limiar": 0.61,
+          "mantidas": 1054,
+          "cobertura": 0.877602,
+          "acuracia": 0.943074,
+          "acuracia_ic95": [
+            0.92741,
+            0.95552
+          ],
+          "risco": 0.056926,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.875831,
+            "bicho_mineiro": 0.857143,
+            "phoma": 0.969595,
+            "cercosporiose": 0.72
+          }
+        },
+        {
+          "limiar": 0.62,
+          "mantidas": 1047,
+          "cobertura": 0.871774,
+          "acuracia": 0.945559,
+          "acuracia_ic95": [
+            0.930116,
+            0.957744
+          ],
+          "risco": 0.0544413,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.871397,
+            "bicho_mineiro": 0.848024,
+            "phoma": 0.969595,
+            "cercosporiose": 0.704
+          }
+        },
+        {
+          "limiar": 0.63,
+          "mantidas": 1044,
+          "cobertura": 0.869276,
+          "acuracia": 0.94636,
+          "acuracia_ic95": [
+            0.930984,
+            0.958463
+          ],
+          "risco": 0.0536398,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.86918,
+            "bicho_mineiro": 0.844985,
+            "phoma": 0.966216,
+            "cercosporiose": 0.704
+          }
+        },
+        {
+          "limiar": 0.64,
+          "mantidas": 1036,
+          "cobertura": 0.862614,
+          "acuracia": 0.949807,
+          "acuracia_ic95": [
+            0.934771,
+            0.96152
+          ],
+          "risco": 0.0501931,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.862528,
+            "bicho_mineiro": 0.835866,
+            "phoma": 0.962838,
+            "cercosporiose": 0.696
+          }
+        },
+        {
+          "limiar": 0.65,
+          "mantidas": 1023,
+          "cobertura": 0.85179,
+          "acuracia": 0.952102,
+          "acuracia_ic95": [
+            0.93724,
+            0.963581
+          ],
+          "risco": 0.0478983,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.853659,
+            "bicho_mineiro": 0.823708,
+            "phoma": 0.956081,
+            "cercosporiose": 0.672
+          }
+        },
+        {
+          "limiar": 0.66,
+          "mantidas": 1016,
+          "cobertura": 0.845962,
+          "acuracia": 0.955709,
+          "acuracia_ic95": [
+            0.941249,
+            0.966735
+          ],
+          "risco": 0.0442913,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.847007,
+            "bicho_mineiro": 0.823708,
+            "phoma": 0.945946,
+            "cercosporiose": 0.664
+          }
+        },
+        {
+          "limiar": 0.67,
+          "mantidas": 1010,
+          "cobertura": 0.840966,
+          "acuracia": 0.956436,
+          "acuracia_ic95": [
+            0.942023,
+            0.967389
+          ],
+          "risco": 0.0435644,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.840355,
+            "bicho_mineiro": 0.81459,
+            "phoma": 0.945946,
+            "cercosporiose": 0.664
+          }
+        },
+        {
+          "limiar": 0.68,
+          "mantidas": 1002,
+          "cobertura": 0.834305,
+          "acuracia": 0.957086,
+          "acuracia_ic95": [
+            0.942695,
+            0.967986
+          ],
+          "risco": 0.0429142,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.831486,
+            "bicho_mineiro": 0.805471,
+            "phoma": 0.942568,
+            "cercosporiose": 0.664
+          }
+        },
+        {
+          "limiar": 0.69,
+          "mantidas": 993,
+          "cobertura": 0.826811,
+          "acuracia": 0.959718,
+          "acuracia_ic95": [
+            0.945613,
+            0.97028
+          ],
+          "risco": 0.040282,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.824834,
+            "bicho_mineiro": 0.796353,
+            "phoma": 0.942568,
+            "cercosporiose": 0.64
+          }
+        },
+        {
+          "limiar": 0.7,
+          "mantidas": 977,
+          "cobertura": 0.813489,
+          "acuracia": 0.963153,
+          "acuracia_ic95": [
+            0.94941,
+            0.973267
+          ],
+          "risco": 0.0368475,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.815965,
+            "bicho_mineiro": 0.781155,
+            "phoma": 0.932432,
+            "cercosporiose": 0.608
+          }
+        },
+        {
+          "limiar": 0.71,
+          "mantidas": 972,
+          "cobertura": 0.809326,
+          "acuracia": 0.965021,
+          "acuracia_ic95": [
+            0.951518,
+            0.974862
+          ],
+          "risco": 0.0349794,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.81153,
+            "bicho_mineiro": 0.775076,
+            "phoma": 0.932432,
+            "cercosporiose": 0.6
+          }
+        },
+        {
+          "limiar": 0.72,
+          "mantidas": 962,
+          "cobertura": 0.800999,
+          "acuracia": 0.966736,
+          "acuracia_ic95": [
+            0.953419,
+            0.97634
+          ],
+          "risco": 0.033264,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.804878,
+            "bicho_mineiro": 0.772036,
+            "phoma": 0.925676,
+            "cercosporiose": 0.568
+          }
+        },
+        {
+          "limiar": 0.73,
+          "mantidas": 954,
+          "cobertura": 0.794338,
+          "acuracia": 0.968553,
+          "acuracia_ic95": [
+            0.955463,
+            0.977885
+          ],
+          "risco": 0.0314465,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.802661,
+            "bicho_mineiro": 0.762918,
+            "phoma": 0.922297,
+            "cercosporiose": 0.544
+          }
+        },
+        {
+          "limiar": 0.74,
+          "mantidas": 943,
+          "cobertura": 0.785179,
+          "acuracia": 0.972428,
+          "acuracia_ic95": [
+            0.959907,
+            0.981116
+          ],
+          "risco": 0.0275716,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.791574,
+            "bicho_mineiro": 0.756839,
+            "phoma": 0.918919,
+            "cercosporiose": 0.52
+          }
+        },
+        {
+          "limiar": 0.75,
+          "mantidas": 930,
+          "cobertura": 0.774355,
+          "acuracia": 0.973118,
+          "acuracia_ic95": [
+            0.960618,
+            0.981726
+          ],
+          "risco": 0.0268817,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.778271,
+            "bicho_mineiro": 0.744681,
+            "phoma": 0.908784,
+            "cercosporiose": 0.52
+          }
+        },
+        {
+          "limiar": 0.76,
+          "mantidas": 914,
+          "cobertura": 0.761032,
+          "acuracia": 0.978118,
+          "acuracia_ic95": [
+            0.966443,
+            0.985791
+          ],
+          "risco": 0.0218818,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.767184,
+            "bicho_mineiro": 0.723404,
+            "phoma": 0.905405,
+            "cercosporiose": 0.496
+          }
+        },
+        {
+          "limiar": 0.77,
+          "mantidas": 904,
+          "cobertura": 0.752706,
+          "acuracia": 0.978982,
+          "acuracia_ic95": [
+            0.967407,
+            0.986504
+          ],
+          "risco": 0.0210177,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.762749,
+            "bicho_mineiro": 0.711246,
+            "phoma": 0.905405,
+            "cercosporiose": 0.464
+          }
+        },
+        {
+          "limiar": 0.78,
+          "mantidas": 894,
+          "cobertura": 0.74438,
+          "acuracia": 0.979866,
+          "acuracia_ic95": [
+            0.968398,
+            0.987227
+          ],
+          "risco": 0.0201342,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.75388,
+            "bicho_mineiro": 0.699088,
+            "phoma": 0.902027,
+            "cercosporiose": 0.456
+          }
+        },
+        {
+          "limiar": 0.79,
+          "mantidas": 873,
+          "cobertura": 0.726894,
+          "acuracia": 0.981672,
+          "acuracia_ic95": [
+            0.970437,
+            0.988688
+          ],
+          "risco": 0.0183276,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.738359,
+            "bicho_mineiro": 0.665653,
+            "phoma": 0.89527,
+            "cercosporiose": 0.448
+          }
+        },
+        {
+          "limiar": 0.8,
+          "mantidas": 854,
+          "cobertura": 0.711074,
+          "acuracia": 0.984778,
+          "acuracia_ic95": [
+            0.974131,
+            0.991083
+          ],
+          "risco": 0.0152225,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.722838,
+            "bicho_mineiro": 0.650456,
+            "phoma": 0.878378,
+            "cercosporiose": 0.432
+          }
+        },
+        {
+          "limiar": 0.81,
+          "mantidas": 839,
+          "cobertura": 0.698585,
+          "acuracia": 0.985697,
+          "acuracia_ic95": [
+            0.975168,
+            0.9918
+          ],
+          "risco": 0.0143027,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.7051,
+            "bicho_mineiro": 0.641337,
+            "phoma": 0.871622,
+            "cercosporiose": 0.416
+          }
+        },
+        {
+          "limiar": 0.82,
+          "mantidas": 817,
+          "cobertura": 0.680266,
+          "acuracia": 0.986536,
+          "acuracia_ic95": [
+            0.976053,
+            0.992466
+          ],
+          "risco": 0.0134639,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.676275,
+            "bicho_mineiro": 0.62614,
+            "phoma": 0.871622,
+            "cercosporiose": 0.384
+          }
+        },
+        {
+          "limiar": 0.83,
+          "mantidas": 799,
+          "cobertura": 0.665279,
+          "acuracia": 0.987484,
+          "acuracia_ic95": [
+            0.977116,
+            0.993188
+          ],
+          "risco": 0.0125156,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.665188,
+            "bicho_mineiro": 0.595745,
+            "phoma": 0.864865,
+            "cercosporiose": 0.376
+          }
+        },
+        {
+          "limiar": 0.84,
+          "mantidas": 780,
+          "cobertura": 0.649459,
+          "acuracia": 0.988462,
+          "acuracia_ic95": [
+            0.978217,
+            0.993918
+          ],
+          "risco": 0.0115385,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.643016,
+            "bicho_mineiro": 0.577508,
+            "phoma": 0.861486,
+            "cercosporiose": 0.36
+          }
+        },
+        {
+          "limiar": 0.85,
+          "mantidas": 765,
+          "cobertura": 0.636969,
+          "acuracia": 0.988235,
+          "acuracia_ic95": [
+            0.977793,
+            0.993798
+          ],
+          "risco": 0.0117647,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.625277,
+            "bicho_mineiro": 0.571429,
+            "phoma": 0.847973,
+            "cercosporiose": 0.352
+          }
+        },
+        {
+          "limiar": 0.86,
+          "mantidas": 745,
+          "cobertura": 0.620316,
+          "acuracia": 0.989262,
+          "acuracia_ic95": [
+            0.978955,
+            0.994549
+          ],
+          "risco": 0.0107383,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.609756,
+            "bicho_mineiro": 0.553191,
+            "phoma": 0.837838,
+            "cercosporiose": 0.32
+          }
+        },
+        {
+          "limiar": 0.87,
+          "mantidas": 719,
+          "cobertura": 0.598668,
+          "acuracia": 0.988873,
+          "acuracia_ic95": [
+            0.978199,
+            0.994351
+          ],
+          "risco": 0.0111266,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.587583,
+            "bicho_mineiro": 0.525836,
+            "phoma": 0.824324,
+            "cercosporiose": 0.296
+          }
+        },
+        {
+          "limiar": 0.88,
+          "mantidas": 694,
+          "cobertura": 0.577852,
+          "acuracia": 0.988473,
+          "acuracia_ic95": [
+            0.97742,
+            0.994148
+          ],
+          "risco": 0.0115274,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.560976,
+            "bicho_mineiro": 0.507599,
+            "phoma": 0.804054,
+            "cercosporiose": 0.288
+          }
+        },
+        {
+          "limiar": 0.89,
+          "mantidas": 663,
+          "cobertura": 0.55204,
+          "acuracia": 0.989442,
+          "acuracia_ic95": [
+            0.978368,
+            0.994876
+          ],
+          "risco": 0.0105581,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.547672,
+            "bicho_mineiro": 0.465046,
+            "phoma": 0.780405,
+            "cercosporiose": 0.256
+          }
+        },
+        {
+          "limiar": 0.9,
+          "mantidas": 639,
+          "cobertura": 0.532057,
+          "acuracia": 0.99061,
+          "acuracia_ic95": [
+            0.979667,
+            0.99569
+          ],
+          "risco": 0.00938967,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.527716,
+            "bicho_mineiro": 0.440729,
+            "phoma": 0.773649,
+            "cercosporiose": 0.216
+          }
+        },
+        {
+          "limiar": 0.91,
+          "mantidas": 601,
+          "cobertura": 0.500416,
+          "acuracia": 0.991681,
+          "acuracia_ic95": [
+            0.980674,
+            0.996441
+          ],
+          "risco": 0.00831947,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.494457,
+            "bicho_mineiro": 0.395137,
+            "phoma": 0.760135,
+            "cercosporiose": 0.184
+          }
+        },
+        {
+          "limiar": 0.92,
+          "mantidas": 556,
+          "cobertura": 0.462948,
+          "acuracia": 0.991007,
+          "acuracia_ic95": [
+            0.979123,
+            0.996153
+          ],
+          "risco": 0.00899281,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.463415,
+            "bicho_mineiro": 0.352584,
+            "phoma": 0.722973,
+            "cercosporiose": 0.136
+          }
+        },
+        {
+          "limiar": 0.93,
+          "mantidas": 517,
+          "cobertura": 0.430475,
+          "acuracia": 0.992263,
+          "acuracia_ic95": [
+            0.980277,
+            0.996987
+          ],
+          "risco": 0.00773694,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.423503,
+            "bicho_mineiro": 0.322188,
+            "phoma": 0.692568,
+            "cercosporiose": 0.12
+          }
+        },
+        {
+          "limiar": 0.94,
+          "mantidas": 479,
+          "cobertura": 0.398834,
+          "acuracia": 0.993737,
+          "acuracia_ic95": [
+            0.98175,
+            0.997868
+          ],
+          "risco": 0.00626305,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.390244,
+            "bicho_mineiro": 0.306991,
+            "phoma": 0.641892,
+            "cercosporiose": 0.096
+          }
+        },
+        {
+          "limiar": 0.95,
+          "mantidas": 432,
+          "cobertura": 0.3597,
+          "acuracia": 0.997685,
+          "acuracia_ic95": [
+            0.987006,
+            0.999591
+          ],
+          "risco": 0.00231481,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.348115,
+            "bicho_mineiro": 0.264438,
+            "phoma": 0.601351,
+            "cercosporiose": 0.08
+          }
+        },
+        {
+          "limiar": 0.96,
+          "mantidas": 371,
+          "cobertura": 0.308909,
+          "acuracia": 0.997305,
+          "acuracia_ic95": [
+            0.984892,
+            0.999524
+          ],
+          "risco": 0.00269542,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.299335,
+            "bicho_mineiro": 0.206687,
+            "phoma": 0.543919,
+            "cercosporiose": 0.056
+          }
+        },
+        {
+          "limiar": 0.97,
+          "mantidas": 278,
+          "cobertura": 0.231474,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.98637,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.215078,
+            "bicho_mineiro": 0.139818,
+            "phoma": 0.445946,
+            "cercosporiose": 0.024
+          }
+        },
+        {
+          "limiar": 0.98,
+          "mantidas": 186,
+          "cobertura": 0.154871,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.979765,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.13082,
+            "bicho_mineiro": 0.0942249,
+            "phoma": 0.320946,
+            "cercosporiose": 0.008
+          }
+        },
+        {
+          "limiar": 0.99,
+          "mantidas": 73,
+          "cobertura": 0.0607827,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.950008,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.0509978,
+            "bicho_mineiro": 0.0425532,
+            "phoma": 0.121622,
+            "cercosporiose": 0.0
+          }
+        }
+      ]
+    },
+    "alvo": 0.95,
+    "proposta": 0.65,
+    "validacao": {
+      "n": 252,
+      "n_doentes": 211,
+      "curva": [
+        {
+          "limiar": 0.25,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.26,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.27,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.28,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.29,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.3,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.31,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.32,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.33,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.34,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.35,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.36,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.37,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.38,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.39,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.4,
+          "mantidas": 211,
+          "cobertura": 1.0,
+          "acuracia": 0.943128,
+          "acuracia_ic95": [
+            0.903238,
+            0.967171
+          ],
+          "risco": 0.056872,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 1.0,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.41,
+          "mantidas": 210,
+          "cobertura": 0.995261,
+          "acuracia": 0.942857,
+          "acuracia_ic95": [
+            0.90279,
+            0.967013
+          ],
+          "risco": 0.0571429,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.982759,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.42,
+          "mantidas": 210,
+          "cobertura": 0.995261,
+          "acuracia": 0.942857,
+          "acuracia_ic95": [
+            0.90279,
+            0.967013
+          ],
+          "risco": 0.0571429,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.982759,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.43,
+          "mantidas": 210,
+          "cobertura": 0.995261,
+          "acuracia": 0.942857,
+          "acuracia_ic95": [
+            0.90279,
+            0.967013
+          ],
+          "risco": 0.0571429,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.982759,
+            "phoma": 1.0,
+            "cercosporiose": 1.0
+          }
+        },
+        {
+          "limiar": 0.44,
+          "mantidas": 208,
+          "cobertura": 0.985782,
+          "acuracia": 0.942308,
+          "acuracia_ic95": [
+            0.901881,
+            0.966693
+          ],
+          "risco": 0.0576923,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 1.0,
+            "bicho_mineiro": 0.982759,
+            "phoma": 1.0,
+            "cercosporiose": 0.909091
+          }
+        },
+        {
+          "limiar": 0.45,
+          "mantidas": 205,
+          "cobertura": 0.971564,
+          "acuracia": 0.941463,
+          "acuracia_ic95": [
+            0.900485,
+            0.966201
+          ],
+          "risco": 0.0585366,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.909091
+          }
+        },
+        {
+          "limiar": 0.46,
+          "mantidas": 205,
+          "cobertura": 0.971564,
+          "acuracia": 0.941463,
+          "acuracia_ic95": [
+            0.900485,
+            0.966201
+          ],
+          "risco": 0.0585366,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.909091
+          }
+        },
+        {
+          "limiar": 0.47,
+          "mantidas": 205,
+          "cobertura": 0.971564,
+          "acuracia": 0.941463,
+          "acuracia_ic95": [
+            0.900485,
+            0.966201
+          ],
+          "risco": 0.0585366,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.909091
+          }
+        },
+        {
+          "limiar": 0.48,
+          "mantidas": 204,
+          "cobertura": 0.966825,
+          "acuracia": 0.941176,
+          "acuracia_ic95": [
+            0.900011,
+            0.966034
+          ],
+          "risco": 0.0588235,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.49,
+          "mantidas": 204,
+          "cobertura": 0.966825,
+          "acuracia": 0.941176,
+          "acuracia_ic95": [
+            0.900011,
+            0.966034
+          ],
+          "risco": 0.0588235,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.5,
+          "mantidas": 204,
+          "cobertura": 0.966825,
+          "acuracia": 0.941176,
+          "acuracia_ic95": [
+            0.900011,
+            0.966034
+          ],
+          "risco": 0.0588235,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.965517,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.51,
+          "mantidas": 203,
+          "cobertura": 0.962085,
+          "acuracia": 0.940887,
+          "acuracia_ic95": [
+            0.899532,
+            0.965865
+          ],
+          "risco": 0.0591133,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.948276,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.52,
+          "mantidas": 203,
+          "cobertura": 0.962085,
+          "acuracia": 0.940887,
+          "acuracia_ic95": [
+            0.899532,
+            0.965865
+          ],
+          "risco": 0.0591133,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.948276,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.53,
+          "mantidas": 203,
+          "cobertura": 0.962085,
+          "acuracia": 0.940887,
+          "acuracia_ic95": [
+            0.899532,
+            0.965865
+          ],
+          "risco": 0.0591133,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.987342,
+            "bicho_mineiro": 0.948276,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.54,
+          "mantidas": 202,
+          "cobertura": 0.957346,
+          "acuracia": 0.940594,
+          "acuracia_ic95": [
+            0.899049,
+            0.965694
+          ],
+          "risco": 0.0594059,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.974684,
+            "bicho_mineiro": 0.948276,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.55,
+          "mantidas": 202,
+          "cobertura": 0.957346,
+          "acuracia": 0.940594,
+          "acuracia_ic95": [
+            0.899049,
+            0.965694
+          ],
+          "risco": 0.0594059,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.974684,
+            "bicho_mineiro": 0.948276,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.56,
+          "mantidas": 201,
+          "cobertura": 0.952607,
+          "acuracia": 0.945274,
+          "acuracia_ic95": [
+            0.904676,
+            0.96917
+          ],
+          "risco": 0.0547264,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.974684,
+            "bicho_mineiro": 0.931034,
+            "phoma": 0.980769,
+            "cercosporiose": 0.863636
+          }
+        },
+        {
+          "limiar": 0.57,
+          "mantidas": 200,
+          "cobertura": 0.947867,
+          "acuracia": 0.95,
+          "acuracia_ic95": [
+            0.910422,
+            0.972617
+          ],
+          "risco": 0.05,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.974684,
+            "bicho_mineiro": 0.931034,
+            "phoma": 0.980769,
+            "cercosporiose": 0.818182
+          }
+        },
+        {
+          "limiar": 0.58,
+          "mantidas": 200,
+          "cobertura": 0.947867,
+          "acuracia": 0.95,
+          "acuracia_ic95": [
+            0.910422,
+            0.972617
+          ],
+          "risco": 0.05,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.974684,
+            "bicho_mineiro": 0.931034,
+            "phoma": 0.980769,
+            "cercosporiose": 0.818182
+          }
+        },
+        {
+          "limiar": 0.59,
+          "mantidas": 197,
+          "cobertura": 0.933649,
+          "acuracia": 0.949239,
+          "acuracia_ic95": [
+            0.909095,
+            0.972197
+          ],
+          "risco": 0.0507614,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.949367,
+            "bicho_mineiro": 0.913793,
+            "phoma": 0.980769,
+            "cercosporiose": 0.818182
+          }
+        },
+        {
+          "limiar": 0.6,
+          "mantidas": 196,
+          "cobertura": 0.92891,
+          "acuracia": 0.94898,
+          "acuracia_ic95": [
+            0.908644,
+            0.972054
+          ],
+          "risco": 0.0510204,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.949367,
+            "bicho_mineiro": 0.896552,
+            "phoma": 0.980769,
+            "cercosporiose": 0.818182
+          }
+        },
+        {
+          "limiar": 0.61,
+          "mantidas": 194,
+          "cobertura": 0.919431,
+          "acuracia": 0.953608,
+          "acuracia_ic95": [
+            0.914197,
+            0.975404
+          ],
+          "risco": 0.0463918,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.936709,
+            "bicho_mineiro": 0.896552,
+            "phoma": 0.980769,
+            "cercosporiose": 0.772727
+          }
+        },
+        {
+          "limiar": 0.62,
+          "mantidas": 194,
+          "cobertura": 0.919431,
+          "acuracia": 0.953608,
+          "acuracia_ic95": [
+            0.914197,
+            0.975404
+          ],
+          "risco": 0.0463918,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.936709,
+            "bicho_mineiro": 0.896552,
+            "phoma": 0.980769,
+            "cercosporiose": 0.772727
+          }
+        },
+        {
+          "limiar": 0.63,
+          "mantidas": 194,
+          "cobertura": 0.919431,
+          "acuracia": 0.953608,
+          "acuracia_ic95": [
+            0.914197,
+            0.975404
+          ],
+          "risco": 0.0463918,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.936709,
+            "bicho_mineiro": 0.896552,
+            "phoma": 0.980769,
+            "cercosporiose": 0.772727
+          }
+        },
+        {
+          "limiar": 0.64,
+          "mantidas": 191,
+          "cobertura": 0.905213,
+          "acuracia": 0.958115,
+          "acuracia_ic95": [
+            0.91954,
+            0.978626
+          ],
+          "risco": 0.0418848,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.911392,
+            "bicho_mineiro": 0.896552,
+            "phoma": 0.980769,
+            "cercosporiose": 0.727273
+          }
+        },
+        {
+          "limiar": 0.65,
+          "mantidas": 190,
+          "cobertura": 0.900474,
+          "acuracia": 0.957895,
+          "acuracia_ic95": [
+            0.919128,
+            0.978513
+          ],
+          "risco": 0.0421053,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.911392,
+            "bicho_mineiro": 0.87931,
+            "phoma": 0.980769,
+            "cercosporiose": 0.727273
+          }
+        },
+        {
+          "limiar": 0.66,
+          "mantidas": 189,
+          "cobertura": 0.895735,
+          "acuracia": 0.957672,
+          "acuracia_ic95": [
+            0.918712,
+            0.978398
+          ],
+          "risco": 0.042328,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.911392,
+            "bicho_mineiro": 0.862069,
+            "phoma": 0.980769,
+            "cercosporiose": 0.727273
+          }
+        },
+        {
+          "limiar": 0.67,
+          "mantidas": 188,
+          "cobertura": 0.890995,
+          "acuracia": 0.962766,
+          "acuracia_ic95": [
+            0.92515,
+            0.981849
+          ],
+          "risco": 0.037234,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.911392,
+            "bicho_mineiro": 0.862069,
+            "phoma": 0.980769,
+            "cercosporiose": 0.681818
+          }
+        },
+        {
+          "limiar": 0.68,
+          "mantidas": 186,
+          "cobertura": 0.881517,
+          "acuracia": 0.962366,
+          "acuracia_ic95": [
+            0.924367,
+            0.981652
+          ],
+          "risco": 0.0376344,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.898734,
+            "bicho_mineiro": 0.844828,
+            "phoma": 0.980769,
+            "cercosporiose": 0.681818
+          }
+        },
+        {
+          "limiar": 0.69,
+          "mantidas": 185,
+          "cobertura": 0.876777,
+          "acuracia": 0.962162,
+          "acuracia_ic95": [
+            0.923969,
+            0.981553
+          ],
+          "risco": 0.0378378,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.898734,
+            "bicho_mineiro": 0.827586,
+            "phoma": 0.980769,
+            "cercosporiose": 0.681818
+          }
+        },
+        {
+          "limiar": 0.7,
+          "mantidas": 185,
+          "cobertura": 0.876777,
+          "acuracia": 0.962162,
+          "acuracia_ic95": [
+            0.923969,
+            0.981553
+          ],
+          "risco": 0.0378378,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.898734,
+            "bicho_mineiro": 0.827586,
+            "phoma": 0.980769,
+            "cercosporiose": 0.681818
+          }
+        },
+        {
+          "limiar": 0.71,
+          "mantidas": 185,
+          "cobertura": 0.876777,
+          "acuracia": 0.962162,
+          "acuracia_ic95": [
+            0.923969,
+            0.981553
+          ],
+          "risco": 0.0378378,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.898734,
+            "bicho_mineiro": 0.827586,
+            "phoma": 0.980769,
+            "cercosporiose": 0.681818
+          }
+        },
+        {
+          "limiar": 0.72,
+          "mantidas": 183,
+          "cobertura": 0.867299,
+          "acuracia": 0.967213,
+          "acuracia_ic95": [
+            0.930326,
+            0.984889
+          ],
+          "risco": 0.0327869,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.886076,
+            "bicho_mineiro": 0.827586,
+            "phoma": 0.980769,
+            "cercosporiose": 0.636364
+          }
+        },
+        {
+          "limiar": 0.73,
+          "mantidas": 182,
+          "cobertura": 0.862559,
+          "acuracia": 0.967033,
+          "acuracia_ic95": [
+            0.929953,
+            0.984805
+          ],
+          "risco": 0.032967,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.886076,
+            "bicho_mineiro": 0.827586,
+            "phoma": 0.980769,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.74,
+          "mantidas": 181,
+          "cobertura": 0.85782,
+          "acuracia": 0.972376,
+          "acuracia_ic95": [
+            0.936973,
+            0.988144
+          ],
+          "risco": 0.0276243,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.886076,
+            "bicho_mineiro": 0.810345,
+            "phoma": 0.980769,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.75,
+          "mantidas": 177,
+          "cobertura": 0.838863,
+          "acuracia": 0.971751,
+          "acuracia_ic95": [
+            0.935586,
+            0.987875
+          ],
+          "risco": 0.0282486,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.860759,
+            "bicho_mineiro": 0.793103,
+            "phoma": 0.961538,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.76,
+          "mantidas": 177,
+          "cobertura": 0.838863,
+          "acuracia": 0.971751,
+          "acuracia_ic95": [
+            0.935586,
+            0.987875
+          ],
+          "risco": 0.0282486,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.860759,
+            "bicho_mineiro": 0.793103,
+            "phoma": 0.961538,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.77,
+          "mantidas": 176,
+          "cobertura": 0.834123,
+          "acuracia": 0.971591,
+          "acuracia_ic95": [
+            0.93523,
+            0.987806
+          ],
+          "risco": 0.0284091,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.860759,
+            "bicho_mineiro": 0.775862,
+            "phoma": 0.961538,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.78,
+          "mantidas": 174,
+          "cobertura": 0.824645,
+          "acuracia": 0.971264,
+          "acuracia_ic95": [
+            0.934505,
+            0.987665
+          ],
+          "risco": 0.0287356,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.848101,
+            "bicho_mineiro": 0.758621,
+            "phoma": 0.961538,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.79,
+          "mantidas": 172,
+          "cobertura": 0.815166,
+          "acuracia": 0.976744,
+          "acuracia_ic95": [
+            0.941738,
+            0.99092
+          ],
+          "risco": 0.0232558,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.835443,
+            "bicho_mineiro": 0.758621,
+            "phoma": 0.942308,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.8,
+          "mantidas": 171,
+          "cobertura": 0.810427,
+          "acuracia": 0.976608,
+          "acuracia_ic95": [
+            0.941407,
+            0.990867
+          ],
+          "risco": 0.0233918,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.822785,
+            "bicho_mineiro": 0.758621,
+            "phoma": 0.942308,
+            "cercosporiose": 0.590909
+          }
+        },
+        {
+          "limiar": 0.81,
+          "mantidas": 169,
+          "cobertura": 0.800948,
+          "acuracia": 0.982249,
+          "acuracia_ic95": [
+            0.949116,
+            0.993945
+          ],
+          "risco": 0.0177515,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.822785,
+            "bicho_mineiro": 0.741379,
+            "phoma": 0.942308,
+            "cercosporiose": 0.545455
+          }
+        },
+        {
+          "limiar": 0.82,
+          "mantidas": 165,
+          "cobertura": 0.781991,
+          "acuracia": 0.981818,
+          "acuracia_ic95": [
+            0.947914,
+            0.993798
+          ],
+          "risco": 0.0181818,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.797468,
+            "bicho_mineiro": 0.741379,
+            "phoma": 0.942308,
+            "cercosporiose": 0.454545
+          }
+        },
+        {
+          "limiar": 0.83,
+          "mantidas": 163,
+          "cobertura": 0.772512,
+          "acuracia": 0.981595,
+          "acuracia_ic95": [
+            0.947292,
+            0.993721
+          ],
+          "risco": 0.0184049,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.797468,
+            "bicho_mineiro": 0.741379,
+            "phoma": 0.923077,
+            "cercosporiose": 0.409091
+          }
+        },
+        {
+          "limiar": 0.84,
+          "mantidas": 163,
+          "cobertura": 0.772512,
+          "acuracia": 0.981595,
+          "acuracia_ic95": [
+            0.947292,
+            0.993721
+          ],
+          "risco": 0.0184049,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.797468,
+            "bicho_mineiro": 0.741379,
+            "phoma": 0.923077,
+            "cercosporiose": 0.409091
+          }
+        },
+        {
+          "limiar": 0.85,
+          "mantidas": 162,
+          "cobertura": 0.767773,
+          "acuracia": 0.981481,
+          "acuracia_ic95": [
+            0.946975,
+            0.993682
+          ],
+          "risco": 0.0185185,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.797468,
+            "bicho_mineiro": 0.724138,
+            "phoma": 0.923077,
+            "cercosporiose": 0.409091
+          }
+        },
+        {
+          "limiar": 0.86,
+          "mantidas": 160,
+          "cobertura": 0.758294,
+          "acuracia": 0.98125,
+          "acuracia_ic95": [
+            0.94633,
+            0.993603
+          ],
+          "risco": 0.01875,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.797468,
+            "bicho_mineiro": 0.724138,
+            "phoma": 0.903846,
+            "cercosporiose": 0.363636
+          }
+        },
+        {
+          "limiar": 0.87,
+          "mantidas": 156,
+          "cobertura": 0.739336,
+          "acuracia": 0.980769,
+          "acuracia_ic95": [
+            0.944991,
+            0.993439
+          ],
+          "risco": 0.0192308,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.78481,
+            "bicho_mineiro": 0.706897,
+            "phoma": 0.884615,
+            "cercosporiose": 0.318182
+          }
+        },
+        {
+          "limiar": 0.88,
+          "mantidas": 153,
+          "cobertura": 0.725118,
+          "acuracia": 0.986928,
+          "acuracia_ic95": [
+            0.953596,
+            0.996408
+          ],
+          "risco": 0.0130719,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.772152,
+            "bicho_mineiro": 0.689655,
+            "phoma": 0.865385,
+            "cercosporiose": 0.318182
+          }
+        },
+        {
+          "limiar": 0.89,
+          "mantidas": 151,
+          "cobertura": 0.71564,
+          "acuracia": 0.986755,
+          "acuracia_ic95": [
+            0.952998,
+            0.99636
+          ],
+          "risco": 0.013245,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.759494,
+            "bicho_mineiro": 0.689655,
+            "phoma": 0.865385,
+            "cercosporiose": 0.272727
+          }
+        },
+        {
+          "limiar": 0.9,
+          "mantidas": 148,
+          "cobertura": 0.701422,
+          "acuracia": 0.993243,
+          "acuracia_ic95": [
+            0.962723,
+            0.998806
+          ],
+          "risco": 0.00675676,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.746835,
+            "bicho_mineiro": 0.672414,
+            "phoma": 0.846154,
+            "cercosporiose": 0.272727
+          }
+        },
+        {
+          "limiar": 0.91,
+          "mantidas": 144,
+          "cobertura": 0.682464,
+          "acuracia": 0.993056,
+          "acuracia_ic95": [
+            0.961715,
+            0.998773
+          ],
+          "risco": 0.00694444,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.721519,
+            "bicho_mineiro": 0.655172,
+            "phoma": 0.846154,
+            "cercosporiose": 0.227273
+          }
+        },
+        {
+          "limiar": 0.92,
+          "mantidas": 139,
+          "cobertura": 0.658768,
+          "acuracia": 0.992806,
+          "acuracia_ic95": [
+            0.960376,
+            0.998729
+          ],
+          "risco": 0.00719424,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.658228,
+            "bicho_mineiro": 0.655172,
+            "phoma": 0.846154,
+            "cercosporiose": 0.227273
+          }
+        },
+        {
+          "limiar": 0.93,
+          "mantidas": 134,
+          "cobertura": 0.635071,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.972131,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.632911,
+            "bicho_mineiro": 0.603448,
+            "phoma": 0.846154,
+            "cercosporiose": 0.227273
+          }
+        },
+        {
+          "limiar": 0.94,
+          "mantidas": 131,
+          "cobertura": 0.620853,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.971511,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.607595,
+            "bicho_mineiro": 0.586207,
+            "phoma": 0.846154,
+            "cercosporiose": 0.227273
+          }
+        },
+        {
+          "limiar": 0.95,
+          "mantidas": 125,
+          "cobertura": 0.592417,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.970185,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.582278,
+            "bicho_mineiro": 0.551724,
+            "phoma": 0.826923,
+            "cercosporiose": 0.181818
+          }
+        },
+        {
+          "limiar": 0.96,
+          "mantidas": 116,
+          "cobertura": 0.549763,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.967945,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.556962,
+            "bicho_mineiro": 0.482759,
+            "phoma": 0.788462,
+            "cercosporiose": 0.136364
+          }
+        },
+        {
+          "limiar": 0.97,
+          "mantidas": 103,
+          "cobertura": 0.488152,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.964045,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.506329,
+            "bicho_mineiro": 0.37931,
+            "phoma": 0.75,
+            "cercosporiose": 0.0909091
+          }
+        },
+        {
+          "limiar": 0.98,
+          "mantidas": 83,
+          "cobertura": 0.393365,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.955765,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.417722,
+            "bicho_mineiro": 0.293103,
+            "phoma": 0.596154,
+            "cercosporiose": 0.0909091
+          }
+        },
+        {
+          "limiar": 0.99,
+          "mantidas": 56,
+          "cobertura": 0.265403,
+          "acuracia": 1.0,
+          "acuracia_ic95": [
+            0.935806,
+            1.0
+          ],
+          "risco": 0.0,
+          "cobertura_por_classe": {
+            "saudavel": NaN,
+            "ferrugem": 0.227848,
+            "bicho_mineiro": 0.206897,
+            "phoma": 0.480769,
+            "cercosporiose": 0.0454545
+          }
+        }
+      ]
+    },
+    "limiar_saudavel": 0.083,
+    "limiar_doenca": 0.65,
+    "efeito_saudavel": {
+      "fora_da_dobra": {
+        "argmax": {
+          "saudavel_dado_d": {
+            "p": 0.0108243,
+            "ic95": [
+              0.00633661,
+              0.0184313
+            ],
+            "sucessos": 13,
+            "n": 1201
+          },
+          "recall_saudavel": {
+            "p": 0.991342,
+            "ic95": [
+              0.968987,
+              0.997622
+            ],
+            "sucessos": 229,
+            "n": 231
+          }
+        },
+        "limiar": {
+          "saudavel_dado_d": {
+            "p": 0.050791,
+            "ic95": [
+              0.0397426,
+              0.0647039
+            ],
+            "sucessos": 61,
+            "n": 1201
+          },
+          "recall_saudavel": {
+            "p": 1.0,
+            "ic95": [
+              0.983642,
+              1.0
+            ],
+            "sucessos": 231,
+            "n": 231
+          }
+        }
+      },
+      "validacao": {
+        "argmax": {
+          "saudavel_dado_d": {
+            "p": 0.0,
+            "ic95": [
+              0.0,
+              0.0178804
+            ],
+            "sucessos": 0,
+            "n": 211
+          },
+          "recall_saudavel": {
+            "p": 0.97561,
+            "ic95": [
+              0.874049,
+              0.995681
+            ],
+            "sucessos": 40,
+            "n": 41
+          }
+        },
+        "limiar": {
+          "saudavel_dado_d": {
+            "p": 0.0189573,
+            "ic95": [
+              0.00739623,
+              0.047721
+            ],
+            "sucessos": 4,
+            "n": 211
+          },
+          "recall_saudavel": {
+            "p": 1.0,
+            "ic95": [
+              0.914332,
+              1.0
+            ],
+            "sucessos": 41,
+            "n": 41
+          }
+        }
+      }
+    },
+    "regra_completa": {
+      "fora_da_dobra": {
+        "duas_etapas": {
+          "acuracia_sem_corte": 0.884078,
+          "cobertura": 0.893855,
+          "acuracia_das_mantidas": {
+            "p": 0.917188,
+            "ic95": [
+              0.900812,
+              0.931066
+            ],
+            "sucessos": 1174,
+            "n": 1280
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.873439
+        },
+        "argmax": {
+          "acuracia_sem_corte": 0.907123,
+          "cobertura": 0.880587,
+          "acuracia_das_mantidas": {
+            "p": 0.950833,
+            "ic95": [
+              0.937469,
+              0.961458
+            ],
+            "sucessos": 1199,
+            "n": 1261
+          },
+          "cobertura_saudaveis": 0.961039,
+          "cobertura_doentes": 0.865112
+        }
+      },
+      "validacao": {
+        "duas_etapas": {
+          "acuracia_sem_corte": 0.940476,
+          "cobertura": 0.924603,
+          "acuracia_das_mantidas": {
+            "p": 0.95279,
+            "ic95": [
+              0.917454,
+              0.973437
+            ],
+            "sucessos": 222,
+            "n": 233
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.909953
+        },
+        "argmax": {
+          "acuracia_sem_corte": 0.948413,
+          "cobertura": 0.920635,
+          "acuracia_das_mantidas": {
+            "p": 0.961207,
+            "ic95": [
+              0.92793,
+              0.979459
+            ],
+            "sucessos": 223,
+            "n": 232
+          },
+          "cobertura_saudaveis": 0.97561,
+          "cobertura_doentes": 0.909953
+        }
+      }
+    },
+    "regra_completa_por_limiar": {
+      "fora_da_dobra": {
+        "0.3": {
+          "acuracia_sem_corte": 0.884078,
+          "cobertura": 1.0,
+          "acuracia_das_mantidas": {
+            "p": 0.884078,
+            "ic95": [
+              0.86646,
+              0.899641
+            ],
+            "sucessos": 1266,
+            "n": 1432
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 1.0
+        },
+        "0.4": {
+          "acuracia_sem_corte": 0.884078,
+          "cobertura": 0.99581,
+          "acuracia_das_mantidas": {
+            "p": 0.885694,
+            "ic95": [
+              0.868133,
+              0.901183
+            ],
+            "sucessos": 1263,
+            "n": 1426
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.995004
+        },
+        "0.5": {
+          "acuracia_sem_corte": 0.884078,
+          "cobertura": 0.969274,
+          "acuracia_das_mantidas": {
+            "p": 0.898415,
+            "ic95": [
+              0.881406,
+              0.913224
+            ],
+            "sucessos": 1247,
+            "n": 1388
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.963364
+        },
+        "0.6": {
+          "acuracia_sem_corte": 0.884078,
+          "cobertura": 0.918296,
+          "acuracia_das_mantidas": {
+            "p": 0.909506,
+            "ic95": [
+              0.892784,
+              0.923842
+            ],
+            "sucessos": 1196,
+            "n": 1315
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.902581
+        },
+        "0.65": {
+          "acuracia_sem_corte": 0.884078,
+          "cobertura": 0.893855,
+          "acuracia_das_mantidas": {
+            "p": 0.917188,
+            "ic95": [
+              0.900812,
+              0.931066
+            ],
+            "sucessos": 1174,
+            "n": 1280
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.873439
+        },
+        "0.7": {
+          "acuracia_sem_corte": 0.884078,
+          "cobertura": 0.863827,
+          "acuracia_das_mantidas": {
+            "p": 0.924818,
+            "ic95": [
+              0.908773,
+              0.938233
+            ],
+            "sucessos": 1144,
+            "n": 1237
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.837635
+        },
+        "0.8": {
+          "acuracia_sem_corte": 0.884078,
+          "cobertura": 0.78352,
+          "acuracia_das_mantidas": {
+            "p": 0.934046,
+            "ic95": [
+              0.917992,
+              0.947139
+            ],
+            "sucessos": 1048,
+            "n": 1122
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.741882
+        },
+        "0.9": {
+          "acuracia_sem_corte": 0.884078,
+          "cobertura": 0.648045,
+          "acuracia_das_mantidas": {
+            "p": 0.927802,
+            "ic95": [
+              0.909327,
+              0.942749
+            ],
+            "sucessos": 861,
+            "n": 928
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.58035
+        }
+      },
+      "validacao": {
+        "0.3": {
+          "acuracia_sem_corte": 0.940476,
+          "cobertura": 1.0,
+          "acuracia_das_mantidas": {
+            "p": 0.940476,
+            "ic95": [
+              0.904125,
+              0.963599
+            ],
+            "sucessos": 237,
+            "n": 252
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 1.0
+        },
+        "0.4": {
+          "acuracia_sem_corte": 0.940476,
+          "cobertura": 1.0,
+          "acuracia_das_mantidas": {
+            "p": 0.940476,
+            "ic95": [
+              0.904125,
+              0.963599
+            ],
+            "sucessos": 237,
+            "n": 252
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 1.0
+        },
+        "0.5": {
+          "acuracia_sem_corte": 0.940476,
+          "cobertura": 0.980159,
+          "acuracia_das_mantidas": {
+            "p": 0.939271,
+            "ic95": [
+              0.902233,
+              0.962856
+            ],
+            "sucessos": 232,
+            "n": 247
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.976303
+        },
+        "0.6": {
+          "acuracia_sem_corte": 0.940476,
+          "cobertura": 0.948413,
+          "acuracia_das_mantidas": {
+            "p": 0.945607,
+            "ic95": [
+              0.909175,
+              0.96794
+            ],
+            "sucessos": 226,
+            "n": 239
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.938389
+        },
+        "0.65": {
+          "acuracia_sem_corte": 0.940476,
+          "cobertura": 0.924603,
+          "acuracia_das_mantidas": {
+            "p": 0.95279,
+            "ic95": [
+              0.917454,
+              0.973437
+            ],
+            "sucessos": 222,
+            "n": 233
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.909953
+        },
+        "0.7": {
+          "acuracia_sem_corte": 0.940476,
+          "cobertura": 0.912698,
+          "acuracia_das_mantidas": {
+            "p": 0.952174,
+            "ic95": [
+              0.916404,
+              0.973088
+            ],
+            "sucessos": 219,
+            "n": 230
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.895735
+        },
+        "0.8": {
+          "acuracia_sem_corte": 0.940476,
+          "cobertura": 0.857143,
+          "acuracia_das_mantidas": {
+            "p": 0.962963,
+            "ic95": [
+              0.928631,
+              0.981115
+            ],
+            "sucessos": 208,
+            "n": 216
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.829384
+        },
+        "0.9": {
+          "acuracia_sem_corte": 0.940476,
+          "cobertura": 0.765873,
+          "acuracia_das_mantidas": {
+            "p": 0.974093,
+            "ic95": [
+              0.940798,
+              0.988885
+            ],
+            "sucessos": 188,
+            "n": 193
+          },
+          "cobertura_saudaveis": 1.0,
+          "cobertura_doentes": 0.720379
+        }
+      }
+    },
+    "campo": {
+      "82 folhas": {
+        "S": 36,
+        "D": 46,
+        "limiar_recalculado": 0.082767,
+        "d_marcadas_saudaveis": {
+          "p": 0.0434783,
+          "ic95": [
+            0.0120054,
+            0.145323
+          ],
+          "sucessos": 2,
+          "n": 46
+        },
+        "recall_s": {
+          "p": 0.833333,
+          "ic95": [
+            0.681092,
+            0.921296
+          ],
+          "sucessos": 30,
+          "n": 36
+        }
+      },
+      "sem as 3 S com marca": {
+        "S": 33,
+        "D": 46,
+        "limiar_recalculado": 0.082767,
+        "d_marcadas_saudaveis": {
+          "p": 0.0434783,
+          "ic95": [
+            0.0120054,
+            0.145323
+          ],
+          "sucessos": 2,
+          "n": 46
+        },
+        "recall_s": {
+          "p": 0.909091,
+          "ic95": [
+            0.764274,
+            0.968596
+          ],
+          "sucessos": 30,
+          "n": 33
+        }
+      }
+    }
+  }
+}

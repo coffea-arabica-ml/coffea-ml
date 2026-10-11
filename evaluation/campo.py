@@ -11,6 +11,12 @@ não têm rótulo de classe, e a rotulagem cega dessas folhas.
   da severidade, folhas na borda x inteiras), o filtro de fragmentos e, só se o CSV estiver
   preenchido, as métricas com os rótulos de campo (com intervalo de Wilson, sem os "?").
 
+- --gerar-rotulagem --fotos treino (passo 5b): a rotulagem de validação, 160 folhas das 194 fotos
+  de TREINO do detector no BRACOT (nunca as 46 de validação, nunca o teste), na cadeia padrão de
+  11/10/2026 (recorte B, filtro de fragmentos em 0,5), em 8 pranchas cegas em
+  data/processed/campo_rotulagem_treino/ e no CSV-modelo data/manifests/campo_rotulado_treino.csv.
+  O detector treinou nessas fotos: as máscaras delas saem mais limpas que as de fotos novas.
+
 O campo_rotulado é uma fonte nova, só de avaliação, nunca de treino. Os rótulos foram feitos
 por Claude por leitura visual das pranchas e aceitos pelo gestor em 11/10/2026 (não são de
 especialista): S saudável evidente, D doente evidente, ? não sei ou recorte ruim; a classe
@@ -19,6 +25,7 @@ do treino dos autores).
 
 Uso (de qualquer pasta, com o venv ativo):
     python evaluation/campo.py --gerar-rotulagem
+    python evaluation/campo.py --gerar-rotulagem --fotos treino
     python evaluation/campo.py --avaliar --classificador model/runs/campo_v1 --saida campo_v1
 A saída de terminal fica sem acento (terminal do Windows); os arquivos gravados são UTF-8.
 """
@@ -72,6 +79,12 @@ ORIGEM_ROTULOS = ("feitos por Claude por leitura visual das pranchas e aceitos p
 # A cadeia da rotulagem (passo 4): o filtro de fragmentos desligado, para que a numeração das
 # 318 folhas, que casa com os rótulos, não mude quando os padrões da cadeia mudarem.
 CONFIG_ROTULAGEM = inf.Configuracao(fracao_visivel_minima=0.0)
+# A rotulagem de validação (passo 5b, decisão do gestor de 11/10/2026): fotos de treino do
+# detector, na cadeia padrão de 11/10/2026, fixada aqui para que os ids não mudem com os padrões.
+PASTA_ROTULAGEM_TREINO = RAIZ_REPO / "data" / "processed" / "campo_rotulagem_treino"  # fora do git
+MANIFEST_CAMPO_TREINO = RAIZ_REPO / "data" / "manifests" / "campo_rotulado_treino.csv"
+N_ROTULAGEM_TREINO = 160
+CONFIG_ROTULAGEM_TREINO = inf.Configuracao(recorte="B", fracao_visivel_minima=0.5)
 CREDITO_BRACOT = ("Fotos: BRACOT (Krohling, Tozzi de Souza e Tassis, 2021), CC BY 4.0, "
                   "DOI 10.17632/pmkbyjpf6k.1")
 
@@ -83,12 +96,23 @@ def fotos_de_validacao() -> tuple[list[str], pd.Series]:
     return td.dividir_validacao(manifest), manifest.set_index("id")["caminho"]
 
 
-def percorrer_folhas(modelos, config=None):
-    """Para cada foto de validação: (foto, imagem reduzida, escala, folhas). As folhas são as da
-    cadeia (inferencia.decidir), numeradas de 1 em ordem de score, com a fração visível e o
-    preenchimento. Uma foto por vez (as fotos têm 4032x3024)."""
+def fotos_de_treino() -> tuple[list[str], pd.Series]:
+    """As 194 fotos de treino do detector: o treino dos autores sem as cenas de validação (nunca
+    o teste). Falha se uma cena aparecer nos dois lados."""
+    manifest = bracot.ler_manifest(split="treino")
+    validacao = set(td.dividir_validacao(manifest))
+    treino = manifest[~manifest["id"].isin(validacao)]
+    if set(treino["cena"]) & set(manifest.loc[manifest["id"].isin(validacao), "cena"]):
+        raise train.ErroFatal("uma cena de treino do BRACOT aparece na validação do detector")
+    return sorted(treino["id"]), manifest.set_index("id")["caminho"]
+
+
+def percorrer_folhas(modelos, config=None, fotos=None):
+    """Para cada foto (as de validação, ou fotos = (ids, caminhos)): (foto, imagem reduzida,
+    escala, folhas). As folhas são as da cadeia (inferencia.decidir), numeradas de 1 em ordem de
+    score, com a fração visível e o preenchimento. Uma foto por vez (as fotos têm 4032x3024)."""
     config = config or CONFIG_ROTULAGEM
-    ids, caminhos = fotos_de_validacao()
+    ids, caminhos = fotos or fotos_de_validacao()
     for foto in ids:
         imagem = dados.ler_imagem(RAIZ_REPO / caminhos[foto])
         altura, largura = imagem.shape[:2]
@@ -130,15 +154,17 @@ def sortear_rotulagem(folhas_por_foto: dict[str, int], n: int = N_ROTULAGEM,
     return escolhidas
 
 
-def gerar_rotulagem(modelos, pasta: Path = PASTA_ROTULAGEM,
-                    manifest: Path = MANIFEST_CAMPO) -> dict:
-    """Pranchas cegas e CSV-modelo (ver o docstring do módulo)."""
+def gerar_rotulagem(modelos, pasta: Path = PASTA_ROTULAGEM, manifest: Path = MANIFEST_CAMPO,
+                    config=None, fotos=None, n: int = N_ROTULAGEM) -> dict:
+    """Pranchas cegas e CSV-modelo (ver o docstring do módulo). Por padrão, a rotulagem do passo
+    4 (fotos de validação); a de validação do passo 5b passa as fotos de treino, a pasta, o CSV,
+    a configuração e o n dela."""
     if manifest.is_file() and ler_rotulos(manifest) is not None:
         raise train.ErroFatal(f"{train._exibir(manifest)} já tem rótulos: não sobrescrevo")
-    config = CONFIG_ROTULAGEM
+    config = config or CONFIG_ROTULAGEM
     todas = {foto: (reduzida, escala, folhas)
-             for foto, reduzida, escala, folhas in percorrer_folhas(modelos, config)}
-    escolhidas = sortear_rotulagem({f: len(v[2]) for f, v in todas.items()})
+             for foto, reduzida, escala, folhas in percorrer_folhas(modelos, config, fotos)}
+    escolhidas = sortear_rotulagem({f: len(v[2]) for f, v in todas.items()}, n=n)
     pasta.mkdir(parents=True, exist_ok=True)
     linhas, cartoes = [], []
     for posicao, (foto, k) in enumerate(escolhidas):
@@ -559,6 +585,9 @@ def main(argv=None) -> int:
                                                              "classificador")
     modo.add_argument("--so-rotulos", action="store_true",
                       help="refaz so os rotulos de um run ja avaliado (--saida), sem modelos")
+    ap.add_argument("--fotos", choices=("validacao", "treino"), default="validacao",
+                    help="com --gerar-rotulagem: as 46 fotos de validacao do detector (passo 4) "
+                         "ou as 194 de treino (rotulagem de validacao do passo 5b)")
     ap.add_argument("--classificador", type=Path, default=inf.PASTA_CLASSIFICADOR,
                     help="pasta do run do classificador (com o melhor.pt)")
     ap.add_argument("--saida", help="com --avaliar: pasta em model/runs para os resultados")
@@ -568,9 +597,17 @@ def main(argv=None) -> int:
 
         dispositivo = "cuda" if torch.cuda.is_available() else "cpu"
         if args.gerar_rotulagem:
-            r = gerar_rotulagem(inf.carregar_modelos(dispositivo=dispositivo))
+            modelos = inf.carregar_modelos(dispositivo=dispositivo)
+            if args.fotos == "treino":
+                pasta = PASTA_ROTULAGEM_TREINO
+                r = gerar_rotulagem(modelos, pasta, MANIFEST_CAMPO_TREINO,
+                                    CONFIG_ROTULAGEM_TREINO, fotos_de_treino(),
+                                    N_ROTULAGEM_TREINO)
+            else:
+                pasta = PASTA_ROTULAGEM
+                r = gerar_rotulagem(modelos)
             fmt.dizer(f"{r['folhas']} folhas de {r['fotos']} fotos (de {r['total_de_folhas']}) em"
-                      f" {len(r['pranchas'])} pranchas em {PASTA_ROTULAGEM}; CSV-modelo em "
+                      f" {len(r['pranchas'])} pranchas em {pasta}; CSV-modelo em "
                       f"{train._exibir(r['manifest'])}")
             return 0
         if not args.saida:

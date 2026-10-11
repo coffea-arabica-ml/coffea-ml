@@ -51,6 +51,16 @@ relatórios e as figuras, sim.
 - **JMuBEN:** entra na comparação de variantes do classificador (passo 4 da Frente 9), só no
   treino, respeitando `RESSALVA_PHOMA_CERCOSPORA`.
 
+## Decisões do gestor (11/10/2026, passo 5b da Frente 9)
+
+- **Modelos finais:** o `base_resnet50_bracol` e o detector `detector_base` ficam congelados,
+  sem retreino final. Os testes fechados do BRACOL e do BRACOT medem estes modelos uma única vez,
+  no fim.
+- **Campo rotulado (82 folhas S ou D):** os rótulos ficam congelados, inclusive as 3 S com marca
+  na ponta (`20191208_142146_02`, `20191208_142156_03` e `20191208_142829_05`). O ponto de
+  operação sem elas sai só como sensibilidade, sem mexer no CSV.
+- **Campo rotulado de validação:** fonte nova, só de avaliação, nunca de treino (seção abaixo).
+
 ## Fontes
 
 | fonte | papel | situação |
@@ -60,6 +70,7 @@ relatórios e as figuras, sim.
 | JMuBEN e JMuBEN2 (`data/raw/jmuben/`) | só treino auxiliar de classificação, nunca validação nem teste | em uso desde 09/10/2026 |
 | BRACOT (`data/raw/bracot/bracot-data/`) | detecção e segmentação de folhas (RF09), com a divisão dos autores; as fotos de treino também dão fundos borrados à augmentation do classificador | em uso desde 09/10/2026 (fundos: 10/10/2026) |
 | Campo rotulado (`data/manifests/campo_rotulado.csv`) | só avaliação de campo do classificador, nunca treino | desde 10/10/2026; rótulos feitos por Claude e aceitos pelo gestor em 11/10/2026 |
+| Campo rotulado de validação (`data/manifests/campo_rotulado_treino.csv`) | só avaliação da regra saudável x doente, nunca treino nem ajuste de limiar | desde 11/10/2026; CSV-modelo gerado, rótulos pendentes |
 
 ## Procedência do BRACOL
 
@@ -461,6 +472,34 @@ O leitor (`campo.ler_rotulos`) aceita o CSV salvo pelo Excel (ponto e vírgula, 
 - As mesmas folhas escolhem as variantes finalistas e medem o resultado, então a medida sai
   otimista.
 - Fonte só de avaliação: nunca entra em treino.
+
+## Campo rotulado de validação (fotos de treino do detector)
+
+**Para que serve.** Validar, em folhas novas, a regra saudável x doente do passo 5b. O limiar de
+saudável (0,083) foi fixado antes nas 82 folhas do campo rotulado e não se reajusta com estes
+rótulos (decisão do gestor, 11/10/2026).
+
+**O que é.** 160 folhas, uma por foto, de 160 das 194 fotos de treino do detector. São as fotos
+de treino dos autores do BRACOT, sem as cenas de validação; nunca as 46 da validação e nunca o
+teste, e o código confere que nenhuma cena aparece nos dois lados.
+
+- **Cadeia:** a padrão de 11/10/2026, com recorte B e filtro de fragmentos em 0,5. Fica fixada
+  em `campo.CONFIG_ROTULAGEM_TREINO`, para os ids não mudarem se os padrões mudarem.
+- **Sorteio:** rodízio entre as fotos, com a semente 42. As fotos tinham 1.090 folhas no total.
+- **Geração:** `python evaluation/campo.py --gerar-rotulagem --fotos treino`.
+- **Pranchas cegas:** `data/processed/campo_rotulagem_treino/prancha_<n>.jpg`, fora do git; são 8
+  de 20, no formato do campo rotulado (B grande, A pequeno, sem previsão).
+- **CSV:** as colunas do campo rotulado. O CSV-modelo não sobrescreve um CSV com rótulos.
+
+**Limites.**
+- O detector treinou nessas fotos, então as máscaras delas saem mais limpas que as de fotos
+  novas. O recorte B mede o classificador numa segmentação melhor que a do uso real.
+- As mesmas fotos deram os fundos borrados da augmentation das variantes v2, v3 e v3s do passo 4.
+  O modelo congelado (`base_resnet50_bracol`) não usou esses fundos.
+- É a mesma lavoura e as mesmas 2 sessões do campo rotulado, mas em fotos e cenas diferentes.
+- Os rótulos serão feitos por Claude por leitura visual e aceitos pelo gestor. Não são de
+  especialista.
+- Fonte só de avaliação: nunca entra em treino nem em ajuste de limiar.
 
 ## Interface para a Frente 9
 

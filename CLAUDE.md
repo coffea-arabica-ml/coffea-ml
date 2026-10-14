@@ -76,8 +76,9 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 - Rede: o único download autorizado é o peso `yolo11s-seg.pt` da release oficial (SHA-256 em
   `detector.py`, conferido ao treinar). `detector.importar_ultralytics()` impõe o modo offline e
   troca a pré-carga da fonte (que baixava a Arial.ttf); o treino roda sem AMP e sem gráficos.
-- O teste do BRACOT (60 fotos) fica fechado até o gestor mandar: só `--avaliar-teste` lê as
-  anotações dele, e cada uso fica em `model/runs/uso_do_teste_detector.md`.
+- O teste do BRACOT (60 fotos) foi aberto uma única vez, no passo 7 (abaixo). Só
+  `treinar_detector.avaliar_teste` lê as anotações dele. Outro uso só por decisão do gestor,
+  registrada em `model/runs/uso_do_teste_final.md`.
 - Anotação parcial (decisão do gestor, 10/10/2026): no treino, cinza (114) fora do casco das
   folhas anotadas, com margem de 2%; as métricas saem nos modos região (principal) e conservador.
 
@@ -169,6 +170,27 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   rotuladas passam pela cadeia final inteira. Das 106 D evidentes, 29% chegam como doente, 5%
   como saudável e 66% somem (58% pelo t_d). O cenário sem t_d é só informação.
 
+## Testes fechados (passo 7; abertos uma vez em 14/10/2026)
+
+- **Autorização:** "pode" do gestor em 14/10/2026 (11:39), com o t_d de 0,65 mantido. Esta foi
+  a única abertura dos testes do BRACOL e do BRACOT.
+- **Script e log:** `model/teste_final.py`. O log único, `model/runs/uso_do_teste_final.md`,
+  substitui neste passo os registros `uso_do_teste.md` e `uso_do_teste_detector.md`. Ele guarda:
+  - a abertura, antes da leitura, com o commit, os SHA dos pesos e a configuração conferida;
+  - o pré-registro de cada uso;
+  - cada evento, com o SHA-256 dos arquivos.
+- **Usos, cada um rodado uma vez e numa pasta nova:**
+  - 1: o teste do BRACOL, em `teste_bracol`;
+  - 2: a detecção no teste do BRACOT, em `teste_bracot_deteccao`;
+  - 3A e 3B: as folhas de campo das 58 fotos de teste, em `teste_bracot_folhas/parte_a` e
+    `parte_b`.
+- **Rótulos de teste:** `data/manifests/campo_rotulado_teste.csv` traz 37 S, 46 D e 32 "?",
+  rotuladas pelo gestor a partir das pranchas cegas, antes de qualquer predição. Fonte só de
+  avaliação final.
+- **Daqui em diante:** nenhum número do teste escolhe ou ajusta nada. Rodar um uso de novo, ou
+  `train.py --avaliar-teste` e `treinar_detector.py --avaliar-teste`, só por decisão do gestor,
+  registrada no log.
+
 ## Comandos (na raiz do repositório, com o venv ativo)
 
 ```
@@ -186,14 +208,18 @@ python data/bracot.py                        # manifest e relatório do BRACOT (
 python data/bracot.py --verificar            # confere dados x manifest do BRACOT
 python model/train.py --rapido               # teste de fumaça do treino (model/runs/_rapido/, fora do git)
 python model/train.py --nome NOME            # treino; grava model/runs/NOME/ e não usa o teste
-python model/train.py --avaliar-teste --run NOME   # só no fim: avalia no teste e registra o uso
+python model/train.py --avaliar-teste --run NOME   # não rodar: o teste já foi usado no passo 7
+python model/teste_final.py --abrir          # passo 7: log único (já criado; recusa rodar de novo)
+python model/teste_final.py --uso 1|2|3a|3b  # passo 7: cada uso uma vez (já rodados); --nova-tentativa só
+                                             # depois de erro; --decisao-do-gestor para outra rodada
+python model/teste_final.py --uso N --relatorio   # só refaz o relatorio.md do uso, sem ler o teste
 python evaluation/atalho.py --run NOME       # checagem de atalho (só treino e val); model/runs/NOME/atalho/
 python evaluation/diagnostico_blocos.py      # validação cruzada por blocos de ids x aleatória (só treino e
                                              # val, retomável); model/runs/diagnostico_blocos/
 python model/treinar_detector.py --nome NOME --epocas 60   # detector: prepara os dados (fora do git),
                                              # treina e avalia na validação; model/runs/NOME/
 python model/treinar_detector.py --avaliar --run NOME      # refaz a avaliação e o relatório do detector
-python model/treinar_detector.py --avaliar-teste --run NOME   # só por ordem do gestor: teste do BRACOT
+python model/treinar_detector.py --avaliar-teste --run NOME   # não rodar: o teste já foi usado no passo 7
 python model/avaliar_pipeline.py             # cadeia final (regra por caminho): limiar de confiança (RF07),
                                              # T1, T2 e T3 por caminho; model/runs/pipeline_final/ (--nome,
                                              # --classificador, --detector e --recortes PASTA_FORA_DO_REPO para

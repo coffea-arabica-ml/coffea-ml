@@ -112,3 +112,11 @@
 | 14/10/2026 12:13:57 | 3a | arquivo | data/manifests/campo_rotulado_teste.csv, SHA-256 a65aa4654710edac44f229007532caaf56db5aea148d58826aeaa0f25298202d |
 | 14/10/2026 12:15:12 | 1 | relatório refeito | model/runs/teste_bracol/relatorio.md, SHA-256 5cc4f326a7d84c77693953fd89958c60a9702caa3d4367af1b9ff8a620a32909 |
 | 14/10/2026 12:15:17 | 2 | relatório refeito | model/runs/teste_bracot_deteccao/relatorio.md, SHA-256 56a366ba09dc355f95785e91b9addf7ec0881369b4cb5f7515e89d6c3a9c6d7b |
+| 14/10/2026 12:26:42 | 3b | início | folhas de campo do teste do BRACOT, parte B; commit 1c59792; código não commitado: nenhum; pasta model/runs/teste_bracot_folhas/parte_b |
+| 14/10/2026 12:26:42 | 3b | teste lido | 58 fotos de teste do BRACOT e os rótulos de data/manifests/campo_rotulado_teste.csv |
+| 14/10/2026 12:27:11 | 3b | fim | D evidentes: 46; chegam como doente 26,1%, como saudável 10,9%, somem 63,0% |
+| 14/10/2026 12:27:11 | 3b | arquivo | model/runs/teste_bracot_folhas/parte_b/folhas.csv, SHA-256 6b35b0000ae39d2849a8aa154468b6296b29a8b0eca4bd51fcbbbc32e97334db |
+| 14/10/2026 12:27:11 | 3b | arquivo | model/runs/teste_bracot_folhas/parte_b/relatorio.md, SHA-256 f0ff0ef85f14ed1bc063b83f62b81d218bf4659f2c66ff5ec237cb48e347ac47 |
+| 14/10/2026 12:27:11 | 3b | arquivo | model/runs/teste_bracot_folhas/parte_b/resultado.json, SHA-256 bf2a44033971c248440e75f7461c098e817e6c5345b615992b041134a59a8410 |
+| 14/10/2026 12:28:01 | 3b | relatório refeito | model/runs/teste_bracot_folhas/parte_b/relatorio.md, SHA-256 22fea50791545f5cf51235b1f060fbc282c92afa0d65b914b0aa05c148bea589 |
+| 14/10/2026 12:28:17 | 3b | relatório refeito | model/runs/teste_bracot_folhas/parte_b/relatorio.md, SHA-256 2779715ac8e3e8907af66a1f5af19e65ddce2df8d4d44ca5cd6de48b366b2164 |

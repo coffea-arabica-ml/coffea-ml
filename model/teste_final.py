@@ -82,6 +82,9 @@ MANIFEST_CAMPO_TESTE = RAIZ_REPO / "data" / "manifests" / "campo_rotulado_teste.
 CONFIG_ROTULAGEM_TESTE = inf.Configuracao(recorte="B", fracao_visivel_minima=0.5)
 MAX_POR_FOTO = 2
 SEED = campo.SEED
+# Quem rotulou as folhas de teste: o registro do commit que trouxe os rótulos.
+ORIGEM_ROTULOS_TESTE = ("rotuladas pelo gestor a partir das pranchas cegas, antes de qualquer "
+                        "predição (commit `1c59792`)")
 # Os pesos finais (os caminhos são os da tabela do MANIFESTO.md) e a cadeia congelada como o
 # gestor a declarou no passo 7: conferidos com o código antes de cada leitura do teste.
 PESOS = {"classificador": ("model/runs/base_resnet50_bracol/melhor.pt",
@@ -998,9 +1001,10 @@ def relatorio_uso_3b(r: dict, leitura: str | None) -> str:
            for c in ("antigas", "novas", "juntas"))], "llllll")
     linhas += ["", "## Leitura", "", leitura or "Ainda não escrita (falta o leitura.md).", "",
                "## Limites", "",
-               "- Rótulos feitos por Claude por leitura visual das pranchas e aceitos pelo "
-               "gestor, sem especialista; nenhuma D tem classe.",
+               f"- Folhas (S, D ou \"?\") {ORIGEM_ROTULOS_TESTE}; nenhuma D tem classe.",
                "- Mesma lavoura das outras rotulagens, em fotos e cenas do teste dos autores.",
+               "- As folhas de teste foram sorteadas já com o filtro de fragmentos ligado; as "
+               "antigas do passo 6b, sem ele (por isso o filtro tira folhas só nas antigas).",
                ""]
     return "\n".join(linhas) + "\n"
 

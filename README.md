@@ -55,8 +55,9 @@ versões. Com GPU, só muda o build do torch e do torchvision, nunca a versão.
 `python model/treinar_detector.py` ajusta o YOLO11s-seg (ultralytics) nas fotos de treino do
 BRACOT e avalia na validação (cenas inteiras do treino). `model/detector.py` tem
 `detectar_folhas(imagem_rgb, limiar)`, que devolve o polígono, a caixa e o score de cada folha,
-para o backend. O teste do BRACOT fica fechado até o modelo final. O run de base, com as métricas
-e a medida do RNF02, está em `model/runs/detector_base/relatorio.md`.
+para o backend. O run de base, com as métricas e a medida do RNF02, está em
+`model/runs/detector_base/relatorio.md`. O teste do BRACOT foi aberto uma única vez, no passo 7
+(seção "Testes fechados", no fim).
 
 - **Licença (decisão do gestor, 10/10/2026):** o ultralytics e os pesos YOLO são AGPL-3.0,
   aceita para este projeto acadêmico de repositórios públicos. Se o backend servir o modelo pela
@@ -282,8 +283,11 @@ dos runs anteriores dão os números gravados neles.
     subiriam de 3,9% para 18,2%.
   - Das 42 doentes mantidas, 81% saem como ferrugem; a classe não foi verificada.
 - **Severidade:** não é informativa no campo.
-- **Teste:** os testes fechados (BRACOL e BRACOT) ainda não mediram a cadeia final; medem uma vez
-  só, no fim.
+- **Teste de campo** (passo 7, 115 folhas das fotos de teste, rotuladas pelo gestor; seção "Testes
+  fechados"):
+  - D chamadas saudáveis: 10,9% (4,7% a 23,0%; 5 de 46), o maior dos conjuntos rotulados, sem
+    diferença sustentada;
+  - D que chegam como doente: 26,1%, e 63,0% somem pelo t_d.
 
 ## Classificador para o campo
 
@@ -349,3 +353,38 @@ O relatório, com a leitura, fica em `model/runs/campo_diagnostico/relatorio.md`
   - **Decisão do gestor (11/10/2026, passo 6):** a regra fica ligada só nos recortes por
     detecção, com o limiar de doença de 0,65 provisório; a foto inteira fica no argmax com 0,61.
     A cadeia final está em `model/runs/pipeline_final`.
+
+## Testes fechados (passo 7, uso único)
+
+Os testes foram abertos uma única vez, em 14/10/2026, com o "pode" do gestor e a cadeia
+congelada. Nada foi ajustado nem escolhido com estes números. O script é `model/teste_final.py`.
+O log único, `model/runs/uso_do_teste_final.md`, registra:
+- a abertura, antes da leitura, com o commit, os SHA dos pesos e a configuração conferida;
+- o que seria medido, declarado antes;
+- cada evento, com o SHA-256 dos arquivos gerados.
+
+| uso | teste | validação (ou validação cruzada) |
+|---|---|---|
+| **BRACOL, cadeia final:** acurácia sem corte | 88,1% (83,5% a 91,5%), F1 macro 86,0% | 92,8% (89,0% a 95,4%), F1 macro 91,6% |
+| BRACOL, cadeia final: mantidas no corte | 225 de 253, com 91,1% certas (86,7% a 94,2%) | 231 de 252, com 94,4% certas |
+| BRACOL, cadeia final: doentes chamadas saudáveis | 2,4% (5 de 212) | 1,4% (3 de 211) |
+| BRACOL, classificador sozinho (informação) | 90,5% (86,3% a 93,5%), F1 macro 88,5% | 94,8%, F1 macro 93,2%; validação cruzada por blocos: 89,9%, F1 macro 87,2% |
+| **BRACOT, detecção:** AP50 de máscara, região / conservador | 92,0% / 81,6% (sem as 2 fotos sobrepostas: 91,6% / 81,3%) | 94,7% / 88,1% |
+| BRACOT, detecção: recall no limiar de 0,35 | 84,0% (79,8% a 87,5%) | 88,3% (83,7% a 91,7%) |
+| **Campo (fotos de teste):** S chamadas saudáveis | 89,2% (75,3% a 95,7%; 33 de 37) | novas: 80,5% |
+| Campo: D chamadas saudáveis | 10,9% (4,7% a 23,0%; 5 de 46) | novas: 6,7% (2,6% a 15,9%) |
+| Campo: D que chegam como doente / somem pelo t_d | 26,1% / 63,0% | novas: 36,7% / 56,7% |
+| Campo: AUC de P(saudável) | 0,98 (0,95 a 0,99) | novas: 0,95 (0,89 a 0,99) |
+
+- **Teste contra validação:** o teste fica abaixo da validação em quase tudo, mas os intervalos
+  se sobrepõem.
+- **Classificador sozinho:** fica perto da validação cruzada (89,9% por blocos e 90,7% pelo
+  protocolo aleatório), que é a estimativa mais realista.
+- **Falso saudável no campo:** o do teste é o maior dos conjuntos rotulados. De novo, os dados
+  não sustentam o teto de 5% usado para fixar o limiar de saudável.
+- **Relatórios e leituras:**
+  - `model/runs/teste_bracol/`;
+  - `model/runs/teste_bracot_deteccao/`;
+  - `model/runs/teste_bracot_folhas/parte_a/` e `parte_b/`.
+- **Rótulos de campo do teste:** `data/manifests/campo_rotulado_teste.csv`, rotuladas pelo gestor
+  a partir das pranchas cegas, antes de qualquer predição. Ver `data/README.md`.

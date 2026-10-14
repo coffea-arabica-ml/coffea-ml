@@ -71,6 +71,7 @@ relatórios e as figuras, sim.
 | BRACOT (`data/raw/bracot/bracot-data/`) | detecção e segmentação de folhas (RF09), com a divisão dos autores; as fotos de treino também dão fundos borrados à augmentation do classificador | em uso desde 09/10/2026 (fundos: 10/10/2026) |
 | Campo rotulado (`data/manifests/campo_rotulado.csv`) | só avaliação de campo do classificador, nunca treino | desde 10/10/2026; rótulos feitos por Claude e aceitos pelo gestor em 11/10/2026 |
 | Campo rotulado de validação (`data/manifests/campo_rotulado_treino.csv`) | só avaliação da regra saudável x doente, nunca treino nem ajuste de limiar | desde 11/10/2026; 41 S, 60 D e 59 "?", rótulos feitos por Claude e aceitos pelo gestor em 11/10/2026 |
+| Campo rotulado de teste (`data/manifests/campo_rotulado_teste.csv`) | só a avaliação final da cadeia congelada (passo 7, uso 3B), nunca treino nem ajuste | desde 14/10/2026; 37 S, 46 D e 32 "?", rotuladas pelo gestor a partir das pranchas cegas, antes de qualquer predição |
 
 ## Procedência do BRACOL
 
@@ -516,6 +517,28 @@ rótulos e nos 82 do campo rotulado, sem reajustar nenhum limiar. As limitaçõe
   classe; a severidade não é informativa no campo.
 
 O relatório da cadeia final está em `model/runs/pipeline_final/relatorio.md`.
+
+## Campo rotulado de teste (fotos de teste do BRACOT)
+
+**Para que serve.** Avaliar uma única vez a cadeia congelada no campo (passo 7, uso 3B), com as
+fotos de teste dos autores do BRACOT. Nunca entra em treino nem em ajuste de limiar.
+
+**O que é.** 115 folhas de 58 fotos: as 60 de teste sem as 2 de `TESTE_SOBREPOSTO`. A geração e
+os rótulos foram assim:
+- **Cadeia:** a final, com o filtro de fragmentos ligado (`teste_final.CONFIG_ROTULAGEM_TESTE`).
+- **Sorteio:** até 2 folhas por foto, semente 42. São 2 folhas em 57 fotos e 1 na foto que só
+  tinha uma.
+- **Sem predição:** o sorteio foi feito com o classificador nem carregado.
+- **Pranchas cegas:** `data/processed/campo_rotulagem_teste/`, fora do git, no formato das
+  anteriores.
+- **Geração:** `python model/teste_final.py --uso 3a`, uma vez, registrada em
+  `model/runs/uso_do_teste_final.md`.
+- **Rótulos:** 37 S, 46 D e 32 "?", rotuladas pelo gestor a partir das pranchas cegas, antes de
+  qualquer predição (commit `1c59792`). Nenhuma D tem classe.
+
+**Limites.**
+- É a mesma lavoura das outras rotulagens, em fotos e cenas do teste.
+- A avaliação está em `model/runs/teste_bracot_folhas/parte_b/` e não ajustou nada.
 
 ## Interface para a Frente 9
 

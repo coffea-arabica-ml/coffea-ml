@@ -1,0 +1,103 @@
+{
+  "limiar": 0.35,
+  "todas": {
+    "fotos": 60,
+    "anotadas": 344,
+    "metricas": {
+      "regiao": {
+        "mascara": {
+          "ap50": 0.919537,
+          "ap50_95": 0.834856
+        },
+        "caixa": {
+          "ap50": 0.919983,
+          "ap50_95": 0.812846
+        }
+      },
+      "conservador": {
+        "mascara": {
+          "ap50": 0.816304,
+          "ap50_95": 0.747253
+        },
+        "caixa": {
+          "ap50": 0.818307,
+          "ap50_95": 0.728235
+        }
+      }
+    },
+    "no_limiar": {
+      "regiao": {
+        "limiar": 0.35,
+        "acertos": 289,
+        "erros": 35,
+        "ignoradas": 103,
+        "fora_da_regiao": 103,
+        "previstas": 427,
+        "precisao": 0.891975,
+        "recall": 0.840116,
+        "f1": 0.865269
+      },
+      "conservador": {
+        "limiar": 0.35,
+        "acertos": 289,
+        "erros": 138,
+        "ignoradas": 0,
+        "fora_da_regiao": 103,
+        "previstas": 427,
+        "precisao": 0.676815,
+        "recall": 0.840116,
+        "f1": 0.749676
+      }
+    }
+  },
+  "sem_sobrepostas": {
+    "fotos": 58,
+    "anotadas": 332,
+    "metricas": {
+      "regiao": {
+        "mascara": {
+          "ap50": 0.916045,
+          "ap50_95": 0.830436
+        },
+        "caixa": {
+          "ap50": 0.917269,
+          "ap50_95": 0.808138
+        }
+      },
+      "conservador": {
+        "mascara": {
+          "ap50": 0.813066,
+          "ap50_95": 0.743437
+        },
+        "caixa": {
+          "ap50": 0.815622,
+          "ap50_95": 0.724072
+        }
+      }
+    },
+    "no_limiar": {
+      "regiao": {
+        "limiar": 0.35,
+        "acertos": 277,
+        "erros": 35,
+        "ignoradas": 98,
+        "fora_da_regiao": 98,
+        "previstas": 410,
+        "precisao": 0.887821,
+        "recall": 0.834337,
+        "f1": 0.860248
+      },
+      "conservador": {
+        "limiar": 0.35,
+        "acertos": 277,
+        "erros": 133,
+        "ignoradas": 0,
+        "fora_da_regiao": 98,
+        "previstas": 410,
+        "precisao": 0.67561,
+        "recall": 0.834337,
+        "f1": 0.746631
+      }
+    }
+  }
+}

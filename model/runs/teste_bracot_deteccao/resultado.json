@@ -1,0 +1,241 @@
+{
+  "uso": "2",
+  "criado_em": "2026-10-14T12:13:29",
+  "teste": {
+    "limiar": 0.35,
+    "todas": {
+      "fotos": 60,
+      "anotadas": 344,
+      "metricas": {
+        "regiao": {
+          "mascara": {
+            "ap50": 0.919537,
+            "ap50_95": 0.834856
+          },
+          "caixa": {
+            "ap50": 0.919983,
+            "ap50_95": 0.812846
+          }
+        },
+        "conservador": {
+          "mascara": {
+            "ap50": 0.816304,
+            "ap50_95": 0.747253
+          },
+          "caixa": {
+            "ap50": 0.818307,
+            "ap50_95": 0.728235
+          }
+        }
+      },
+      "no_limiar": {
+        "regiao": {
+          "limiar": 0.35,
+          "acertos": 289,
+          "erros": 35,
+          "ignoradas": 103,
+          "fora_da_regiao": 103,
+          "previstas": 427,
+          "precisao": 0.891975,
+          "recall": 0.840116,
+          "f1": 0.865269
+        },
+        "conservador": {
+          "limiar": 0.35,
+          "acertos": 289,
+          "erros": 138,
+          "ignoradas": 0,
+          "fora_da_regiao": 103,
+          "previstas": 427,
+          "precisao": 0.676815,
+          "recall": 0.840116,
+          "f1": 0.749676
+        }
+      }
+    },
+    "sem_sobrepostas": {
+      "fotos": 58,
+      "anotadas": 332,
+      "metricas": {
+        "regiao": {
+          "mascara": {
+            "ap50": 0.916045,
+            "ap50_95": 0.830436
+          },
+          "caixa": {
+            "ap50": 0.917269,
+            "ap50_95": 0.808138
+          }
+        },
+        "conservador": {
+          "mascara": {
+            "ap50": 0.813066,
+            "ap50_95": 0.743437
+          },
+          "caixa": {
+            "ap50": 0.815622,
+            "ap50_95": 0.724072
+          }
+        }
+      },
+      "no_limiar": {
+        "regiao": {
+          "limiar": 0.35,
+          "acertos": 277,
+          "erros": 35,
+          "ignoradas": 98,
+          "fora_da_regiao": 98,
+          "previstas": 410,
+          "precisao": 0.887821,
+          "recall": 0.834337,
+          "f1": 0.860248
+        },
+        "conservador": {
+          "limiar": 0.35,
+          "acertos": 277,
+          "erros": 133,
+          "ignoradas": 0,
+          "fora_da_regiao": 98,
+          "previstas": 410,
+          "precisao": 0.67561,
+          "recall": 0.834337,
+          "f1": 0.746631
+        }
+      }
+    }
+  },
+  "contagens": {
+    "todas": {
+      "fotos": 60,
+      "anotadas": 344,
+      "previstas": 427,
+      "acertos": 289,
+      "fora_da_regiao": 103,
+      "anotadas_por_foto": {
+        "mediana": 6.0,
+        "min": 2.0,
+        "max": 9.0
+      },
+      "previstas_por_foto": {
+        "mediana": 7.0,
+        "min": 2.0,
+        "max": 14.0
+      },
+      "diferenca_por_foto": {
+        "mediana": 1.0,
+        "min": -2.0,
+        "max": 6.0,
+        "media": 1.38333
+      },
+      "fotos_com_mais_previstas": 39,
+      "fotos_com_menos_previstas": 14,
+      "fotos_iguais": 7
+    },
+    "sem_sobrepostas": {
+      "fotos": 58,
+      "anotadas": 332,
+      "previstas": 410,
+      "acertos": 277,
+      "fora_da_regiao": 98,
+      "anotadas_por_foto": {
+        "mediana": 6.0,
+        "min": 2.0,
+        "max": 9.0
+      },
+      "previstas_por_foto": {
+        "mediana": 7.0,
+        "min": 2.0,
+        "max": 14.0
+      },
+      "diferenca_por_foto": {
+        "mediana": 1.0,
+        "min": -2.0,
+        "max": 6.0,
+        "media": 1.34483
+      },
+      "fotos_com_mais_previstas": 37,
+      "fotos_com_menos_previstas": 14,
+      "fotos_iguais": 7
+    }
+  },
+  "referencias": {
+    "validacao": {
+      "arquivo": "model/runs/detector_base/metricas_val.json",
+      "fotos": 46,
+      "anotadas": 248,
+      "metricas": {
+        "regiao": {
+          "mascara": {
+            "ap50": 0.946643,
+            "ap50_95": 0.885192
+          },
+          "caixa": {
+            "ap50": 0.948254,
+            "ap50_95": 0.869428
+          }
+        },
+        "conservador": {
+          "mascara": {
+            "ap50": 0.881318,
+            "ap50_95": 0.828502
+          },
+          "caixa": {
+            "ap50": 0.882552,
+            "ap50_95": 0.813216
+          }
+        }
+      },
+      "no_limiar": {
+        "regiao": {
+          "limiar": 0.35,
+          "acertos": 219,
+          "erros": 27,
+          "ignoradas": 75,
+          "fora_da_regiao": 75,
+          "previstas": 321,
+          "precisao": 0.890244,
+          "recall": 0.883065,
+          "f1": 0.88664
+        },
+        "conservador": {
+          "limiar": 0.35,
+          "acertos": 219,
+          "erros": 102,
+          "ignoradas": 0,
+          "fora_da_regiao": 75,
+          "previstas": 321,
+          "precisao": 0.682243,
+          "recall": 0.883065,
+          "f1": 0.769772
+        }
+      }
+    },
+    "validacao_contagens": {
+      "arquivo": "model/runs/detector_base/contagens_val.csv",
+      "fotos": 46,
+      "anotadas": 248,
+      "previstas": 321,
+      "acertos": 219,
+      "fora_da_regiao": 75,
+      "anotadas_por_foto": {
+        "mediana": 5.0,
+        "min": 2.0,
+        "max": 11.0
+      },
+      "previstas_por_foto": {
+        "mediana": 6.5,
+        "min": 3.0,
+        "max": 13.0
+      },
+      "diferenca_por_foto": {
+        "mediana": 1.0,
+        "min": -1.0,
+        "max": 6.0,
+        "media": 1.58696
+      },
+      "fotos_com_mais_previstas": 34,
+      "fotos_com_menos_previstas": 2,
+      "fotos_iguais": 10
+    }
+  }
+}

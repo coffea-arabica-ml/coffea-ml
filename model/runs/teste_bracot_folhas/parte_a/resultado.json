@@ -1,0 +1,36 @@
+{
+  "uso": "3a",
+  "criado_em": "2026-10-14T12:13:57",
+  "fotos": 58,
+  "sobrepostas_fora": [
+    "20190831_164920",
+    "20190831_165013"
+  ],
+  "planos": {
+    "deteccao": 58
+  },
+  "deteccoes_no_limiar": 410,
+  "cortadas": {
+    "area": 1,
+    "cor": 1,
+    "fragmento": 76,
+    "limite": 0
+  },
+  "fotos_com_fragmento_cortado": 41,
+  "folhas": 332,
+  "folhas_por_foto": {
+    "mediana": 5.0,
+    "min": 1.0,
+    "max": 13.0
+  },
+  "sorteadas": 115,
+  "fotos_por_sorteadas": {
+    "1": 1,
+    "2": 57
+  },
+  "pranchas": 6,
+  "max_por_foto": 2,
+  "semente": 42,
+  "pasta_pranchas": "data/processed/campo_rotulagem_teste",
+  "csv": "data/manifests/campo_rotulado_teste.csv"
+}

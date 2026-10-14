@@ -165,6 +165,9 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   - a regra chama saudável 54% das "?" novas (62% nas duas rotulagens);
   - classe da doença não verificada no campo;
   - severidade não informativa no campo.
+- **Passo 6b** (`evaluation/campo_cadeia_final.py`, `model/runs/campo_cadeia_final`): as folhas
+  rotuladas passam pela cadeia final inteira. Das 106 D evidentes, 29% chegam como doente, 5%
+  como saudável e 66% somem (58% pelo t_d). O cenário sem t_d é só informação.
 
 ## Comandos (na raiz do repositório, com o venv ativo)
 
@@ -203,6 +206,9 @@ python evaluation/campo.py --gerar-rotulagem --fotos treino   # rotulagem de val
                                              # detector): data/manifests/campo_rotulado_treino.csv
 python evaluation/campo_validacao.py         # validação da regra em duas etapas nas folhas antigas e
                                              # novas; model/runs/campo_validacao_duas_etapas/
+python evaluation/campo_cadeia_final.py      # passo 6b: as folhas rotuladas pela cadeia final (destino de S,
+                                             # D e "?", motivo do descarte, com e sem t_d); não sobrescreve
+                                             # model/runs/campo_cadeia_final/ (--relatorio só refaz o relatorio.md)
 python evaluation/campo.py --avaliar --classificador PASTA --saida campo_X   # proxies e rótulos de campo
 python model/treinar_campo.py --mascaras     # máscaras das folhas do BRACOL (data/processed/, só treino e val)
 python model/treinar_campo.py --fundos       # fundos borrados das fotos de treino do BRACOT

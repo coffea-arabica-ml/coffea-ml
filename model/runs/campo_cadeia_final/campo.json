@@ -1,0 +1,3205 @@
+{
+  "criado_em": "14/10/2026 11:32",
+  "origem": "no commit `975b484` (com alterações não commitadas)",
+  "configuracao": {
+    "decisao": "por_caminho",
+    "recorte": "B",
+    "fracao_visivel_minima": 0.5,
+    "limiar_saudavel": 0.083,
+    "limiar_doenca": 0.65,
+    "limiar_confianca": 0.61,
+    "max_folhas": 15
+  },
+  "modelos": {
+    "classificador": "base_resnet50_bracol",
+    "detector": "detector_base",
+    "dispositivo": "cuda"
+  },
+  "nao_casados": {
+    "antigas": 0,
+    "novas": 0
+  },
+  "planos": {
+    "antigas": {
+      "deteccao": 46
+    },
+    "novas": {
+      "deteccao": 160
+    }
+  },
+  "detalhes_outro": {},
+  "conferencia": {
+    "folhas": 245,
+    "sem_par": 0,
+    "diferenca_maxima": 0.000670174,
+    "desfechos_diferentes": 0
+  },
+  "por_conjunto": {
+    "antigas": {
+      "contagens": {
+        "S": 36,
+        "D": 46,
+        "?": 38
+      },
+      "destinos": {
+        "classificada": 85,
+        "fragmentos": 35
+      },
+      "final": {
+        "rotulos": {
+          "S": {
+            "n": 36,
+            "saudavel": {
+              "p": 0.611111,
+              "ic95": [
+                0.448645,
+                0.752151
+              ],
+              "sucessos": 22,
+              "n": 36
+            },
+            "doenca": {
+              "p": 0.0277778,
+              "ic95": [
+                0.00492041,
+                0.141697
+              ],
+              "sucessos": 1,
+              "n": 36
+            },
+            "descartada": {
+              "p": 0.361111,
+              "ic95": [
+                0.224756,
+                0.524249
+              ],
+              "sucessos": 13,
+              "n": 36
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.222222,
+                "ic95": [
+                  0.117163,
+                  0.380847
+                ],
+                "sucessos": 8,
+                "n": 36
+              },
+              "corte_td": {
+                "p": 0.138889,
+                "ic95": [
+                  0.0608182,
+                  0.286595
+                ],
+                "sucessos": 5,
+                "n": 36
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0964186
+                ],
+                "sucessos": 0,
+                "n": 36
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 0,
+              "bicho_mineiro": 0,
+              "phoma": 1,
+              "cercosporiose": 0
+            }
+          },
+          "D": {
+            "n": 46,
+            "saudavel": {
+              "p": 0.0217391,
+              "ic95": [
+                0.00384785,
+                0.113353
+              ],
+              "sucessos": 1,
+              "n": 46
+            },
+            "doenca": {
+              "p": 0.195652,
+              "ic95": [
+                0.106506,
+                0.331713
+              ],
+              "sucessos": 9,
+              "n": 46
+            },
+            "descartada": {
+              "p": 0.782609,
+              "ic95": [
+                0.644263,
+                0.877391
+              ],
+              "sucessos": 36,
+              "n": 46
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.195652,
+                "ic95": [
+                  0.106506,
+                  0.331713
+                ],
+                "sucessos": 9,
+                "n": 46
+              },
+              "corte_td": {
+                "p": 0.586957,
+                "ic95": [
+                  0.443395,
+                  0.717114
+                ],
+                "sucessos": 27,
+                "n": 46
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0770736
+                ],
+                "sucessos": 0,
+                "n": 46
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 8,
+              "bicho_mineiro": 1,
+              "phoma": 0,
+              "cercosporiose": 0
+            }
+          },
+          "?": {
+            "n": 38,
+            "saudavel": {
+              "p": 0.342105,
+              "ic95": [
+                0.212124,
+                0.501079
+              ],
+              "sucessos": 13,
+              "n": 38
+            },
+            "doenca": {
+              "p": 0.0263158,
+              "ic95": [
+                0.00466059,
+                0.134949
+              ],
+              "sucessos": 1,
+              "n": 38
+            },
+            "descartada": {
+              "p": 0.631579,
+              "ic95": [
+                0.47284,
+                0.766158
+              ],
+              "sucessos": 24,
+              "n": 38
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.473684,
+                "ic95": [
+                  0.32479,
+                  0.62741
+                ],
+                "sucessos": 18,
+                "n": 38
+              },
+              "corte_td": {
+                "p": 0.157895,
+                "ic95": [
+                  0.0744386,
+                  0.304168
+                ],
+                "sucessos": 6,
+                "n": 38
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0918099
+                ],
+                "sucessos": 0,
+                "n": 38
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 1,
+              "bicho_mineiro": 0,
+              "phoma": 0,
+              "cercosporiose": 0
+            }
+          }
+        },
+        "doentes_mantidas": {
+          "S": {
+            "n": 1,
+            "classes": {
+              "ferrugem": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.793451
+                ],
+                "sucessos": 0,
+                "n": 1
+              },
+              "bicho_mineiro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.793451
+                ],
+                "sucessos": 0,
+                "n": 1
+              },
+              "phoma": {
+                "p": 1.0,
+                "ic95": [
+                  0.206549,
+                  1.0
+                ],
+                "sucessos": 1,
+                "n": 1
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.793451
+                ],
+                "sucessos": 0,
+                "n": 1
+              }
+            },
+            "confianca": {
+              "n": 1,
+              "media": 0.819378,
+              "mediana": 0.819378,
+              "p25": 0.819378,
+              "p75": 0.819378,
+              "min": 0.819378,
+              "max": 0.819378
+            },
+            "confianca_por_classe": {
+              "ferrugem": null,
+              "bicho_mineiro": null,
+              "phoma": {
+                "n": 1,
+                "media": 0.819378,
+                "mediana": 0.819378,
+                "p25": 0.819378,
+                "p75": 0.819378,
+                "min": 0.819378,
+                "max": 0.819378
+              },
+              "cercosporiose": null
+            }
+          },
+          "D": {
+            "n": 9,
+            "classes": {
+              "ferrugem": {
+                "p": 0.888889,
+                "ic95": [
+                  0.565,
+                  0.980109
+                ],
+                "sucessos": 8,
+                "n": 9
+              },
+              "bicho_mineiro": {
+                "p": 0.111111,
+                "ic95": [
+                  0.0198909,
+                  0.435
+                ],
+                "sucessos": 1,
+                "n": 9
+              },
+              "phoma": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.299145
+                ],
+                "sucessos": 0,
+                "n": 9
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.299145
+                ],
+                "sucessos": 0,
+                "n": 9
+              }
+            },
+            "confianca": {
+              "n": 9,
+              "media": 0.780722,
+              "mediana": 0.808437,
+              "p25": 0.712762,
+              "p75": 0.819619,
+              "min": 0.663831,
+              "max": 0.933916
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 8,
+                "media": 0.771394,
+                "mediana": 0.783739,
+                "p25": 0.700676,
+                "p75": 0.811754,
+                "min": 0.663831,
+                "max": 0.933916
+              },
+              "bicho_mineiro": {
+                "n": 1,
+                "media": 0.855347,
+                "mediana": 0.855347,
+                "p25": 0.855347,
+                "p75": 0.855347,
+                "min": 0.855347,
+                "max": 0.855347
+              },
+              "phoma": null,
+              "cercosporiose": null
+            }
+          },
+          "?": {
+            "n": 1,
+            "classes": {
+              "ferrugem": {
+                "p": 1.0,
+                "ic95": [
+                  0.206549,
+                  1.0
+                ],
+                "sucessos": 1,
+                "n": 1
+              },
+              "bicho_mineiro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.793451
+                ],
+                "sucessos": 0,
+                "n": 1
+              },
+              "phoma": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.793451
+                ],
+                "sucessos": 0,
+                "n": 1
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.793451
+                ],
+                "sucessos": 0,
+                "n": 1
+              }
+            },
+            "confianca": {
+              "n": 1,
+              "media": 0.663102,
+              "mediana": 0.663102,
+              "p25": 0.663102,
+              "p75": 0.663102,
+              "min": 0.663102,
+              "max": 0.663102
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 1,
+                "media": 0.663102,
+                "mediana": 0.663102,
+                "p25": 0.663102,
+                "p75": 0.663102,
+                "min": 0.663102,
+                "max": 0.663102
+              },
+              "bicho_mineiro": null,
+              "phoma": null,
+              "cercosporiose": null
+            }
+          },
+          "todas": {
+            "n": 11,
+            "classes": {
+              "ferrugem": {
+                "p": 0.818182,
+                "ic95": [
+                  0.523019,
+                  0.948632
+                ],
+                "sucessos": 9,
+                "n": 11
+              },
+              "bicho_mineiro": {
+                "p": 0.0909091,
+                "ic95": [
+                  0.0162322,
+                  0.377358
+                ],
+                "sucessos": 1,
+                "n": 11
+              },
+              "phoma": {
+                "p": 0.0909091,
+                "ic95": [
+                  0.0162322,
+                  0.377358
+                ],
+                "sucessos": 1,
+                "n": 11
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.258833
+                ],
+                "sucessos": 0,
+                "n": 11
+              }
+            },
+            "confianca": {
+              "n": 11,
+              "media": 0.773544,
+              "mediana": 0.808437,
+              "p25": 0.688589,
+              "p75": 0.819498,
+              "min": 0.663102,
+              "max": 0.933916
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 9,
+                "media": 0.759362,
+                "mediana": 0.75904,
+                "p25": 0.664416,
+                "p75": 0.809132,
+                "min": 0.663102,
+                "max": 0.933916
+              },
+              "bicho_mineiro": {
+                "n": 1,
+                "media": 0.855347,
+                "mediana": 0.855347,
+                "p25": 0.855347,
+                "p75": 0.855347,
+                "min": 0.855347,
+                "max": 0.855347
+              },
+              "phoma": {
+                "n": 1,
+                "media": 0.819378,
+                "mediana": 0.819378,
+                "p25": 0.819378,
+                "p75": 0.819378,
+                "min": 0.819378,
+                "max": 0.819378
+              },
+              "cercosporiose": null
+            }
+          }
+        }
+      },
+      "sem_td": {
+        "rotulos": {
+          "S": {
+            "n": 36,
+            "saudavel": {
+              "p": 0.611111,
+              "ic95": [
+                0.448645,
+                0.752151
+              ],
+              "sucessos": 22,
+              "n": 36
+            },
+            "doenca": {
+              "p": 0.166667,
+              "ic95": [
+                0.0787045,
+                0.318908
+              ],
+              "sucessos": 6,
+              "n": 36
+            },
+            "descartada": {
+              "p": 0.222222,
+              "ic95": [
+                0.117163,
+                0.380847
+              ],
+              "sucessos": 8,
+              "n": 36
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.222222,
+                "ic95": [
+                  0.117163,
+                  0.380847
+                ],
+                "sucessos": 8,
+                "n": 36
+              },
+              "corte_td": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0964186
+                ],
+                "sucessos": 0,
+                "n": 36
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0964186
+                ],
+                "sucessos": 0,
+                "n": 36
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 1,
+              "bicho_mineiro": 0,
+              "phoma": 5,
+              "cercosporiose": 0
+            }
+          },
+          "D": {
+            "n": 46,
+            "saudavel": {
+              "p": 0.0217391,
+              "ic95": [
+                0.00384785,
+                0.113353
+              ],
+              "sucessos": 1,
+              "n": 46
+            },
+            "doenca": {
+              "p": 0.782609,
+              "ic95": [
+                0.644263,
+                0.877391
+              ],
+              "sucessos": 36,
+              "n": 46
+            },
+            "descartada": {
+              "p": 0.195652,
+              "ic95": [
+                0.106506,
+                0.331713
+              ],
+              "sucessos": 9,
+              "n": 46
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.195652,
+                "ic95": [
+                  0.106506,
+                  0.331713
+                ],
+                "sucessos": 9,
+                "n": 46
+              },
+              "corte_td": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0770736
+                ],
+                "sucessos": 0,
+                "n": 46
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0770736
+                ],
+                "sucessos": 0,
+                "n": 46
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 26,
+              "bicho_mineiro": 9,
+              "phoma": 0,
+              "cercosporiose": 1
+            }
+          },
+          "?": {
+            "n": 38,
+            "saudavel": {
+              "p": 0.342105,
+              "ic95": [
+                0.212124,
+                0.501079
+              ],
+              "sucessos": 13,
+              "n": 38
+            },
+            "doenca": {
+              "p": 0.184211,
+              "ic95": [
+                0.0922177,
+                0.334189
+              ],
+              "sucessos": 7,
+              "n": 38
+            },
+            "descartada": {
+              "p": 0.473684,
+              "ic95": [
+                0.32479,
+                0.62741
+              ],
+              "sucessos": 18,
+              "n": 38
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.473684,
+                "ic95": [
+                  0.32479,
+                  0.62741
+                ],
+                "sucessos": 18,
+                "n": 38
+              },
+              "corte_td": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0918099
+                ],
+                "sucessos": 0,
+                "n": 38
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0918099
+                ],
+                "sucessos": 0,
+                "n": 38
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 5,
+              "bicho_mineiro": 1,
+              "phoma": 1,
+              "cercosporiose": 0
+            }
+          }
+        },
+        "doentes_mantidas": {
+          "S": {
+            "n": 6,
+            "classes": {
+              "ferrugem": {
+                "p": 0.166667,
+                "ic95": [
+                  0.0300534,
+                  0.563503
+                ],
+                "sucessos": 1,
+                "n": 6
+              },
+              "bicho_mineiro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.390334
+                ],
+                "sucessos": 0,
+                "n": 6
+              },
+              "phoma": {
+                "p": 0.833333,
+                "ic95": [
+                  0.436497,
+                  0.969947
+                ],
+                "sucessos": 5,
+                "n": 6
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.390334
+                ],
+                "sucessos": 0,
+                "n": 6
+              }
+            },
+            "confianca": {
+              "n": 6,
+              "media": 0.46152,
+              "mediana": 0.416267,
+              "p25": 0.364855,
+              "p75": 0.448817,
+              "min": 0.309826,
+              "max": 0.819378
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 1,
+                "media": 0.455536,
+                "mediana": 0.455536,
+                "p25": 0.455536,
+                "p75": 0.455536,
+                "min": 0.455536,
+                "max": 0.455536
+              },
+              "bicho_mineiro": null,
+              "phoma": {
+                "n": 5,
+                "media": 0.462717,
+                "mediana": 0.403876,
+                "p25": 0.351848,
+                "p75": 0.428658,
+                "min": 0.309826,
+                "max": 0.819378
+              },
+              "cercosporiose": null
+            }
+          },
+          "D": {
+            "n": 36,
+            "classes": {
+              "ferrugem": {
+                "p": 0.722222,
+                "ic95": [
+                  0.560075,
+                  0.841517
+                ],
+                "sucessos": 26,
+                "n": 36
+              },
+              "bicho_mineiro": {
+                "p": 0.25,
+                "ic95": [
+                  0.137505,
+                  0.410705
+                ],
+                "sucessos": 9,
+                "n": 36
+              },
+              "phoma": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0964186
+                ],
+                "sucessos": 0,
+                "n": 36
+              },
+              "cercosporiose": {
+                "p": 0.0277778,
+                "ic95": [
+                  0.00492041,
+                  0.141697
+                ],
+                "sucessos": 1,
+                "n": 36
+              }
+            },
+            "confianca": {
+              "n": 36,
+              "media": 0.525489,
+              "mediana": 0.496712,
+              "p25": 0.371363,
+              "p75": 0.627737,
+              "min": 0.313468,
+              "max": 0.933916
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 26,
+                "media": 0.537422,
+                "mediana": 0.539414,
+                "p25": 0.37105,
+                "p75": 0.66427,
+                "min": 0.313468,
+                "max": 0.933916
+              },
+              "bicho_mineiro": {
+                "n": 9,
+                "media": 0.499739,
+                "mediana": 0.49464,
+                "p25": 0.407053,
+                "p75": 0.56139,
+                "min": 0.333711,
+                "max": 0.855347
+              },
+              "phoma": null,
+              "cercosporiose": {
+                "n": 1,
+                "media": 0.446975,
+                "mediana": 0.446975,
+                "p25": 0.446975,
+                "p75": 0.446975,
+                "min": 0.446975,
+                "max": 0.446975
+              }
+            }
+          },
+          "?": {
+            "n": 7,
+            "classes": {
+              "ferrugem": {
+                "p": 0.714286,
+                "ic95": [
+                  0.358934,
+                  0.917781
+                ],
+                "sucessos": 5,
+                "n": 7
+              },
+              "bicho_mineiro": {
+                "p": 0.142857,
+                "ic95": [
+                  0.0256796,
+                  0.513128
+                ],
+                "sucessos": 1,
+                "n": 7
+              },
+              "phoma": {
+                "p": 0.142857,
+                "ic95": [
+                  0.0256796,
+                  0.513128
+                ],
+                "sucessos": 1,
+                "n": 7
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.35433
+                ],
+                "sucessos": 0,
+                "n": 7
+              }
+            },
+            "confianca": {
+              "n": 7,
+              "media": 0.569103,
+              "mediana": 0.580125,
+              "p25": 0.540156,
+              "p75": 0.616945,
+              "min": 0.426295,
+              "max": 0.663102
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 5,
+                "media": 0.592502,
+                "mediana": 0.580125,
+                "p25": 0.561845,
+                "p75": 0.638969,
+                "min": 0.518467,
+                "max": 0.663102
+              },
+              "bicho_mineiro": {
+                "n": 1,
+                "media": 0.59492,
+                "mediana": 0.59492,
+                "p25": 0.59492,
+                "p75": 0.59492,
+                "min": 0.59492,
+                "max": 0.59492
+              },
+              "phoma": {
+                "n": 1,
+                "media": 0.426295,
+                "mediana": 0.426295,
+                "p25": 0.426295,
+                "p75": 0.426295,
+                "min": 0.426295,
+                "max": 0.426295
+              },
+              "cercosporiose": null
+            }
+          },
+          "todas": {
+            "n": 49,
+            "classes": {
+              "ferrugem": {
+                "p": 0.653061,
+                "ic95": [
+                  0.513112,
+                  0.770756
+                ],
+                "sucessos": 32,
+                "n": 49
+              },
+              "bicho_mineiro": {
+                "p": 0.204082,
+                "ic95": [
+                  0.114818,
+                  0.33637
+                ],
+                "sucessos": 10,
+                "n": 49
+              },
+              "phoma": {
+                "p": 0.122449,
+                "ic95": [
+                  0.0573483,
+                  0.242444
+                ],
+                "sucessos": 6,
+                "n": 49
+              },
+              "cercosporiose": {
+                "p": 0.0204082,
+                "ic95": [
+                  0.00361167,
+                  0.106935
+                ],
+                "sucessos": 1,
+                "n": 49
+              }
+            },
+            "confianca": {
+              "n": 49,
+              "media": 0.523887,
+              "mediana": 0.498783,
+              "p25": 0.374188,
+              "p75": 0.615705,
+              "min": 0.309826,
+              "max": 0.933916
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 32,
+                "media": 0.543469,
+                "mediana": 0.558783,
+                "p25": 0.373521,
+                "p75": 0.663284,
+                "min": 0.313468,
+                "max": 0.933916
+              },
+              "bicho_mineiro": {
+                "n": 10,
+                "media": 0.509257,
+                "mediana": 0.496712,
+                "p25": 0.410289,
+                "p75": 0.56688,
+                "min": 0.333711,
+                "max": 0.855347
+              },
+              "phoma": {
+                "n": 6,
+                "media": 0.456647,
+                "mediana": 0.415085,
+                "p25": 0.364855,
+                "p75": 0.428068,
+                "min": 0.309826,
+                "max": 0.819378
+              },
+              "cercosporiose": {
+                "n": 1,
+                "media": 0.446975,
+                "mediana": 0.446975,
+                "p25": 0.446975,
+                "p75": 0.446975,
+                "min": 0.446975,
+                "max": 0.446975
+              }
+            }
+          }
+        }
+      }
+    },
+    "novas": {
+      "contagens": {
+        "S": 41,
+        "D": 60,
+        "?": 59
+      },
+      "destinos": {
+        "classificada": 160
+      },
+      "final": {
+        "rotulos": {
+          "S": {
+            "n": 41,
+            "saudavel": {
+              "p": 0.804878,
+              "ic95": [
+                0.659864,
+                0.897656
+              ],
+              "sucessos": 33,
+              "n": 41
+            },
+            "doenca": {
+              "p": 0.0487805,
+              "ic95": [
+                0.0134809,
+                0.16139
+              ],
+              "sucessos": 2,
+              "n": 41
+            },
+            "descartada": {
+              "p": 0.146341,
+              "ic95": [
+                0.0688425,
+                0.284435
+              ],
+              "sucessos": 6,
+              "n": 41
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0856676
+                ],
+                "sucessos": 0,
+                "n": 41
+              },
+              "corte_td": {
+                "p": 0.146341,
+                "ic95": [
+                  0.0688425,
+                  0.284435
+                ],
+                "sucessos": 6,
+                "n": 41
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0856676
+                ],
+                "sucessos": 0,
+                "n": 41
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 1,
+              "bicho_mineiro": 0,
+              "phoma": 1,
+              "cercosporiose": 0
+            }
+          },
+          "D": {
+            "n": 60,
+            "saudavel": {
+              "p": 0.0666667,
+              "ic95": [
+                0.0262287,
+                0.159254
+              ],
+              "sucessos": 4,
+              "n": 60
+            },
+            "doenca": {
+              "p": 0.366667,
+              "ic95": [
+                0.256209,
+                0.49317
+              ],
+              "sucessos": 22,
+              "n": 60
+            },
+            "descartada": {
+              "p": 0.566667,
+              "ic95": [
+                0.441034,
+                0.684276
+              ],
+              "sucessos": 34,
+              "n": 60
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0601719
+                ],
+                "sucessos": 0,
+                "n": 60
+              },
+              "corte_td": {
+                "p": 0.566667,
+                "ic95": [
+                  0.441034,
+                  0.684276
+                ],
+                "sucessos": 34,
+                "n": 60
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0601719
+                ],
+                "sucessos": 0,
+                "n": 60
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 18,
+              "bicho_mineiro": 2,
+              "phoma": 1,
+              "cercosporiose": 1
+            }
+          },
+          "?": {
+            "n": 59,
+            "saudavel": {
+              "p": 0.542373,
+              "ic95": [
+                0.416578,
+                0.662987
+              ],
+              "sucessos": 32,
+              "n": 59
+            },
+            "doenca": {
+              "p": 0.118644,
+              "ic95": [
+                0.0586758,
+                0.225236
+              ],
+              "sucessos": 7,
+              "n": 59
+            },
+            "descartada": {
+              "p": 0.338983,
+              "ic95": [
+                0.231377,
+                0.466275
+              ],
+              "sucessos": 20,
+              "n": 59
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0611294
+                ],
+                "sucessos": 0,
+                "n": 59
+              },
+              "corte_td": {
+                "p": 0.338983,
+                "ic95": [
+                  0.231377,
+                  0.466275
+                ],
+                "sucessos": 20,
+                "n": 59
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0611294
+                ],
+                "sucessos": 0,
+                "n": 59
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 6,
+              "bicho_mineiro": 0,
+              "phoma": 1,
+              "cercosporiose": 0
+            }
+          }
+        },
+        "doentes_mantidas": {
+          "S": {
+            "n": 2,
+            "classes": {
+              "ferrugem": {
+                "p": 0.5,
+                "ic95": [
+                  0.0945312,
+                  0.905469
+                ],
+                "sucessos": 1,
+                "n": 2
+              },
+              "bicho_mineiro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.65762
+                ],
+                "sucessos": 0,
+                "n": 2
+              },
+              "phoma": {
+                "p": 0.5,
+                "ic95": [
+                  0.0945312,
+                  0.905469
+                ],
+                "sucessos": 1,
+                "n": 2
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.65762
+                ],
+                "sucessos": 0,
+                "n": 2
+              }
+            },
+            "confianca": {
+              "n": 2,
+              "media": 0.751232,
+              "mediana": 0.751232,
+              "p25": 0.700847,
+              "p75": 0.801616,
+              "min": 0.650463,
+              "max": 0.852001
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 1,
+                "media": 0.852001,
+                "mediana": 0.852001,
+                "p25": 0.852001,
+                "p75": 0.852001,
+                "min": 0.852001,
+                "max": 0.852001
+              },
+              "bicho_mineiro": null,
+              "phoma": {
+                "n": 1,
+                "media": 0.650463,
+                "mediana": 0.650463,
+                "p25": 0.650463,
+                "p75": 0.650463,
+                "min": 0.650463,
+                "max": 0.650463
+              },
+              "cercosporiose": null
+            }
+          },
+          "D": {
+            "n": 22,
+            "classes": {
+              "ferrugem": {
+                "p": 0.818182,
+                "ic95": [
+                  0.614834,
+                  0.926931
+                ],
+                "sucessos": 18,
+                "n": 22
+              },
+              "bicho_mineiro": {
+                "p": 0.0909091,
+                "ic95": [
+                  0.0252954,
+                  0.278149
+                ],
+                "sucessos": 2,
+                "n": 22
+              },
+              "phoma": {
+                "p": 0.0454545,
+                "ic95": [
+                  0.00806943,
+                  0.21798
+                ],
+                "sucessos": 1,
+                "n": 22
+              },
+              "cercosporiose": {
+                "p": 0.0454545,
+                "ic95": [
+                  0.00806943,
+                  0.21798
+                ],
+                "sucessos": 1,
+                "n": 22
+              }
+            },
+            "confianca": {
+              "n": 22,
+              "media": 0.812459,
+              "mediana": 0.816723,
+              "p25": 0.720351,
+              "p75": 0.915145,
+              "min": 0.650836,
+              "max": 0.967196
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 18,
+                "media": 0.833916,
+                "mediana": 0.834596,
+                "p25": 0.749804,
+                "p75": 0.927914,
+                "min": 0.692495,
+                "max": 0.967196
+              },
+              "bicho_mineiro": {
+                "n": 2,
+                "media": 0.713811,
+                "mediana": 0.713811,
+                "p25": 0.682323,
+                "p75": 0.745298,
+                "min": 0.650836,
+                "max": 0.776786
+              },
+              "phoma": {
+                "n": 1,
+                "media": 0.662496,
+                "mediana": 0.662496,
+                "p25": 0.662496,
+                "p75": 0.662496,
+                "min": 0.662496,
+                "max": 0.662496
+              },
+              "cercosporiose": {
+                "n": 1,
+                "media": 0.773501,
+                "mediana": 0.773501,
+                "p25": 0.773501,
+                "p75": 0.773501,
+                "min": 0.773501,
+                "max": 0.773501
+              }
+            }
+          },
+          "?": {
+            "n": 7,
+            "classes": {
+              "ferrugem": {
+                "p": 0.857143,
+                "ic95": [
+                  0.486872,
+                  0.97432
+                ],
+                "sucessos": 6,
+                "n": 7
+              },
+              "bicho_mineiro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.35433
+                ],
+                "sucessos": 0,
+                "n": 7
+              },
+              "phoma": {
+                "p": 0.142857,
+                "ic95": [
+                  0.0256796,
+                  0.513128
+                ],
+                "sucessos": 1,
+                "n": 7
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.35433
+                ],
+                "sucessos": 0,
+                "n": 7
+              }
+            },
+            "confianca": {
+              "n": 7,
+              "media": 0.815809,
+              "mediana": 0.813809,
+              "p25": 0.781277,
+              "p75": 0.870606,
+              "min": 0.708467,
+              "max": 0.884623
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 6,
+                "media": 0.8337,
+                "mediana": 0.837379,
+                "p25": 0.791383,
+                "p75": 0.875434,
+                "min": 0.778646,
+                "max": 0.884623
+              },
+              "bicho_mineiro": null,
+              "phoma": {
+                "n": 1,
+                "media": 0.708467,
+                "mediana": 0.708467,
+                "p25": 0.708467,
+                "p75": 0.708467,
+                "min": 0.708467,
+                "max": 0.708467
+              },
+              "cercosporiose": null
+            }
+          },
+          "todas": {
+            "n": 31,
+            "classes": {
+              "ferrugem": {
+                "p": 0.806452,
+                "ic95": [
+                  0.637197,
+                  0.90813
+                ],
+                "sucessos": 25,
+                "n": 31
+              },
+              "bicho_mineiro": {
+                "p": 0.0645161,
+                "ic95": [
+                  0.0178748,
+                  0.207186
+                ],
+                "sucessos": 2,
+                "n": 31
+              },
+              "phoma": {
+                "p": 0.0967742,
+                "ic95": [
+                  0.0334646,
+                  0.248999
+                ],
+                "sucessos": 3,
+                "n": 31
+              },
+              "cercosporiose": {
+                "p": 0.0322581,
+                "ic95": [
+                  0.00571722,
+                  0.161941
+                ],
+                "sucessos": 1,
+                "n": 31
+              }
+            },
+            "confianca": {
+              "n": 31,
+              "media": 0.809266,
+              "mediana": 0.816277,
+              "p25": 0.730086,
+              "p75": 0.882443,
+              "min": 0.650463,
+              "max": 0.967196
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 25,
+                "media": 0.834587,
+                "mediana": 0.849555,
+                "p25": 0.778646,
+                "p75": 0.898006,
+                "min": 0.692495,
+                "max": 0.967196
+              },
+              "bicho_mineiro": {
+                "n": 2,
+                "media": 0.713811,
+                "mediana": 0.713811,
+                "p25": 0.682323,
+                "p75": 0.745298,
+                "min": 0.650836,
+                "max": 0.776786
+              },
+              "phoma": {
+                "n": 3,
+                "media": 0.673809,
+                "mediana": 0.662496,
+                "p25": 0.65648,
+                "p75": 0.685482,
+                "min": 0.650463,
+                "max": 0.708467
+              },
+              "cercosporiose": {
+                "n": 1,
+                "media": 0.773501,
+                "mediana": 0.773501,
+                "p25": 0.773501,
+                "p75": 0.773501,
+                "min": 0.773501,
+                "max": 0.773501
+              }
+            }
+          }
+        }
+      },
+      "sem_td": {
+        "rotulos": {
+          "S": {
+            "n": 41,
+            "saudavel": {
+              "p": 0.804878,
+              "ic95": [
+                0.659864,
+                0.897656
+              ],
+              "sucessos": 33,
+              "n": 41
+            },
+            "doenca": {
+              "p": 0.195122,
+              "ic95": [
+                0.102344,
+                0.340136
+              ],
+              "sucessos": 8,
+              "n": 41
+            },
+            "descartada": {
+              "p": 0.0,
+              "ic95": [
+                0.0,
+                0.0856676
+              ],
+              "sucessos": 0,
+              "n": 41
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0856676
+                ],
+                "sucessos": 0,
+                "n": 41
+              },
+              "corte_td": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0856676
+                ],
+                "sucessos": 0,
+                "n": 41
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0856676
+                ],
+                "sucessos": 0,
+                "n": 41
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 2,
+              "bicho_mineiro": 1,
+              "phoma": 5,
+              "cercosporiose": 0
+            }
+          },
+          "D": {
+            "n": 60,
+            "saudavel": {
+              "p": 0.0666667,
+              "ic95": [
+                0.0262287,
+                0.159254
+              ],
+              "sucessos": 4,
+              "n": 60
+            },
+            "doenca": {
+              "p": 0.933333,
+              "ic95": [
+                0.840746,
+                0.973771
+              ],
+              "sucessos": 56,
+              "n": 60
+            },
+            "descartada": {
+              "p": 0.0,
+              "ic95": [
+                0.0,
+                0.0601719
+              ],
+              "sucessos": 0,
+              "n": 60
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0601719
+                ],
+                "sucessos": 0,
+                "n": 60
+              },
+              "corte_td": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0601719
+                ],
+                "sucessos": 0,
+                "n": 60
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0601719
+                ],
+                "sucessos": 0,
+                "n": 60
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 31,
+              "bicho_mineiro": 9,
+              "phoma": 13,
+              "cercosporiose": 3
+            }
+          },
+          "?": {
+            "n": 59,
+            "saudavel": {
+              "p": 0.542373,
+              "ic95": [
+                0.416578,
+                0.662987
+              ],
+              "sucessos": 32,
+              "n": 59
+            },
+            "doenca": {
+              "p": 0.457627,
+              "ic95": [
+                0.337013,
+                0.583422
+              ],
+              "sucessos": 27,
+              "n": 59
+            },
+            "descartada": {
+              "p": 0.0,
+              "ic95": [
+                0.0,
+                0.0611294
+              ],
+              "sucessos": 0,
+              "n": 59
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0611294
+                ],
+                "sucessos": 0,
+                "n": 59
+              },
+              "corte_td": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0611294
+                ],
+                "sucessos": 0,
+                "n": 59
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0611294
+                ],
+                "sucessos": 0,
+                "n": 59
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 15,
+              "bicho_mineiro": 2,
+              "phoma": 9,
+              "cercosporiose": 1
+            }
+          }
+        },
+        "doentes_mantidas": {
+          "S": {
+            "n": 8,
+            "classes": {
+              "ferrugem": {
+                "p": 0.25,
+                "ic95": [
+                  0.0714792,
+                  0.590725
+                ],
+                "sucessos": 2,
+                "n": 8
+              },
+              "bicho_mineiro": {
+                "p": 0.125,
+                "ic95": [
+                  0.0224175,
+                  0.470888
+                ],
+                "sucessos": 1,
+                "n": 8
+              },
+              "phoma": {
+                "p": 0.625,
+                "ic95": [
+                  0.305742,
+                  0.863156
+                ],
+                "sucessos": 5,
+                "n": 8
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.324408
+                ],
+                "sucessos": 0,
+                "n": 8
+              }
+            },
+            "confianca": {
+              "n": 8,
+              "media": 0.538446,
+              "mediana": 0.51807,
+              "p25": 0.418163,
+              "p75": 0.616336,
+              "min": 0.347591,
+              "max": 0.852001
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 2,
+                "media": 0.599796,
+                "mediana": 0.599796,
+                "p25": 0.473693,
+                "p75": 0.725898,
+                "min": 0.347591,
+                "max": 0.852001
+              },
+              "bicho_mineiro": {
+                "n": 1,
+                "media": 0.475127,
+                "mediana": 0.475127,
+                "p25": 0.475127,
+                "p75": 0.475127,
+                "min": 0.475127,
+                "max": 0.475127
+              },
+              "phoma": {
+                "n": 5,
+                "media": 0.526569,
+                "mediana": 0.561013,
+                "p25": 0.42812,
+                "p75": 0.604961,
+                "min": 0.388291,
+                "max": 0.650463
+              },
+              "cercosporiose": null
+            }
+          },
+          "D": {
+            "n": 56,
+            "classes": {
+              "ferrugem": {
+                "p": 0.553571,
+                "ic95": [
+                  0.424132,
+                  0.676133
+                ],
+                "sucessos": 31,
+                "n": 56
+              },
+              "bicho_mineiro": {
+                "p": 0.160714,
+                "ic95": [
+                  0.0869267,
+                  0.278062
+                ],
+                "sucessos": 9,
+                "n": 56
+              },
+              "phoma": {
+                "p": 0.232143,
+                "ic95": [
+                  0.140994,
+                  0.357682
+                ],
+                "sucessos": 13,
+                "n": 56
+              },
+              "cercosporiose": {
+                "p": 0.0535714,
+                "ic95": [
+                  0.0183858,
+                  0.146073
+                ],
+                "sucessos": 3,
+                "n": 56
+              }
+            },
+            "confianca": {
+              "n": 56,
+              "media": 0.6022,
+              "mediana": 0.56487,
+              "p25": 0.43522,
+              "p75": 0.756288,
+              "min": 0.305763,
+              "max": 0.967196
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 31,
+                "media": 0.67352,
+                "mediana": 0.70396,
+                "p25": 0.510954,
+                "p75": 0.850453,
+                "min": 0.305763,
+                "max": 0.967196
+              },
+              "bicho_mineiro": {
+                "n": 9,
+                "media": 0.566424,
+                "mediana": 0.544958,
+                "p25": 0.533523,
+                "p75": 0.606585,
+                "min": 0.341928,
+                "max": 0.776786
+              },
+              "phoma": {
+                "n": 13,
+                "media": 0.460091,
+                "mediana": 0.412431,
+                "p25": 0.398501,
+                "p75": 0.565232,
+                "min": 0.3133,
+                "max": 0.662496
+              },
+              "cercosporiose": {
+                "n": 3,
+                "media": 0.588359,
+                "mediana": 0.518014,
+                "p25": 0.495788,
+                "p75": 0.645758,
+                "min": 0.473562,
+                "max": 0.773501
+              }
+            }
+          },
+          "?": {
+            "n": 27,
+            "classes": {
+              "ferrugem": {
+                "p": 0.555556,
+                "ic95": [
+                  0.37313,
+                  0.724141
+                ],
+                "sucessos": 15,
+                "n": 27
+              },
+              "bicho_mineiro": {
+                "p": 0.0740741,
+                "ic95": [
+                  0.0205547,
+                  0.233696
+                ],
+                "sucessos": 2,
+                "n": 27
+              },
+              "phoma": {
+                "p": 0.333333,
+                "ic95": [
+                  0.186433,
+                  0.521752
+                ],
+                "sucessos": 9,
+                "n": 27
+              },
+              "cercosporiose": {
+                "p": 0.037037,
+                "ic95": [
+                  0.00656815,
+                  0.182835
+                ],
+                "sucessos": 1,
+                "n": 27
+              }
+            },
+            "confianca": {
+              "n": 27,
+              "media": 0.521902,
+              "mediana": 0.447428,
+              "p25": 0.373578,
+              "p75": 0.655735,
+              "min": 0.293576,
+              "max": 0.884623
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 15,
+                "media": 0.597149,
+                "mediana": 0.586127,
+                "p25": 0.394552,
+                "p75": 0.798859,
+                "min": 0.344807,
+                "max": 0.884623
+              },
+              "bicho_mineiro": {
+                "n": 2,
+                "media": 0.332463,
+                "mediana": 0.332463,
+                "p25": 0.313019,
+                "p75": 0.351906,
+                "min": 0.293576,
+                "max": 0.37135
+              },
+              "phoma": {
+                "n": 9,
+                "media": 0.462615,
+                "mediana": 0.443978,
+                "p25": 0.390926,
+                "p75": 0.47791,
+                "min": 0.353039,
+                "max": 0.708467
+              },
+              "cercosporiose": {
+                "n": 1,
+                "media": 0.305653,
+                "mediana": 0.305653,
+                "p25": 0.305653,
+                "p75": 0.305653,
+                "min": 0.305653,
+                "max": 0.305653
+              }
+            }
+          },
+          "todas": {
+            "n": 91,
+            "classes": {
+              "ferrugem": {
+                "p": 0.527473,
+                "ic95": [
+                  0.425878,
+                  0.626842
+                ],
+                "sucessos": 48,
+                "n": 91
+              },
+              "bicho_mineiro": {
+                "p": 0.131868,
+                "ic95": [
+                  0.0770711,
+                  0.216487
+                ],
+                "sucessos": 12,
+                "n": 91
+              },
+              "phoma": {
+                "p": 0.296703,
+                "ic95": [
+                  0.212635,
+                  0.39724
+                ],
+                "sucessos": 27,
+                "n": 91
+              },
+              "cercosporiose": {
+                "p": 0.043956,
+                "ic95": [
+                  0.0172244,
+                  0.107631
+                ],
+                "sucessos": 4,
+                "n": 91
+              }
+            },
+            "confianca": {
+              "n": 91,
+              "media": 0.572771,
+              "mediana": 0.537424,
+              "p25": 0.400624,
+              "p75": 0.730086,
+              "min": 0.293576,
+              "max": 0.967196
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 48,
+                "media": 0.646583,
+                "mediana": 0.694972,
+                "p25": 0.43522,
+                "p75": 0.850004,
+                "min": 0.305763,
+                "max": 0.967196
+              },
+              "bicho_mineiro": {
+                "n": 12,
+                "media": 0.519822,
+                "mediana": 0.535474,
+                "p25": 0.449183,
+                "p75": 0.595322,
+                "min": 0.293576,
+                "max": 0.776786
+              },
+              "phoma": {
+                "n": 27,
+                "media": 0.473243,
+                "mediana": 0.443978,
+                "p25": 0.394713,
+                "p75": 0.563122,
+                "min": 0.3133,
+                "max": 0.708467
+              },
+              "cercosporiose": {
+                "n": 4,
+                "media": 0.517682,
+                "mediana": 0.495788,
+                "p25": 0.431585,
+                "p75": 0.581886,
+                "min": 0.305653,
+                "max": 0.773501
+              }
+            }
+          }
+        }
+      }
+    },
+    "juntas": {
+      "contagens": {
+        "S": 77,
+        "D": 106,
+        "?": 97
+      },
+      "destinos": {
+        "classificada": 245,
+        "fragmentos": 35
+      },
+      "final": {
+        "rotulos": {
+          "S": {
+            "n": 77,
+            "saudavel": {
+              "p": 0.714286,
+              "ic95": [
+                0.605102,
+                0.803105
+              ],
+              "sucessos": 55,
+              "n": 77
+            },
+            "doenca": {
+              "p": 0.038961,
+              "ic95": [
+                0.013338,
+                0.1084
+              ],
+              "sucessos": 3,
+              "n": 77
+            },
+            "descartada": {
+              "p": 0.246753,
+              "ic95": [
+                0.164041,
+                0.353534
+              ],
+              "sucessos": 19,
+              "n": 77
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.103896,
+                "ic95": [
+                  0.0535929,
+                  0.191844
+                ],
+                "sucessos": 8,
+                "n": 77
+              },
+              "corte_td": {
+                "p": 0.142857,
+                "ic95": [
+                  0.0816833,
+                  0.237973
+                ],
+                "sucessos": 11,
+                "n": 77
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0475184
+                ],
+                "sucessos": 0,
+                "n": 77
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 1,
+              "bicho_mineiro": 0,
+              "phoma": 2,
+              "cercosporiose": 0
+            }
+          },
+          "D": {
+            "n": 106,
+            "saudavel": {
+              "p": 0.0471698,
+              "ic95": [
+                0.0203141,
+                0.105699
+              ],
+              "sucessos": 5,
+              "n": 106
+            },
+            "doenca": {
+              "p": 0.292453,
+              "ic95": [
+                0.214333,
+                0.385089
+              ],
+              "sucessos": 31,
+              "n": 106
+            },
+            "descartada": {
+              "p": 0.660377,
+              "ic95": [
+                0.566027,
+                0.74351
+              ],
+              "sucessos": 70,
+              "n": 106
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.0849057,
+                "ic95": [
+                  0.0453116,
+                  0.153534
+                ],
+                "sucessos": 9,
+                "n": 106
+              },
+              "corte_td": {
+                "p": 0.575472,
+                "ic95": [
+                  0.480361,
+                  0.665304
+                ],
+                "sucessos": 61,
+                "n": 106
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0349728
+                ],
+                "sucessos": 0,
+                "n": 106
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 26,
+              "bicho_mineiro": 3,
+              "phoma": 1,
+              "cercosporiose": 1
+            }
+          },
+          "?": {
+            "n": 97,
+            "saudavel": {
+              "p": 0.463918,
+              "ic95": [
+                0.367948,
+                0.562636
+              ],
+              "sucessos": 45,
+              "n": 97
+            },
+            "doenca": {
+              "p": 0.0824742,
+              "ic95": [
+                0.0423827,
+                0.154376
+              ],
+              "sucessos": 8,
+              "n": 97
+            },
+            "descartada": {
+              "p": 0.453608,
+              "ic95": [
+                0.358192,
+                0.552559
+              ],
+              "sucessos": 44,
+              "n": 97
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.185567,
+                "ic95": [
+                  0.120729,
+                  0.274361
+                ],
+                "sucessos": 18,
+                "n": 97
+              },
+              "corte_td": {
+                "p": 0.268041,
+                "ic95": [
+                  0.189976,
+                  0.363779
+                ],
+                "sucessos": 26,
+                "n": 97
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.038094
+                ],
+                "sucessos": 0,
+                "n": 97
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 7,
+              "bicho_mineiro": 0,
+              "phoma": 1,
+              "cercosporiose": 0
+            }
+          }
+        },
+        "doentes_mantidas": {
+          "S": {
+            "n": 3,
+            "classes": {
+              "ferrugem": {
+                "p": 0.333333,
+                "ic95": [
+                  0.0614919,
+                  0.79234
+                ],
+                "sucessos": 1,
+                "n": 3
+              },
+              "bicho_mineiro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.561497
+                ],
+                "sucessos": 0,
+                "n": 3
+              },
+              "phoma": {
+                "p": 0.666667,
+                "ic95": [
+                  0.20766,
+                  0.938508
+                ],
+                "sucessos": 2,
+                "n": 3
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.561497
+                ],
+                "sucessos": 0,
+                "n": 3
+              }
+            },
+            "confianca": {
+              "n": 3,
+              "media": 0.773947,
+              "mediana": 0.819378,
+              "p25": 0.73492,
+              "p75": 0.835689,
+              "min": 0.650463,
+              "max": 0.852001
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 1,
+                "media": 0.852001,
+                "mediana": 0.852001,
+                "p25": 0.852001,
+                "p75": 0.852001,
+                "min": 0.852001,
+                "max": 0.852001
+              },
+              "bicho_mineiro": null,
+              "phoma": {
+                "n": 2,
+                "media": 0.73492,
+                "mediana": 0.73492,
+                "p25": 0.692691,
+                "p75": 0.777149,
+                "min": 0.650463,
+                "max": 0.819378
+              },
+              "cercosporiose": null
+            }
+          },
+          "D": {
+            "n": 31,
+            "classes": {
+              "ferrugem": {
+                "p": 0.83871,
+                "ic95": [
+                  0.673656,
+                  0.929074
+                ],
+                "sucessos": 26,
+                "n": 31
+              },
+              "bicho_mineiro": {
+                "p": 0.0967742,
+                "ic95": [
+                  0.0334646,
+                  0.248999
+                ],
+                "sucessos": 3,
+                "n": 31
+              },
+              "phoma": {
+                "p": 0.0322581,
+                "ic95": [
+                  0.00571722,
+                  0.161941
+                ],
+                "sucessos": 1,
+                "n": 31
+              },
+              "cercosporiose": {
+                "p": 0.0322581,
+                "ic95": [
+                  0.00571722,
+                  0.161941
+                ],
+                "sucessos": 1,
+                "n": 31
+              }
+            },
+            "confianca": {
+              "n": 31,
+              "media": 0.803245,
+              "mediana": 0.809132,
+              "p25": 0.71169,
+              "p75": 0.876677,
+              "min": 0.650836,
+              "max": 0.967196
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 26,
+                "media": 0.814678,
+                "mediana": 0.816723,
+                "p25": 0.721961,
+                "p75": 0.915145,
+                "min": 0.663831,
+                "max": 0.967196
+              },
+              "bicho_mineiro": {
+                "n": 3,
+                "media": 0.760989,
+                "mediana": 0.776786,
+                "p25": 0.713811,
+                "p75": 0.816066,
+                "min": 0.650836,
+                "max": 0.855347
+              },
+              "phoma": {
+                "n": 1,
+                "media": 0.662496,
+                "mediana": 0.662496,
+                "p25": 0.662496,
+                "p75": 0.662496,
+                "min": 0.662496,
+                "max": 0.662496
+              },
+              "cercosporiose": {
+                "n": 1,
+                "media": 0.773501,
+                "mediana": 0.773501,
+                "p25": 0.773501,
+                "p75": 0.773501,
+                "min": 0.773501,
+                "max": 0.773501
+              }
+            }
+          },
+          "?": {
+            "n": 8,
+            "classes": {
+              "ferrugem": {
+                "p": 0.875,
+                "ic95": [
+                  0.529112,
+                  0.977583
+                ],
+                "sucessos": 7,
+                "n": 8
+              },
+              "bicho_mineiro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.324408
+                ],
+                "sucessos": 0,
+                "n": 8
+              },
+              "phoma": {
+                "p": 0.125,
+                "ic95": [
+                  0.0224175,
+                  0.470888
+                ],
+                "sucessos": 1,
+                "n": 8
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.324408
+                ],
+                "sucessos": 0,
+                "n": 8
+              }
+            },
+            "confianca": {
+              "n": 8,
+              "media": 0.796721,
+              "mediana": 0.798859,
+              "p25": 0.761101,
+              "p75": 0.865778,
+              "min": 0.663102,
+              "max": 0.884623
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 7,
+                "media": 0.809329,
+                "mediana": 0.813809,
+                "p25": 0.781277,
+                "p75": 0.870606,
+                "min": 0.663102,
+                "max": 0.884623
+              },
+              "bicho_mineiro": null,
+              "phoma": {
+                "n": 1,
+                "media": 0.708467,
+                "mediana": 0.708467,
+                "p25": 0.708467,
+                "p75": 0.708467,
+                "min": 0.708467,
+                "max": 0.708467
+              },
+              "cercosporiose": null
+            }
+          },
+          "todas": {
+            "n": 42,
+            "classes": {
+              "ferrugem": {
+                "p": 0.809524,
+                "ic95": [
+                  0.666992,
+                  0.90018
+                ],
+                "sucessos": 34,
+                "n": 42
+              },
+              "bicho_mineiro": {
+                "p": 0.0714286,
+                "ic95": [
+                  0.0245904,
+                  0.190094
+                ],
+                "sucessos": 3,
+                "n": 42
+              },
+              "phoma": {
+                "p": 0.0952381,
+                "ic95": [
+                  0.0376622,
+                  0.220651
+                ],
+                "sucessos": 4,
+                "n": 42
+              },
+              "cercosporiose": {
+                "p": 0.0238095,
+                "ic95": [
+                  0.0042154,
+                  0.123212
+                ],
+                "sucessos": 1,
+                "n": 42
+              }
+            },
+            "confianca": {
+              "n": 42,
+              "media": 0.79991,
+              "mediana": 0.811471,
+              "p25": 0.711153,
+              "p75": 0.859549,
+              "min": 0.650463,
+              "max": 0.967196
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 34,
+                "media": 0.814675,
+                "mediana": 0.816723,
+                "p25": 0.749804,
+                "p75": 0.883533,
+                "min": 0.663102,
+                "max": 0.967196
+              },
+              "bicho_mineiro": {
+                "n": 3,
+                "media": 0.760989,
+                "mediana": 0.776786,
+                "p25": 0.713811,
+                "p75": 0.816066,
+                "min": 0.650836,
+                "max": 0.855347
+              },
+              "phoma": {
+                "n": 4,
+                "media": 0.710201,
+                "mediana": 0.685482,
+                "p25": 0.659488,
+                "p75": 0.736195,
+                "min": 0.650463,
+                "max": 0.819378
+              },
+              "cercosporiose": {
+                "n": 1,
+                "media": 0.773501,
+                "mediana": 0.773501,
+                "p25": 0.773501,
+                "p75": 0.773501,
+                "min": 0.773501,
+                "max": 0.773501
+              }
+            }
+          }
+        }
+      },
+      "sem_td": {
+        "rotulos": {
+          "S": {
+            "n": 77,
+            "saudavel": {
+              "p": 0.714286,
+              "ic95": [
+                0.605102,
+                0.803105
+              ],
+              "sucessos": 55,
+              "n": 77
+            },
+            "doenca": {
+              "p": 0.181818,
+              "ic95": [
+                0.111513,
+                0.282363
+              ],
+              "sucessos": 14,
+              "n": 77
+            },
+            "descartada": {
+              "p": 0.103896,
+              "ic95": [
+                0.0535929,
+                0.191844
+              ],
+              "sucessos": 8,
+              "n": 77
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.103896,
+                "ic95": [
+                  0.0535929,
+                  0.191844
+                ],
+                "sucessos": 8,
+                "n": 77
+              },
+              "corte_td": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0475184
+                ],
+                "sucessos": 0,
+                "n": 77
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0475184
+                ],
+                "sucessos": 0,
+                "n": 77
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 3,
+              "bicho_mineiro": 1,
+              "phoma": 10,
+              "cercosporiose": 0
+            }
+          },
+          "D": {
+            "n": 106,
+            "saudavel": {
+              "p": 0.0471698,
+              "ic95": [
+                0.0203141,
+                0.105699
+              ],
+              "sucessos": 5,
+              "n": 106
+            },
+            "doenca": {
+              "p": 0.867925,
+              "ic95": [
+                0.790446,
+                0.919668
+              ],
+              "sucessos": 92,
+              "n": 106
+            },
+            "descartada": {
+              "p": 0.0849057,
+              "ic95": [
+                0.0453116,
+                0.153534
+              ],
+              "sucessos": 9,
+              "n": 106
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.0849057,
+                "ic95": [
+                  0.0453116,
+                  0.153534
+                ],
+                "sucessos": 9,
+                "n": 106
+              },
+              "corte_td": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0349728
+                ],
+                "sucessos": 0,
+                "n": 106
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.0349728
+                ],
+                "sucessos": 0,
+                "n": 106
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 57,
+              "bicho_mineiro": 18,
+              "phoma": 13,
+              "cercosporiose": 4
+            }
+          },
+          "?": {
+            "n": 97,
+            "saudavel": {
+              "p": 0.463918,
+              "ic95": [
+                0.367948,
+                0.562636
+              ],
+              "sucessos": 45,
+              "n": 97
+            },
+            "doenca": {
+              "p": 0.350515,
+              "ic95": [
+                0.262911,
+                0.449509
+              ],
+              "sucessos": 34,
+              "n": 97
+            },
+            "descartada": {
+              "p": 0.185567,
+              "ic95": [
+                0.120729,
+                0.274361
+              ],
+              "sucessos": 18,
+              "n": 97
+            },
+            "motivos": {
+              "fragmentos": {
+                "p": 0.185567,
+                "ic95": [
+                  0.120729,
+                  0.274361
+                ],
+                "sucessos": 18,
+                "n": 97
+              },
+              "corte_td": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.038094
+                ],
+                "sucessos": 0,
+                "n": 97
+              },
+              "outro": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.038094
+                ],
+                "sucessos": 0,
+                "n": 97
+              }
+            },
+            "classes_doentes": {
+              "ferrugem": 20,
+              "bicho_mineiro": 3,
+              "phoma": 10,
+              "cercosporiose": 1
+            }
+          }
+        },
+        "doentes_mantidas": {
+          "S": {
+            "n": 14,
+            "classes": {
+              "ferrugem": {
+                "p": 0.214286,
+                "ic95": [
+                  0.0757139,
+                  0.475892
+                ],
+                "sucessos": 3,
+                "n": 14
+              },
+              "bicho_mineiro": {
+                "p": 0.0714286,
+                "ic95": [
+                  0.0127222,
+                  0.314687
+                ],
+                "sucessos": 1,
+                "n": 14
+              },
+              "phoma": {
+                "p": 0.714286,
+                "ic95": [
+                  0.453509,
+                  0.882786
+                ],
+                "sucessos": 10,
+                "n": 14
+              },
+              "cercosporiose": {
+                "p": 0.0,
+                "ic95": [
+                  0.0,
+                  0.215311
+                ],
+                "sucessos": 0,
+                "n": 14
+              }
+            },
+            "confianca": {
+              "n": 14,
+              "media": 0.505478,
+              "mediana": 0.442097,
+              "p25": 0.392187,
+              "p75": 0.593974,
+              "min": 0.309826,
+              "max": 0.852001
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 3,
+                "media": 0.551709,
+                "mediana": 0.455536,
+                "p25": 0.401564,
+                "p75": 0.653768,
+                "min": 0.347591,
+                "max": 0.852001
+              },
+              "bicho_mineiro": {
+                "n": 1,
+                "media": 0.475127,
+                "mediana": 0.475127,
+                "p25": 0.475127,
+                "p75": 0.475127,
+                "min": 0.475127,
+                "max": 0.475127
+              },
+              "phoma": {
+                "n": 10,
+                "media": 0.494643,
+                "mediana": 0.428389,
+                "p25": 0.392187,
+                "p75": 0.593974,
+                "min": 0.309826,
+                "max": 0.819378
+              },
+              "cercosporiose": null
+            }
+          },
+          "D": {
+            "n": 92,
+            "classes": {
+              "ferrugem": {
+                "p": 0.619565,
+                "ic95": [
+                  0.517457,
+                  0.712088
+                ],
+                "sucessos": 57,
+                "n": 92
+              },
+              "bicho_mineiro": {
+                "p": 0.195652,
+                "ic95": [
+                  0.127498,
+                  0.288203
+                ],
+                "sucessos": 18,
+                "n": 92
+              },
+              "phoma": {
+                "p": 0.141304,
+                "ic95": [
+                  0.0844769,
+                  0.226886
+                ],
+                "sucessos": 13,
+                "n": 92
+              },
+              "cercosporiose": {
+                "p": 0.0434783,
+                "ic95": [
+                  0.0170357,
+                  0.106517
+                ],
+                "sucessos": 4,
+                "n": 92
+              }
+            },
+            "confianca": {
+              "n": 92,
+              "media": 0.572183,
+              "mediana": 0.55034,
+              "p25": 0.39936,
+              "p75": 0.711153,
+              "min": 0.305763,
+              "max": 0.967196
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 57,
+                "media": 0.61144,
+                "mediana": 0.592943,
+                "p25": 0.39191,
+                "p75": 0.809132,
+                "min": 0.305763,
+                "max": 0.967196
+              },
+              "bicho_mineiro": {
+                "n": 18,
+                "media": 0.533081,
+                "mediana": 0.535474,
+                "p25": 0.438657,
+                "p75": 0.585854,
+                "min": 0.333711,
+                "max": 0.855347
+              },
+              "phoma": {
+                "n": 13,
+                "media": 0.460091,
+                "mediana": 0.412431,
+                "p25": 0.398501,
+                "p75": 0.565232,
+                "min": 0.3133,
+                "max": 0.662496
+              },
+              "cercosporiose": {
+                "n": 4,
+                "media": 0.553013,
+                "mediana": 0.495788,
+                "p25": 0.466915,
+                "p75": 0.581886,
+                "min": 0.446975,
+                "max": 0.773501
+              }
+            }
+          },
+          "?": {
+            "n": 34,
+            "classes": {
+              "ferrugem": {
+                "p": 0.588235,
+                "ic95": [
+                  0.422216,
+                  0.73634
+                ],
+                "sucessos": 20,
+                "n": 34
+              },
+              "bicho_mineiro": {
+                "p": 0.0882353,
+                "ic95": [
+                  0.0304659,
+                  0.229605
+                ],
+                "sucessos": 3,
+                "n": 34
+              },
+              "phoma": {
+                "p": 0.294118,
+                "ic95": [
+                  0.168346,
+                  0.461689
+                ],
+                "sucessos": 10,
+                "n": 34
+              },
+              "cercosporiose": {
+                "p": 0.0294118,
+                "ic95": [
+                  0.00521091,
+                  0.149156
+                ],
+                "sucessos": 1,
+                "n": 34
+              }
+            },
+            "confianca": {
+              "n": 34,
+              "media": 0.53162,
+              "mediana": 0.480517,
+              "p25": 0.38064,
+              "p75": 0.629978,
+              "min": 0.293576,
+              "max": 0.884623
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 20,
+                "media": 0.595987,
+                "mediana": 0.583126,
+                "p25": 0.438895,
+                "p75": 0.779961,
+                "min": 0.344807,
+                "max": 0.884623
+              },
+              "bicho_mineiro": {
+                "n": 3,
+                "media": 0.419949,
+                "mediana": 0.37135,
+                "p25": 0.332463,
+                "p75": 0.483135,
+                "min": 0.293576,
+                "max": 0.59492
+              },
+              "phoma": {
+                "n": 10,
+                "media": 0.458983,
+                "mediana": 0.435137,
+                "p25": 0.39362,
+                "p75": 0.47342,
+                "min": 0.353039,
+                "max": 0.708467
+              },
+              "cercosporiose": {
+                "n": 1,
+                "media": 0.305653,
+                "mediana": 0.305653,
+                "p25": 0.305653,
+                "p75": 0.305653,
+                "min": 0.305653,
+                "max": 0.305653
+              }
+            }
+          },
+          "todas": {
+            "n": 140,
+            "classes": {
+              "ferrugem": {
+                "p": 0.571429,
+                "ic95": [
+                  0.488626,
+                  0.650416
+                ],
+                "sucessos": 80,
+                "n": 140
+              },
+              "bicho_mineiro": {
+                "p": 0.157143,
+                "ic95": [
+                  0.106124,
+                  0.226474
+                ],
+                "sucessos": 22,
+                "n": 140
+              },
+              "phoma": {
+                "p": 0.235714,
+                "ic95": [
+                  0.173051,
+                  0.312493
+                ],
+                "sucessos": 33,
+                "n": 140
+              },
+              "cercosporiose": {
+                "p": 0.0357143,
+                "ic95": [
+                  0.0153497,
+                  0.0808775
+                ],
+                "sucessos": 5,
+                "n": 140
+              }
+            },
+            "confianca": {
+              "n": 140,
+              "media": 0.555661,
+              "mediana": 0.52787,
+              "p25": 0.396853,
+              "p75": 0.693734,
+              "min": 0.293576,
+              "max": 0.967196
+            },
+            "confianca_por_classe": {
+              "ferrugem": {
+                "n": 80,
+                "media": 0.605337,
+                "mediana": 0.583126,
+                "p25": 0.40795,
+                "p75": 0.808611,
+                "min": 0.305763,
+                "max": 0.967196
+              },
+              "bicho_mineiro": {
+                "n": 22,
+                "media": 0.51502,
+                "mediana": 0.523864,
+                "p25": 0.410289,
+                "p75": 0.585854,
+                "min": 0.293576,
+                "max": 0.855347
+              },
+              "phoma": {
+                "n": 33,
+                "media": 0.470226,
+                "mediana": 0.42812,
+                "p25": 0.390926,
+                "p75": 0.561013,
+                "min": 0.309826,
+                "max": 0.819378
+              },
+              "cercosporiose": {
+                "n": 5,
+                "media": 0.503541,
+                "mediana": 0.473562,
+                "p25": 0.446975,
+                "p75": 0.518014,
+                "min": 0.305653,
+                "max": 0.773501
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

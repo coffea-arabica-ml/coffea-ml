@@ -273,6 +273,14 @@ dos runs anteriores dão os números gravados neles.
   com 0,61.
 - **Classe da doença no campo:** não foi verificada, porque os rótulos de campo só dizem S ou D.
   O limiar de doença (0,65, provisório) só foi calibrado no BRACOL.
+- **D evidentes que chegam ao usuário** (passo 6b, `model/runs/campo_cadeia_final`, com a cadeia
+  final inteira, incluindo o filtro de fragmentos):
+  - como doente: 29,2% (21,4% a 38,5%) das 106;
+  - como saudável: 4,7%;
+  - somem: 66,0%, sendo 57,5% pelo corte t_d e 8,5% pelo filtro de fragmentos.
+  - Com o t_d desligado (só informação), chegariam como doente 86,8%, mas as S chamadas doentes
+    subiriam de 3,9% para 18,2%.
+  - Das 42 doentes mantidas, 81% saem como ferrugem; a classe não foi verificada.
 - **Severidade:** não é informativa no campo.
 - **Teste:** os testes fechados (BRACOL e BRACOT) ainda não mediram a cadeia final; medem uma vez
   só, no fim.

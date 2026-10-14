@@ -503,6 +503,20 @@ teste, e o código confere que nenhuma cena aparece nos dois lados.
   (`evaluation/campo_validacao.py`).
 - Fonte só de avaliação: nunca entra em treino nem em ajuste de limiar.
 
+**O que os rótulos de campo sustentam na cadeia final (passo 6; decisão do gestor,
+11/10/2026).** A regra em duas etapas ficou ligada nos recortes por detecção com base nestes
+rótulos e nos 82 do campo rotulado, sem reajustar nenhum limiar. As limitações:
+- **Rótulos:** feitos por Claude por leitura visual, aceitos pelo gestor, sem especialista.
+- **Amostra:** 183 folhas evidentes (77 S e 106 D), de 1 lavoura e 2 sessões.
+- **Falso saudável nas D evidentes:** 5,7% (2,6% a 11,8%) nas 106 D. Nas 60 D novas, 6,7%, com
+  IC até 15,9%.
+- **Folhas ambíguas ("?"):** a regra chama saudável 54% das "?" novas (32 de 59) e 62% das duas
+  rotulagens juntas (60 de 97). Se forem doentes, o falso saudável sobe.
+- **Classe e severidade:** a classe da doença no campo não foi verificada, porque nenhuma D tem
+  classe; a severidade não é informativa no campo.
+
+O relatório da cadeia final está em `model/runs/pipeline_final/relatorio.md`.
+
 ## Interface para a Frente 9
 
 - **Classificação e severidade:**

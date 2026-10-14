@@ -85,8 +85,8 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 
 - `model/inferencia.py`: `carregar_modelos()` e `diagnosticar_arquivo(bytes ou caminho)` devolvem
   o contrato do coffea-web (`src/api/types.ts`); interface no README. Os parâmetros ficam em
-  `inferencia.Configuracao`. O limiar de confiança 0,61 é uma proposta e aguarda a decisão do
-  gestor.
+  `inferencia.Configuracao`. O limiar de confiança 0,61 vale na foto inteira da cadeia final
+  (passo 6, abaixo).
 - Regras de folha única (decisão do gestor, 10/10/2026): a foto inteira é classificada se houver
   uma só folha utilizável cobrindo a foto (regra 1) ou só detecção fraca com cor de folha, score
   >= 0,05 (regra 2); sem nenhuma das duas, `planta_nao_identificada`. Mais de 64 MP (cabeçalho,
@@ -117,7 +117,8 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   `data/processed/`.
 - Nas imagens cortadas ou apagadas pela augmentation de campo, a severidade vira -1.
 - Decisões do gestor, 11/10/2026: não há validação cruzada das variantes do passo 4, e o modelo
-  oficial segue o `base_resnet50_bracol`. O limiar de confiança segue pendente.
+  oficial segue o `base_resnet50_bracol`. O limiar de confiança ficou em 0,61 na foto inteira
+  da cadeia final (passo 6).
 - Diagnóstico sem treino (passo 5a, `evaluation/campo_diagnostico.py`): usa as 82 folhas S ou D do
   campo rotulado e só checkpoints existentes. Mede a AUC de P(saudável), a sonda linear nos
   embeddings (dobras por cena; não gera modelo) e o efeito do limiar no BRACOL (só validação), e
@@ -127,14 +128,15 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 
 - **Modelos finais:** o `base_resnet50_bracol` e o `detector_base` ficam congelados, sem retreino
   final. Os testes fechados medem estes modelos uma única vez, no fim.
-- **Regra em duas etapas:** opção em `inferencia.Configuracao` (`decisao="duas_etapas"`),
-  desligada por padrão até a validação. A 1ª etapa é P(saudável) >= `limiar_saudavel`: a folha
-  vira saudável, sem o corte de 0,61. Na 2ª, a classe é a doença de maior probabilidade, com o
-  softmax renormalizado entre as 4 doenças e corte em `limiar_doenca`.
+- **Regra em duas etapas:** em `inferencia.Configuracao`, `decisao="duas_etapas"` a aplica em
+  todo caminho; na cadeia final, ela vale só nos recortes por detecção (passo 6, abaixo). A 1ª
+  etapa é P(saudável) >= `limiar_saudavel`: a folha vira saudável, sem o corte de 0,61. Na 2ª, a
+  classe é a doença de maior probabilidade, com o softmax renormalizado entre as 4 doenças e
+  corte em `limiar_doenca`.
 - **Limiar de saudável:** 0,083, fixado antes de dados novos, com no máximo 5% das D das 82 folhas
   marcadas saudáveis. Não se reajusta com dados novos.
-- **Limiar de doença:** só se calibra no BRACOL, com as predições fora da dobra. É proposto, não
-  adotado.
+- **Limiar de doença:** só se calibra no BRACOL, com as predições fora da dobra. 0,65 é o padrão
+  provisório da cadeia final (passo 6).
 - **Rótulos:** as 82 folhas ficam congeladas, inclusive as 3 S com marca na ponta. A conta sem
   elas é só sensibilidade.
 - **Rotulagem de validação:** `data/manifests/campo_rotulado_treino.csv`, com 160 folhas das 194
@@ -143,6 +145,26 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   - Rótulos: 41 S, 60 D e 59 "?", feitos por Claude e aceitos pelo gestor em 11/10/2026.
   - Avaliação: `evaluation/campo_validacao.py`, em `model/runs/campo_validacao_duas_etapas`,
     sem reajustar t_s nem t_d.
+
+## Cadeia final (passo 6; decisões do gestor, 11/10/2026)
+
+- **Regra por caminho** (`Configuracao.decisao = "por_caminho"`, o padrão): as duas etapas
+  (t_s = 0,083; t_d = 0,65, provisório) só nos recortes por detecção no modo B. A foto inteira
+  (regras de folha única) e o modo A ficam no argmax com corte 0,61 (`decisao_do_caminho`).
+- **Padrões anteriores, como opção:** `decisao="argmax"` é a cadeia do `pipeline_padrao_b`, e
+  `decisao="duas_etapas"`, a do `pipeline_duas_etapas`.
+- **Limiares:** nenhum se reajusta com dados de campo.
+- **Run da cadeia final:** `model/runs/pipeline_final`, com o T1 e o T2 por caminho e a
+  comparação com os dois runs anteriores.
+- **Pesos finais:** nome, tamanho e SHA-256 em `model/pesos/MANIFESTO.md`, o único arquivo de
+  `model/pesos/` no git.
+- **Limitações registradas no relatório e nos READMEs:**
+  - rótulos de Claude, sem especialista;
+  - 183 folhas evidentes, 1 lavoura e 2 sessões;
+  - falso saudável de cerca de 6% nas D evidentes (IC até 16%);
+  - a regra chama saudável 54% das "?" novas (62% nas duas rotulagens);
+  - classe da doença não verificada no campo;
+  - severidade não informativa no campo.
 
 ## Comandos (na raiz do repositório, com o venv ativo)
 
@@ -169,12 +191,13 @@ python model/treinar_detector.py --nome NOME --epocas 60   # detector: prepara o
                                              # treina e avalia na validação; model/runs/NOME/
 python model/treinar_detector.py --avaliar --run NOME      # refaz a avaliação e o relatório do detector
 python model/treinar_detector.py --avaliar-teste --run NOME   # só por ordem do gestor: teste do BRACOT
-python model/avaliar_pipeline.py             # cadeia inteira: limiar de confiança (RF07), T1, T2 e T3;
-                                             # model/runs/pipeline_padrao_b/ (--nome, --classificador, --detector e
-                                             # --recortes PASTA_FORA_DO_REPO para recortes e pranchas;
-                                             # --relatorio --nome NOME só refaz o relatorio.md)
-python model/avaliar_pipeline.py --decisao duas_etapas   # regra em duas etapas: propõe o limiar de doença
-                                             # no BRACOL e roda T1 a T3; model/runs/pipeline_duas_etapas/
+python model/avaliar_pipeline.py             # cadeia final (regra por caminho): limiar de confiança (RF07),
+                                             # T1, T2 e T3 por caminho; model/runs/pipeline_final/ (--nome,
+                                             # --classificador, --detector e --recortes PASTA_FORA_DO_REPO para
+                                             # recortes e pranchas; --relatorio --nome NOME só refaz o relatorio.md)
+python model/avaliar_pipeline.py --decisao argmax        # os padrões até o passo 5b; model/runs/pipeline_padrao_b/
+python model/avaliar_pipeline.py --decisao duas_etapas   # regra em duas etapas em todo caminho: propõe o
+                                             # limiar de doença no BRACOL e roda T1 a T3; model/runs/pipeline_duas_etapas/
 python evaluation/campo.py --gerar-rotulagem # pranchas cegas (data/processed/) e CSV-modelo do campo rotulado
 python evaluation/campo.py --gerar-rotulagem --fotos treino   # rotulagem de validação (fotos de treino do
                                              # detector): data/manifests/campo_rotulado_treino.csv

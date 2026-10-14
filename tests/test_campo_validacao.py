@@ -32,9 +32,10 @@ def test_desfecho_das_regras():
     assert cv.desfecho([0.1, 0.6, 0.1, 0.1, 0.1], duas) == "saudavel"  # P(saudável) >= 0,083
     assert cv.desfecho([0.02, 0.4, 0.38, 0.1, 0.1], duas) == "descartada"  # 0,41 < 0,65
     assert cv.desfecho([0.02, 0.88, 0.04, 0.04, 0.02], duas) == "doenca"
-    assert cv.desfecho([0.5, 0.2, 0.1, 0.1, 0.1], inf.Configuracao()) == "descartada"
     assert cv.desfecho([0.5, 0.2, 0.1, 0.1, 0.1],
-                       inf.Configuracao(limiar_confianca=0.0)) == "saudavel"
+                       inf.Configuracao(decisao="argmax")) == "descartada"
+    assert cv.desfecho([0.5, 0.2, 0.1, 0.1, 0.1],
+                       inf.Configuracao(decisao="argmax", limiar_confianca=0.0)) == "saudavel"
 
 
 def test_regras_comparadas_usam_os_limiares_fixados():

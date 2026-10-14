@@ -17,8 +17,9 @@ planta, de um galho ou de uma folha e devolve o diagnóstico no contrato dos fro
 
 Cadeia: detector (model/detector.py) -> área mínima e número máximo de folhas -> regras de folha
 única -> recorte de cada folha, deitada e com margem como no BRACOL -> classificador, num lote só
--> regra de decisão e corte (argmax com limiar de confiança; ou, desligada por padrão, as duas
-etapas: saudável por P(saudável), senão a doença com o softmax renormalizado) -> contrato.
+-> regra de decisão e corte, por caminho (padrão desde o passo 6): na foto inteira, o argmax com
+limiar de confiança; nos recortes por detecção (modo B), as duas etapas, com saudável por
+P(saudável) e, senão, a doença com o softmax renormalizado -> contrato.
 
 Uso (com model/ no sys.path):
     import inferencia
@@ -26,13 +27,14 @@ Uso (com model/ no sys.path):
     resposta = inferencia.diagnosticar_arquivo(conteudo)  # bytes do upload ou caminho
 
 Os pesos ficam fora do git: o melhor.pt do classificador (PASTA_CLASSIFICADOR) e o last.pt do
-detector (detector.PESOS_PADRAO). Outros caminhos vão em carregar_modelos.
+detector (detector.PESOS_PADRAO), com nome, tamanho e SHA-256 em model/pesos/MANIFESTO.md.
+Outros caminhos vão em carregar_modelos.
 """
 import io
 import math
 import sys
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import cv2
@@ -53,7 +55,7 @@ CATEGORIAS = tuple(bracol.CLASSES)  # os nomes de CLASSES já são os do contrat
 NIVEIS_CONTRATO = ("saudavel", "muito_baixa", "baixa", "alta", "muito_alta")
 SAUDAVEL = CATEGORIAS.index("saudavel")
 DOENCAS = tuple(i for i in range(len(CATEGORIAS)) if i != SAUDAVEL)
-DECISOES = ("argmax", "duas_etapas")  # regras de decisão (Configuracao.decisao)
+DECISOES = ("por_caminho", "argmax", "duas_etapas")  # regras de decisão (Configuracao.decisao)
 RAIO_MINIMO, RAIO_MAXIMO = 0.01, 0.5  # o mesmo limite do normalizador do frontend
 LADO_TRABALHO = 2048  # a foto é reduzida a este lado maior antes dos recortes (o do BRACOL)
 LADO_COR = 1024  # lado maior da cópia reduzida em que se mede a cor das máscaras
@@ -75,8 +77,11 @@ MENSAGENS = {
 
 @dataclass(frozen=True)
 class Configuracao:
-    """Parâmetros da cadeia. Os padrões e a origem de cada um estão no relatório de
-    model/runs/pipeline_padrao_b/ (o de model/runs/pipeline_base/ é o do passo 3)."""
+    """Parâmetros da cadeia. Os padrões são os da cadeia final (passo 6), e a origem de cada um
+    está no relatório de model/runs/pipeline_final/. Os padrões anteriores continuam como
+    opção: decisao="argmax" é a cadeia do run pipeline_padrao_b, e decisao="duas_etapas", a do
+    pipeline_duas_etapas (o de model/runs/pipeline_base/ é o do passo 3, com recorte="A" e
+    fracao_visivel_minima=0)."""
     limiar_deteccao: float = 0.35  # decisão do gestor, 10/10/2026 (run detector_base)
     max_folhas: int = 15  # as de maior score do detector (RNF02)
     area_minima: float = 0.005  # fração da foto ocupada pela máscara
@@ -86,8 +91,9 @@ class Configuracao:
     # nas folhas anotadas do BRACOT, a mediana é 99% e o p1, 35%; no fundo do BRACOL, < 10%.
     saturacao_minima: int = 30
     fracao_colorida_minima: float = 0.25
-    # RF07: probabilidade mínima da classe prevista. 0,61 é a PROPOSTA da curva risco-cobertura
-    # (model/runs/pipeline_base/relatorio.md) e aguarda a decisão do gestor.
+    # RF07: probabilidade mínima da classe prevista no argmax. 0,61 saiu da curva risco-cobertura
+    # (model/runs/pipeline_base/relatorio.md); na cadeia final, vale na foto inteira (decisão do
+    # gestor, 11/10/2026, passo 6).
     limiar_confianca: float = 0.61
     # "B": fundo fora da máscara em cinza; "A": a foto em volta. B por padrão (decisão do gestor,
     # 11/10/2026): nos rótulos de campo do passo 4, P(prever doença | S) cai de 100% (A) para 69%
@@ -108,28 +114,32 @@ class Configuracao:
     fracao_visivel_minima: float = 0.5
     preenchimento_minimo: float = 0.0
     max_megapixels: float = 64.0
-    # Regra de decisão (passo 5b; decisões do gestor de 11/10/2026). "argmax" (padrão): a classe
-    # de maior probabilidade, cortada por limiar_confianca. "duas_etapas", desligada até a
-    # validação no campo: P(saudável) >= limiar_saudavel faz a folha "saudavel", sem corte;
-    # senão, a doença de maior probabilidade com o softmax renormalizado entre as 4 doenças,
-    # cortada por limiar_doenca (abaixo dele a folha sai, como hoje). Ver aplicar_decisao.
-    decisao: str = "argmax"
+    # Regra de decisão (passos 5b e 6; decisões do gestor de 11/10/2026). Ver aplicar_decisao.
+    # - "argmax": a classe de maior probabilidade, cortada por limiar_confianca.
+    # - "duas_etapas": P(saudável) >= limiar_saudavel faz a folha "saudavel", sem corte; senão, a
+    #   doença de maior probabilidade com o softmax renormalizado entre as 4 doenças, cortada
+    #   por limiar_doenca (abaixo dele a folha sai).
+    # - "por_caminho" (padrão, a cadeia final): as duas etapas nos recortes por detecção no modo
+    #   B, onde o limiar de saudável foi fixado e validado; o argmax na foto inteira (regras de
+    #   folha única) e no modo A. Ver decisao_do_caminho.
+    decisao: str = "por_caminho"
     # Fixado em 11/10/2026, antes de dados novos, e não se reajusta: no máximo 5% das 46 D do
     # campo rotulado marcadas saudáveis (modelo atual, modo B; model/runs/campo_diagnostico).
     # Com >=, 0,083 deixa passar 2 das 46 D e 30 das 36 S; o valor exato da 3ª D (0,08277)
     # deixaria passar 3 D (6,5%).
     limiar_saudavel: float = 0.083
-    # Sem padrão: a proposta sai da curva risco-cobertura das doenças no BRACOL
-    # (model/avaliar_pipeline.py --decisao duas_etapas) e espera a decisão do gestor.
-    limiar_doenca: float | None = None
+    # Provisório (decisão do gestor, 11/10/2026, passo 6): a proposta da curva risco-cobertura
+    # das doenças no BRACOL, fora da dobra (run pipeline_duas_etapas). Não se reajusta com dados
+    # de campo.
+    limiar_doenca: float | None = 0.65
 
     def __post_init__(self):
         if self.recorte not in ("A", "B"):
             raise ValueError(f"recorte desconhecido: {self.recorte!r} (use 'A' ou 'B')")
         if self.decisao not in DECISOES:
             raise ValueError(f"decisão desconhecida: {self.decisao!r} (use {DECISOES})")
-        if self.decisao == "duas_etapas" and self.limiar_doenca is None:
-            raise ValueError("a decisão em duas etapas precisa de limiar_doenca")
+        if self.decisao != "argmax" and self.limiar_doenca is None:
+            raise ValueError(f"a decisão {self.decisao!r} precisa de limiar_doenca")
 
 
 @dataclass(frozen=True)
@@ -335,6 +345,22 @@ def classificar(recortes, modelos: Modelos) -> tuple[np.ndarray, np.ndarray]:
             logits_sev.argmax(dim=1).cpu().numpy())
 
 
+def decisao_do_caminho(config: Configuracao, plano: str, recorte: str | None = None) -> str:
+    """A regra ("argmax" ou "duas_etapas") das folhas de um plano de decidir ("foto_inteira",
+    "deteccao"...), no modo de recorte pedido ou no da configuração. Com decisao="por_caminho",
+    as duas etapas só valem nos recortes por detecção no modo B; a foto inteira e o modo A ficam
+    no argmax. Com "argmax" ou "duas_etapas", a mesma regra em todo caminho."""
+    if config.decisao != "por_caminho":
+        return config.decisao
+    return "duas_etapas" if plano == "deteccao" and (recorte or config.recorte) == "B" else "argmax"
+
+
+def config_do_caminho(config: Configuracao, plano: str, recorte: str | None = None):
+    """A configuração com a regra do caminho já resolvida (decisao_do_caminho), para
+    aplicar_decisao e limiar_de_corte."""
+    return replace(config, decisao=decisao_do_caminho(config, plano, recorte))
+
+
 def aplicar_decisao(probs, config: Configuracao) -> tuple[int, float, float]:
     """A regra de decisão de uma folha (puro): (classe em CATEGORIAS, confiança informada no
     contrato, valor comparado com limiar_de_corte(config); a folha sai se ele ficar abaixo).
@@ -345,7 +371,9 @@ def aplicar_decisao(probs, config: Configuracao) -> tuple[int, float, float]:
       sem corte (valor de corte infinito); senão, a doença de maior probabilidade entre as 4,
       com as probabilidades delas renormalizadas para somar 1; a confiança e o valor de corte
       são essa probabilidade renormalizada.
+    - por_caminho: depende do plano da foto; resolva antes com config_do_caminho.
     """
+    _exigir_caminho_resolvido(config)
     probs = np.asarray(probs, dtype=np.float64)
     if config.decisao == "argmax":
         classe = int(np.argmax(probs))
@@ -361,19 +389,27 @@ def aplicar_decisao(probs, config: Configuracao) -> tuple[int, float, float]:
 
 def limiar_de_corte(config: Configuracao) -> float:
     """O limiar que a regra de decisão aplica ao valor de corte de aplicar_decisao."""
+    _exigir_caminho_resolvido(config)
     return config.limiar_doenca if config.decisao == "duas_etapas" else config.limiar_confianca
+
+
+def _exigir_caminho_resolvido(config: Configuracao) -> None:
+    if config.decisao == "por_caminho":
+        raise ValueError("a decisão por caminho depende do plano da foto: resolva a regra com "
+                         "config_do_caminho")
 
 
 def montar_resposta(preparo: dict, probabilidades, niveis, config: Configuracao,
                     modelos: Modelos | None = None) -> dict:
     """O contrato a partir das folhas do preparo e das saídas do classificador: aplica a regra
-    de decisão com o corte dela (aplicar_decisao) e numera as folhas que ficam, na ordem de
-    score."""
+    de decisão do caminho da foto com o corte dela (config_do_caminho e aplicar_decisao) e
+    numera as folhas que ficam, na ordem de score."""
     altura, largura = preparo["altura"], preparo["largura"]
+    regra = config_do_caminho(config, preparo["plano"])
     folhas = []
     for folha, probs, nivel in zip(preparo["folhas"], probabilidades, niveis):
-        classe, confianca, corte = aplicar_decisao(probs, config)
-        if corte < limiar_de_corte(config):
+        classe, confianca, corte = aplicar_decisao(probs, regra)
+        if corte < limiar_de_corte(regra):
             continue
         categoria = CATEGORIAS[classe]
         folhas.append({
@@ -401,12 +437,15 @@ def resposta_de_erro(tipo: str, mensagem: str | None = None, detalhes: dict | No
 
 
 def _detalhes(preparo: dict, config: Configuracao, modelos, abaixo_da_confianca: int = 0):
+    """decisao: a regra aplicada às folhas desta foto (a do caminho dela), com os limiares dela;
+    decisao_configurada: a da configuração ("por_caminho" na cadeia final)."""
+    decisao = decisao_do_caminho(config, preparo["plano"])
     limiares = ({"limiar_saudavel": config.limiar_saudavel,
-                 "limiar_doenca": config.limiar_doenca} if config.decisao == "duas_etapas"
+                 "limiar_doenca": config.limiar_doenca} if decisao == "duas_etapas"
                 else {"limiar_confianca": config.limiar_confianca})
     return {"plano": preparo["plano"], "regra": preparo["regra"], **preparo["contagens"],
             "abaixo_da_confianca": abaixo_da_confianca, "recorte": config.recorte,
-            "decisao": config.decisao, **limiares,
+            "decisao": decisao, "decisao_configurada": config.decisao, **limiares,
             "classificador": modelos.nome_classificador if modelos else None,
             "detector": modelos.nome_detector if modelos else None}
 

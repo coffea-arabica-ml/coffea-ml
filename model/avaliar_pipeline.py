@@ -13,12 +13,19 @@ Avaliação ponta a ponta da inferência (Frente 9, passo 3), gravada em model/r
 - Com --decisao duas_etapas (passo 5b): a curva risco-cobertura do limiar de doença nas doentes
   fora da dobra, com a proposta; o efeito do limiar de saudável no BRACOL; a regra completa
   contra o argmax; e a sensibilidade do limiar de saudável no campo rotulado.
+- Com a regra por caminho (o padrão da cadeia final, passo 6): o T1 e o T2 por caminho (foto
+  inteira x recortes por detecção), nas três regras (argmax, duas etapas e por caminho), com as
+  mesmas probabilidades; a comparação com os runs pipeline_padrao_b e pipeline_duas_etapas; e as
+  limitações de campo, lidas de model/runs/campo_validacao_duas_etapas/validacao.json.
 
 Os testes do BRACOL e do BRACOT ficam fechados: nada aqui lê o split de teste do BRACOL nem
 as anotações de teste do BRACOT.
 
 Uso (de qualquer pasta, com o venv ativo):
-    python model/avaliar_pipeline.py                    tudo, em model/runs/pipeline_padrao_b/
+    python model/avaliar_pipeline.py                    tudo, com a cadeia final (regra por
+                                                        caminho), em model/runs/pipeline_final/
+    python model/avaliar_pipeline.py --decisao argmax   os padrões até o passo 5b, em
+                                                        model/runs/pipeline_padrao_b/
     python model/avaliar_pipeline.py --so-constantes    só mede e mostra as constantes
     python model/avaliar_pipeline.py --relatorio --nome NOME
                                                         só refaz o relatorio.md do run
@@ -64,10 +71,17 @@ import metrics
 import train
 import treinar_detector as td
 
-# os padrões da cadeia de 11/10/2026 (recorte B e filtro de fragmentos); o pipeline_base, do passo
-# 3 (recorte A, sem filtro), fica como registro e não é sobrescrito por uma rodada sem --nome
-NOME_PADRAO = "pipeline_padrao_b"
-NOME_DUAS_ETAPAS = "pipeline_duas_etapas"  # o padrão de --nome com --decisao duas_etapas
+# O run de cada regra de decisão (o padrão de --nome): a cadeia final (passo 6), os padrões de
+# 11/10/2026 com o argmax (recorte B e filtro de fragmentos) e a regra em duas etapas em todo
+# caminho (passo 5b). O pipeline_base, do passo 3 (recorte A, sem filtro), fica como registro e não
+# é sobrescrito por uma rodada sem --nome.
+NOMES = {"por_caminho": "pipeline_final", "argmax": "pipeline_padrao_b",
+         "duas_etapas": "pipeline_duas_etapas"}
+NOME_REGRA = {"argmax": "argmax em todo caminho", "duas_etapas": "duas etapas em todo caminho",
+              "por_caminho": "por caminho (cadeia final)"}
+CAMINHOS = {"foto_inteira": "foto inteira (regras 1 e 2)", "deteccao": "recortes por detecção",
+            "todas": "todas"}
+VALIDACAO_CAMPO = train.PASTA_RUNS / "campo_validacao_duas_etapas" / "validacao.json"
 PASTA_FORA_DA_DOBRA = train.PASTA_RUNS / "diagnostico_blocos"
 ALVO_ACURACIA = 0.95  # acurácia das predições mantidas que a proposta de limiar busca
 LIMIARES_CURVA = np.round(np.arange(0.30, 1.0, 0.01), 2)
@@ -121,6 +135,15 @@ DECISOES = (
                    "por padrão até a validação."),
     ("11/10/2026", "os 82 rótulos de campo ficam congelados, inclusive as 3 S com marca na "
                    "ponta; o ponto de operação sem elas sai só como sensibilidade."),
+    ("11/10/2026", "passo 6, cadeia final: a regra em duas etapas fica ligada por padrão só nos "
+                   "recortes por detecção (modo B), com limiar de saudável 0,083 e limiar de "
+                   "doença 0,65 (provisório); as regras de foto inteira (folha única) continuam "
+                   "no argmax com corte 0,61."),
+    ("11/10/2026", "passo 6: nenhum limiar é reajustado com dados de campo."),
+    ("11/10/2026", "passo 6: as limitações de campo ficam registradas no relatório e nos READMEs "
+                   "(rótulos de Claude sem especialista, uma lavoura e duas sessões, falso "
+                   "saudável nas D evidentes, folhas ambíguas, classe da doença e severidade não "
+                   "verificadas no campo)."),
 )
 
 
@@ -394,7 +417,7 @@ def completar_duas_etapas(calibracao_doencas: dict, pasta_fora_da_dobra: Path,
     verdadeiras_fora = fora["classe_verdadeira"].map(bracol.CLASSES.index).to_numpy()
     probs_val = np.stack(inteira_val["probs"])
     verdadeiras_val = inteira_val["classe"].to_numpy()
-    argmax = inf.Configuracao(limiar_confianca=config.limiar_confianca)
+    argmax = replace(config, decisao="argmax")
     fontes = {"fora_da_dobra": (probs_fora, verdadeiras_fora),
               "validacao": (probs_val, verdadeiras_val)}
     return {**calibracao_doencas,
@@ -472,8 +495,10 @@ def figura_risco_cobertura(calibracao: dict, limiar_em_uso: float,
 # --------------------------------------------------------------------------- T1
 def t1(modelos, config) -> pd.DataFrame:
     """Cada imagem de validação do BRACOL pela imagem inteira, pela cadeia (regras completas) e
-    só pelo recorte da maior folha (sem a regra 1), nos modos A e B, pela regra de decisão da
-    configuração, sem o corte (o valor de corte fica registrado e o corte entra nas métricas)."""
+    só pelo recorte da maior folha (sem a regra 1), nos modos A e B, pela regra de decisão do
+    caminho de cada previsão (a imagem inteira é o caminho da foto inteira; o recorte, o da
+    detecção). A classe é a da regra sem o corte; o valor de corte e se a folha fica no corte
+    ficam registrados, e o corte entra nas métricas."""
     val = dados.montar_val()
     cadeia = replace(config, limiar_confianca=0.0)
     so_recorte = replace(cadeia, cobertura_folha_unica=math.inf)
@@ -495,10 +520,10 @@ def t1(modelos, config) -> pd.DataFrame:
                     "plano": preparo["plano"], "regra": preparo["regra"],
                     "folhas": len(preparo["folhas"])}
         inteira = _prever([inf.recorte_da_foto_inteira(imagem, config.cinza_fundo)], modelos,
-                          cadeia)[0]
+                          config, "foto_inteira")[0]
         _registrar(registro, "inteira", inteira)
         for modo in MODOS:
-            recorte = _folha_principal(imagem, preparo_recorte, cadeia, modo, modelos, inteira)
+            recorte = _folha_principal(imagem, preparo_recorte, config, modo, modelos, inteira)
             _registrar(registro, f"recorte_{modo}", recorte)
             principal = {"foto_inteira": inteira, "deteccao": recorte}.get(preparo["plano"])
             _registrar(registro, f"cadeia_{modo}", principal)
@@ -514,33 +539,35 @@ def _folha_principal(imagem, preparo, config, modo, modelos, inteira):
         return inteira
     if not preparo["folhas"]:
         return None
-    previsoes = _prever(inf.recortar(imagem, preparo, config, modo), modelos, config)
+    previsoes = _prever(inf.recortar(imagem, preparo, config, modo), modelos, config,
+                        preparo["plano"], modo)
     return previsoes[int(np.argmax([f["area"] for f in preparo["folhas"]]))]
 
 
-def _prever(recortes, modelos, config) -> list[dict]:
-    """As probabilidades e, pela regra de decisão da configuração (inferencia.aplicar_decisao),
-    a classe, a confiança e o valor de corte de cada recorte."""
+def _prever(recortes, modelos, config, plano: str, modo: str | None = None) -> list[dict]:
+    """As probabilidades e, pela regra de decisão do caminho (plano e modo de recorte;
+    inferencia.config_do_caminho e aplicar_decisao), a classe, a confiança, o valor de corte e
+    se a folha fica no corte, para cada recorte."""
     probabilidades, niveis = inf.classificar(recortes, modelos)
+    regra = inf.config_do_caminho(config, plano, modo)
     previsoes = []
     for p, nivel in zip(probabilidades, niveis):
-        classe, confianca, corte = inf.aplicar_decisao(p, config)
+        classe, confianca, corte = inf.aplicar_decisao(p, regra)
         previsoes.append({"probs": p, "classe": classe, "confianca": confianca, "corte": corte,
-                          "nivel": int(nivel)})
+                          "mantida": corte >= inf.limiar_de_corte(regra),
+                          "decisao": regra.decisao, "nivel": int(nivel)})
     return previsoes
 
 
 def _registrar(registro: dict, prefixo: str, previsao) -> None:
-    registro[f"{prefixo}_classe"] = None if previsao is None else previsao["classe"]
-    registro[f"{prefixo}_confianca"] = None if previsao is None else previsao["confianca"]
-    registro[f"{prefixo}_corte"] = None if previsao is None else previsao["corte"]
-    registro[f"{prefixo}_nivel"] = None if previsao is None else previsao["nivel"]
-    registro[f"{prefixo}_probs"] = None if previsao is None else previsao["probs"]
+    for campo in ("classe", "confianca", "corte", "mantida", "decisao", "nivel", "probs"):
+        registro[f"{prefixo}_{campo}"] = None if previsao is None else previsao[campo]
 
 
-def metricas_t1(tabela: pd.DataFrame, limiar: float) -> dict:
+def metricas_t1(tabela: pd.DataFrame) -> dict:
     """Por variante: as métricas sem corte, as doentes marcadas saudáveis e o recall das
-    saudáveis, e a cobertura e a acurácia com o corte (valor de corte >= limiar)."""
+    saudáveis, e a cobertura e a acurácia com o corte da regra de cada previsão (coluna
+    <variante>_mantida)."""
     resultado = {}
     for variante in VARIANTES_T1:
         com = tabela[tabela[f"{variante}_classe"].notna()]
@@ -549,7 +576,7 @@ def metricas_t1(tabela: pd.DataFrame, limiar: float) -> dict:
         ms = metrics.calcular_metricas_severidade(
             com["severidade"].to_numpy(),
             np.where(previstas == 0, 0, np.maximum(com[f"{variante}_nivel"].astype(int), 1)))
-        mantidas = com[f"{variante}_corte"].astype(float) >= limiar
+        mantidas = com[f"{variante}_mantida"].astype(bool)
         doente = com["classe"].to_numpy() != inf.SAUDAVEL
         saudavel = previstas == inf.SAUDAVEL
         resultado[variante] = {
@@ -557,7 +584,8 @@ def metricas_t1(tabela: pd.DataFrame, limiar: float) -> dict:
             "saudavel_dado_d": _proporcao(int((saudavel & doente).sum()), int(doente.sum())),
             "recall_saudavel": _proporcao(int((saudavel & ~doente).sum()),
                                           int((~doente).sum())),
-            "limiar": limiar, "mantidas": int(mantidas.sum()),
+            "decisoes": sorted(com[f"{variante}_decisao"].dropna().unique().tolist()),
+            "mantidas": int(mantidas.sum()),
             "cobertura_no_limiar": float(mantidas.sum() / len(tabela)),
             "acuracia_no_limiar": float(np.mean(previstas[mantidas.to_numpy()]
                                                 == com["classe"].to_numpy()[mantidas.to_numpy()]))
@@ -567,7 +595,9 @@ def metricas_t1(tabela: pd.DataFrame, limiar: float) -> dict:
 
 # --------------------------------------------------------------------------- T2
 def t2(modelos, config, pasta_recortes: Path | None = None):
-    """Cada folha das fotos de validação do BRACOT, recortada nos modos A e B."""
+    """Cada folha das fotos de validação do BRACOT, recortada nos modos A e B, pela regra de
+    decisão do caminho (plano da foto e modo), com as probabilidades das classes (para comparar
+    as regras com as mesmas previsões)."""
     manifest = bracot.ler_manifest(split="treino")
     caminhos = manifest.set_index("id")["caminho"]
     cadeia = replace(config, limiar_confianca=0.0)
@@ -583,7 +613,8 @@ def t2(modelos, config, pasta_recortes: Path | None = None):
         if not preparo["folhas"]:
             continue
         recortes = {modo: inf.recortar(imagem, preparo, cadeia, modo) for modo in MODOS}
-        previsoes = {modo: _prever(recortes[modo], modelos, cadeia) for modo in MODOS}
+        previsoes = {modo: _prever(recortes[modo], modelos, config, preparo["plano"], modo)
+                     for modo in MODOS}
         for k, folha in enumerate(preparo["folhas"]):
             linha = {"foto": foto, "folha": k + 1, "plano": preparo["plano"],
                      "score": folha["score"], "area": folha["area"], "borda": folha["borda"]}
@@ -591,9 +622,12 @@ def t2(modelos, config, pasta_recortes: Path | None = None):
                 p = previsoes[modo][k]
                 categoria = inf.CATEGORIAS[p["classe"]]
                 linha.update({f"classe_{modo}": categoria, f"confianca_{modo}": p["confianca"],
-                              f"corte_{modo}": p["corte"],
+                              f"corte_{modo}": p["corte"], f"mantida_{modo}": p["mantida"],
+                              f"decisao_{modo}": p["decisao"],
                               f"severidade_{modo}": inf.severidade_do_contrato(categoria,
-                                                                              p["nivel"])})
+                                                                              p["nivel"]),
+                              **{f"prob_{c}_{modo}": float(v)
+                                 for c, v in zip(inf.CATEGORIAS, p["probs"])}})
             folhas.append(linha)
             if pasta_recortes:
                 _gravar_recorte(pasta_recortes / "recortes" / f"{foto}_{k + 1:02d}.jpg",
@@ -675,9 +709,13 @@ def gravar_pranchas(folhas_escolhidas: pd.DataFrame, pasta: Path) -> list[Path]:
     return caminhos
 
 
-def resumo_t2(folhas: pd.DataFrame, fotos: pd.DataFrame, limiar: float) -> dict:
-    """Classes, severidades e confiança por modo; o corte (valor de corte >= limiar) por folha
-    e por foto (foto sem nenhuma folha mantida: baixa_confianca)."""
+def resumo_t2(folhas: pd.DataFrame, fotos: pd.DataFrame, config) -> dict:
+    """Classes, severidades e confiança por modo; o corte da regra de cada folha (coluna
+    mantida_<modo>) por folha e por foto (foto sem nenhuma folha mantida: baixa_confianca); e a
+    distribuição do valor de corte em limiares fixos e nos limiares de corte da regra de cada
+    modo."""
+    limiares = sorted({*LIMIARES_T2, *(inf.limiar_de_corte(inf.config_do_caminho(
+        config, plano, modo)) for plano in folhas["plano"].unique() for modo in MODOS)})
     resultado = {"fotos": len(fotos), "folhas": len(folhas),
                  "planos": fotos["plano"].value_counts().to_dict(),
                  "cortadas_por_area": int(fotos["cortadas_por_area"].sum()),
@@ -687,22 +725,23 @@ def resumo_t2(folhas: pd.DataFrame, fotos: pd.DataFrame, limiar: float) -> dict:
     for modo in MODOS:
         conf = folhas[f"confianca_{modo}"]
         corte = folhas[f"corte_{modo}"].astype(float)
+        mantida = folhas[f"mantida_{modo}"].astype(bool)
         borda = folhas["borda"].astype(bool)
         resultado[modo] = {
+            "decisoes": folhas[f"decisao_{modo}"].value_counts().to_dict(),
             "classes": folhas[f"classe_{modo}"].value_counts().reindex(
                 bracol.CLASSES, fill_value=0).to_dict(),
-            "classes_mantidas": folhas.loc[corte >= limiar, f"classe_{modo}"].value_counts()
+            "classes_mantidas": folhas.loc[mantida, f"classe_{modo}"].value_counts()
             .reindex(bracol.CLASSES, fill_value=0).to_dict(),
             "severidades": folhas[f"severidade_{modo}"].value_counts().reindex(
                 inf.NIVEIS_CONTRATO, fill_value=0).to_dict(),
             "confianca_media": float(conf.mean()), "confianca_mediana": float(conf.median()),
-            "abaixo": {f"{t:g}": float((corte < t).mean())
-                       for t in sorted({*LIMIARES_T2, limiar})},
+            "abaixo": {f"{t:g}": float((corte < t).mean()) for t in limiares},
             "borda": {"folhas": int(borda.sum()), "confianca_media": float(conf[borda].mean()),
-                      "abaixo_do_limiar": float((corte[borda] < limiar).mean())},
+                      "abaixo_do_limiar": float((~mantida[borda]).mean())},
             "inteiras": {"folhas": int((~borda).sum()),
                          "confianca_media": float(conf[~borda].mean()),
-                         "abaixo_do_limiar": float((corte[~borda] < limiar).mean())},
+                         "abaixo_do_limiar": float((~mantida[~borda]).mean())},
         }
     resultado["concordancia_A_B"] = float((folhas["classe_A"] == folhas["classe_B"]).mean())
     resultado["cortadas_por_cor"] = int(fotos["cortadas_por_cor"].sum())
@@ -710,9 +749,177 @@ def resumo_t2(folhas: pd.DataFrame, fotos: pd.DataFrame, limiar: float) -> dict:
                                                         pd.Series(dtype=int)).sum())
     maxima = folhas.groupby("foto")[[f"corte_{m}" for m in MODOS]].max()
     resultado["fotos_baixa_confianca"] = {
-        modo: {f"{t:g}": int((maxima[f"corte_{modo}"] < t).sum())
-               for t in sorted({*LIMIARES_T2, limiar})} for modo in MODOS}
+        modo: {f"{t:g}": int((maxima[f"corte_{modo}"] < t).sum()) for t in limiares}
+        for modo in MODOS}
+    resultado["fotos_baixa_confianca_na_regra"] = {
+        modo: int((~folhas[f"mantida_{modo}"].astype(bool).groupby(folhas["foto"]).any()).sum())
+        for modo in MODOS}
     return resultado
+
+
+# --------------------------------------------------- regra por caminho (passo 6, cadeia final)
+def regras_comparadas(config) -> dict:
+    """As três regras de decisão, com os limiares da configuração do run."""
+    return {d: replace(config, decisao=d) for d in ("argmax", "duas_etapas", "por_caminho")}
+
+
+def desfecho(probs, regra) -> tuple[int, str]:
+    """A classe pela regra já resolvida no caminho e o que a cadeia faz com a folha:
+    "saudavel", "doenca" ou "descartada" (abaixo do corte)."""
+    classe, _, corte = inf.aplicar_decisao(probs, regra)
+    if corte < inf.limiar_de_corte(regra):
+        return classe, "descartada"
+    return classe, "saudavel" if classe == inf.SAUDAVEL else "doenca"
+
+
+def _sem_previsao(probs) -> bool:
+    return probs is None or (isinstance(probs, float) and math.isnan(probs))
+
+
+def _resumo_desfechos(t: pd.DataFrame) -> dict:
+    """Imagens com rótulo: acurácia sem corte (nas que têm previsão), cobertura, acurácia das
+    mantidas e as chamadas saudáveis entre as doentes e entre as saudáveis, com Wilson."""
+    doente = (t["classe"] != inf.SAUDAVEL).to_numpy()
+    com = t["prevista"].notna().to_numpy()
+    acerto = com & (t["prevista"].to_numpy() == t["classe"].to_numpy())
+    mantida = t["desfecho"].isin(["saudavel", "doenca"]).to_numpy()
+    saudavel = (t["desfecho"] == "saudavel").to_numpy()
+    return {"imagens": len(t), "com_previsao": int(com.sum()),
+            "acuracia_sem_corte": float(acerto[com].mean()) if com.any() else None,
+            "cobertura": _proporcao(int(mantida.sum()), len(t)),
+            "acuracia_das_mantidas": _proporcao(int((acerto & mantida).sum()), int(mantida.sum())),
+            "saudavel_dado_d": _proporcao(int((saudavel & doente).sum()), int(doente.sum())),
+            "saudavel_dado_s": _proporcao(int((saudavel & ~doente).sum()), int((~doente).sum()))}
+
+
+def t1_por_caminho(tabela: pd.DataFrame, config) -> dict:
+    """O T1 da cadeia no modo B (a folha principal: a imagem inteira na foto inteira, o
+    recorte B na detecção) separado pelo caminho da imagem, nas três regras, com as mesmas
+    probabilidades (coluna cadeia_B_probs). A imagem sem folha (regra 3) conta como não
+    mantida."""
+    resultado = {}
+    for nome, cfg in regras_comparadas(config).items():
+        linhas = []
+        for plano, classe, probs in zip(tabela["plano"], tabela["classe"],
+                                        tabela["cadeia_B_probs"]):
+            if _sem_previsao(probs):
+                linhas.append({"plano": plano, "classe": classe, "prevista": None,
+                               "desfecho": "sem_folha"})
+                continue
+            prevista, d = desfecho(probs, inf.config_do_caminho(cfg, plano, "B"))
+            linhas.append({"plano": plano, "classe": classe, "prevista": prevista,
+                           "desfecho": d})
+        t = pd.DataFrame(linhas)
+        resultado[nome] = {caminho: _resumo_desfechos(t if caminho == "todas"
+                                                      else t[t["plano"] == caminho])
+                           for caminho in CAMINHOS}
+    return resultado
+
+
+def t2_por_regra(folhas: pd.DataFrame, fotos: pd.DataFrame, config) -> dict:
+    """As folhas do T2 no modo B (o da cadeia), nas três regras, com as mesmas probabilidades
+    (colunas prob_<classe>_B): folhas chamadas saudáveis, doentes (por classe) e descartadas; e
+    as fotos com resposta, com alguma doença na resposta, em baixa_confianca pelo corte, pelo
+    filtro de fragmentos e sem folha (planta_nao_identificada)."""
+    probs = folhas[[f"prob_{c}_B" for c in inf.CATEGORIAS]].to_numpy()
+    sem_folhas = {"baixa_confianca_fragmentos": int((fotos["plano"] == "fragmentos").sum()),
+                  "planta_nao_identificada": int((fotos["plano"] == "nenhuma").sum())}
+    resultado = {}
+    for nome, cfg in regras_comparadas(config).items():
+        saidas = [desfecho(p, inf.config_do_caminho(cfg, plano, "B"))
+                  for p, plano in zip(probs, folhas["plano"])]
+        f = folhas.assign(prevista=[inf.CATEGORIAS[c] for c, _ in saidas],
+                          desfecho=[d for _, d in saidas])
+        mantida = f["desfecho"] != "descartada"
+        por_foto = pd.DataFrame({"resposta": mantida, "doenca": f["desfecho"] == "doenca",
+                                 "foto": f["foto"]}).groupby("foto").any()
+        resultado[nome] = {
+            "folhas": len(f),
+            "desfechos": {d: int((f["desfecho"] == d).sum())
+                          for d in ("saudavel", "doenca", "descartada")},
+            "classes_mantidas": f.loc[mantida, "prevista"].value_counts()
+            .reindex(inf.CATEGORIAS, fill_value=0).to_dict(),
+            "fotos": {"total": len(fotos), "com_resposta": int(por_foto["resposta"].sum()),
+                      "com_doenca": int(por_foto["doenca"].sum()),
+                      "baixa_confianca_corte": int((~por_foto["resposta"]).sum()),
+                      **sem_folhas}}
+    return resultado
+
+
+def ler_run(nome: str, pasta_runs: Path = train.PASTA_RUNS) -> tuple[dict, dict] | None:
+    """O config.json e o metricas.json gravados num run (None se faltar algum)."""
+    pasta = Path(pasta_runs) / nome
+    if not all((pasta / a).is_file() for a in ("config.json", "metricas.json")):
+        return None
+    return tuple(json.loads((pasta / a).read_text(encoding="utf-8"))
+                 for a in ("config.json", "metricas.json"))
+
+
+def comparar_com_runs(por_caminho_t1: dict, por_regra_t2: dict,
+                      pasta_runs: Path = train.PASTA_RUNS) -> dict:
+    """Os números gravados nos runs pipeline_padrao_b (argmax) e pipeline_duas_etapas (T1 da
+    cadeia B, T2 no modo B e T3) e os recalculados aqui com a mesma regra e as probabilidades
+    deste run (conferência: as mesmas previsões dão os mesmos números)."""
+    resultado = {}
+    for regra in ("argmax", "duas_etapas"):
+        lido = ler_run(NOMES[regra], pasta_runs)
+        if lido is None:
+            resultado[NOMES[regra]] = None
+            continue
+        config_run, m = lido
+        c = config_run["configuracao"]
+        limiar = c["limiar_doenca"] if regra == "duas_etapas" else c["limiar_confianca"]
+        cadeia = m["t1"]["variantes"]["cadeia_B"]
+        gravado = {"t1_acuracia_sem_corte": cadeia["metricas"]["acuracia"],
+                   "t1_mantidas": cadeia["mantidas"],
+                   "t1_acuracia_das_mantidas": cadeia["acuracia_no_limiar"],
+                   "t2_folhas": m["t2"]["folhas"],
+                   "t2_fotos_baixa_confianca": m["t2"]["fotos_baixa_confianca"]["B"][f"{limiar:g}"],
+                   "t3_mediana_s": m["t3"]["mediana"]["total_s"],
+                   "t3_maximo_s": m["t3"]["maximo"]["total_s"]}
+        todas, t2r = por_caminho_t1[regra]["todas"], por_regra_t2[regra]
+        recalculado = {"t1_acuracia_sem_corte": todas["acuracia_sem_corte"],
+                       "t1_mantidas": todas["cobertura"]["sucessos"],
+                       "t1_acuracia_das_mantidas": todas["acuracia_das_mantidas"]["p"],
+                       "t2_folhas": t2r["folhas"],
+                       "t2_fotos_baixa_confianca": t2r["fotos"]["baixa_confianca_corte"]}
+        resultado[NOMES[regra]] = {
+            "regra": regra, "limiar": limiar, "criado_em": config_run["criado_em"],
+            "gravado": gravado, "recalculado": recalculado,
+            "confere": all(math.isclose(recalculado[k], gravado[k], abs_tol=1e-6)
+                           for k in recalculado)}
+    return resultado
+
+
+def limitacoes_de_campo(caminho: Path = VALIDACAO_CAMPO) -> dict | None:
+    """Os números de campo das limitações da cadeia final (decisão do gestor, 11/10/2026), lidos
+    da validação da regra em duas etapas: contagens de S, D e "?", saudável dado S e dado D e a
+    fração de "?" que a regra chama saudável (com "?" como D, menos as D), por conjunto."""
+    if not Path(caminho).is_file():
+        return None
+    v = json.loads(Path(caminho).read_text(encoding="utf-8"))
+    resultado = {"arquivo": train._exibir(Path(caminho)), "limiar_saudavel": v["limiar_saudavel"],
+                 "limiar_doenca": v["limiar_doenca_proposto"]}
+    for conjunto in ("antigas", "novas", "juntas"):
+        regra = v["por_conjunto"][conjunto]["regras"]["duas_etapas"]
+        sem = v["limites"][conjunto]["sem_interrogacao"]["regras"]["duas_etapas"]
+        como_d = v["limites"][conjunto]["interrogacao_como_D"]["regras"]["duas_etapas"]
+        sucessos = como_d["saudavel_dado_d"]["sucessos"] - sem["saudavel_dado_d"]["sucessos"]
+        n = como_d["saudavel_dado_d"]["n"] - sem["saudavel_dado_d"]["n"]
+        resultado[conjunto] = {**v["contagens"][conjunto],
+                               "saudavel_dado_s": regra["saudavel_dado_s"],
+                               "saudavel_dado_d": regra["saudavel_dado_d"],
+                               "interrogacao_chamada_saudavel": _proporcao(sucessos, n),
+                               "saudavel_dado_d_interrogacao_como_d": como_d["saudavel_dado_d"]}
+    return resultado
+
+
+def analisar_por_caminho(tabela_t1: pd.DataFrame, folhas_t2: pd.DataFrame,
+                         fotos_t2: pd.DataFrame, config) -> dict:
+    t1r = t1_por_caminho(tabela_t1, config)
+    t2r = t2_por_regra(folhas_t2, fotos_t2, config)
+    return {"t1": t1r, "t2": t2r, "runs": comparar_com_runs(t1r, t2r),
+            "campo": limitacoes_de_campo()}
 
 
 # --------------------------------------------------------------------------- T3
@@ -823,6 +1030,7 @@ def relatorio(config_run: dict, metricas: dict, observacoes: str | None) -> str:
     cal = metricas["calibracao"]
     t1m, t2m, t3m = metricas["t1"], metricas["t2"], metricas["t3"]
     const = config_run["constantes_medidas"]
+    final = c.get("decisao") == "por_caminho"
     linhas = [
         f"# Inferência ponta a ponta: run `{config_run['run']}`", "",
         f"Gerado por `python model/avaliar_pipeline.py` em {_data(config_run['criado_em'])}, "
@@ -842,6 +1050,8 @@ def relatorio(config_run: dict, metricas: dict, observacoes: str | None) -> str:
          f"{c['saturacao_minima']} / {_pct(c['fracao_colorida_minima'], 0)}",
          "filtro de cor, medido no treino (abaixo)"],
         ["limiar_confianca", fmt.decimal(c["limiar_confianca"], 2),
+         "curva risco-cobertura (abaixo); vale na foto inteira e no modo A: decisão do gestor "
+         "(11/10/2026, passo 6)" if final else
          "proposta da curva risco-cobertura; **aguarda a decisão do gestor**"],
         ["recorte", c["recorte"],
          "decisão do gestor (11/10/2026), pelos rótulos de campo do passo 4; no T1 só o recorte "
@@ -857,17 +1067,25 @@ def relatorio(config_run: dict, metricas: dict, observacoes: str | None) -> str:
         ["fracao_visivel_minima", fmt.decimal(c["fracao_visivel_minima"], 2),
          "filtro de fragmentos; decisão do gestor (11/10/2026)"],
         ["decisao", c.get("decisao", "argmax"),
+         "decisão do gestor (11/10/2026, passo 6): duas etapas nos recortes por detecção "
+         "(modo B); argmax com limiar_confianca na foto inteira e no modo A" if final else
          "argmax: o padrão; duas_etapas: proposta do passo 5b, desligada por padrão"],
         *([["limiar_saudavel", fmt.decimal(c["limiar_saudavel"], 3),
-            "decisão do gestor (11/10/2026): fixado antes de dados novos (abaixo)"],
+            "decisão do gestor (11/10/2026): fixado antes de dados novos"
+            + (" e validado no campo (`campo_validacao_duas_etapas`), sem reajuste" if final
+               else " (abaixo)")],
            ["limiar_doenca", fmt.decimal(c["limiar_doenca"], 2),
+            "decisão do gestor (11/10/2026, passo 6): **provisório**; a proposta da curva das "
+            "doenças no BRACOL (`pipeline_duas_etapas`)" if final else
             "proposta da curva das doenças (abaixo); **aguarda a decisão do gestor**"]]
-          if c.get("decisao") == "duas_etapas" else []),
+          if c.get("decisao") in ("duas_etapas", "por_caminho") else []),
     ], "lll")
     linhas += _secao_constantes(const, c)
     linhas += _secao_calibracao(cal, c)
     if "duas_etapas" in metricas:
         linhas += _secao_duas_etapas(metricas["duas_etapas"], c)
+    if "por_caminho" in metricas:
+        linhas += _secao_por_caminho(metricas["por_caminho"], metricas, c)
     linhas += _secao_t1(t1m, c)
     linhas += _secao_t2(t2m, c, observacoes)
     linhas += _secao_t3(t3m, c)
@@ -884,7 +1102,46 @@ def relatorio(config_run: dict, metricas: dict, observacoes: str | None) -> str:
         "café pode sair como folha de café com confiança alta.",
         "- O T2 não tem rótulo de classe: as observações dos recortes são uma inspeção visual, "
         "não uma medida.", ""]
+    if final:
+        linhas += _limitacoes_de_campo(metricas["por_caminho"].get("campo"), c)
     return "\n".join(linhas) + "\n"
+
+
+def _limitacoes_de_campo(campo: dict | None, c: dict) -> list[str]:
+    """As limitações de campo da cadeia final (decisão do gestor, 11/10/2026), com os números
+    da validação da regra em duas etapas."""
+    linhas = ["### Limitações de campo da cadeia final (decisão do gestor, 11/10/2026)", ""]
+    if campo is None:
+        return linhas + ["Sem a validação de campo (`campo_validacao_duas_etapas/validacao.json`)."
+                         " Os números não puderam ser lidos.", ""]
+    novas, juntas, antigas = campo["novas"], campo["juntas"], campo["antigas"]
+
+    def folhas(conjunto):
+        return conjunto["S"] + conjunto["D"]
+
+    return linhas + [
+        "- **Rótulos:** feitos por Claude por leitura visual das pranchas e aceitos pelo gestor "
+        "em 11/10/2026, sem especialista.",
+        f"- **Amostra:** {folhas(juntas)} folhas evidentes ({juntas['S']} S e {juntas['D']} D): "
+        f"{folhas(antigas)} das fotos de validação do detector, de onde saiu o limiar de "
+        f"saudável, e {folhas(novas)} das fotos de treino, a validação. São 1 lavoura e 2 "
+        "sessões de fotos.",
+        f"- **Falso saudável nas D evidentes:** {_prop(juntas['saudavel_dado_d'])} nas D das "
+        f"duas rotulagens; nas novas, {_prop(novas['saudavel_dado_d'])}. Os dados não mostram "
+        "que a regra respeita o teto de 5% usado para fixar o limiar de saudável.",
+        "- **Folhas ambíguas (\"?\"):** a regra chama saudável "
+        f"{_prop(novas['interrogacao_chamada_saudavel'])} das \"?\" novas e "
+        f"{_prop(juntas['interrogacao_chamada_saudavel'])} das duas rotulagens juntas. Se elas "
+        "forem doentes, o falso saudável sobe: nas novas, com os \"?\" como D, vai a "
+        f"{_prop(novas['saudavel_dado_d_interrogacao_como_d'])}.",
+        f"- **Recall das saudáveis:** {_prop(juntas['saudavel_dado_s'])} nas S das duas "
+        f"rotulagens; nas novas, {_prop(novas['saudavel_dado_s'])}.",
+        "- **Classe da doença no campo:** não foi verificada. Os rótulos de campo só dizem S ou "
+        f"D, e o limiar de doença ({fmt.decimal(c['limiar_doenca'], 2)}, provisório) só foi "
+        "calibrado no BRACOL.",
+        "- **Severidade:** não é informativa no campo (passo 4). O nível sai do classificador "
+        "treinado no BRACOL, e não há rótulo de severidade no campo.",
+        f"- Fonte dos números: `{campo['arquivo']}`.", ""]
 
 
 def _secao_constantes(const: dict, c: dict) -> list[str]:
@@ -964,16 +1221,115 @@ def _secao_calibracao(cal: dict, c: dict) -> list[str]:
 
 def _corte(c: dict) -> str:
     """O corte da regra de decisão do run, para os títulos das tabelas."""
+    duas = (f"saudável com P >= {fmt.decimal(c.get('limiar_saudavel', 0), 3)}; doença com P "
+            f"renormalizada >= {fmt.decimal(c.get('limiar_doenca') or 0, 2)}")
     if c.get("decisao", "argmax") == "duas_etapas":
-        return (f"na regra em duas etapas (saudável com P >= {fmt.decimal(c['limiar_saudavel'], 3)}"
-                f"; doença com P renormalizada >= {fmt.decimal(c['limiar_doenca'], 2)})")
+        return f"na regra em duas etapas ({duas})"
+    if c.get("decisao") == "por_caminho":
+        return (f"por caminho (foto inteira e modo A: confiança >= "
+                f"{fmt.decimal(c['limiar_confianca'], 2)}; recortes por detecção no modo B: "
+                f"{duas})")
     return f"no limiar {fmt.decimal(c['limiar_confianca'], 2)}"
 
 
 def _valor_de_corte(c: dict) -> str:
     if c.get("decisao", "argmax") == "duas_etapas":
         return "P renormalizada da doença (as saudáveis da 1ª etapa não têm corte)"
+    if c.get("decisao") == "por_caminho":
+        return ("confiança na foto inteira e no modo A; P renormalizada da doença nos recortes do "
+                "modo B (as saudáveis da 1ª etapa não têm corte)")
     return "confiança"
+
+
+def _secao_por_caminho(pc: dict, metricas: dict, c: dict) -> list[str]:
+    t_c, t_s, t_d = (fmt.decimal(c["limiar_confianca"], 2), fmt.decimal(c["limiar_saudavel"], 3),
+                     fmt.decimal(c["limiar_doenca"], 2))
+    linhas = [
+        "## Regra de decisão por caminho (passo 6): a cadeia final", "",
+        "Decisão do gestor (11/10/2026): as duas etapas (saudável com P(saudável) >= "
+        f"{t_s}; senão, a doença com P renormalizada >= {t_d}, **provisório**) só nos recortes "
+        f"por detecção, no modo B; na foto inteira (regras de folha única 1 e 2) e no modo A, o "
+        f"argmax com corte {t_c}. Nenhum limiar foi reajustado com dados de campo. As três "
+        "regras das tabelas abaixo usam as mesmas probabilidades deste run: só a regra muda. "
+        "Por construção, a regra por caminho é igual ao argmax na foto inteira e às duas etapas "
+        "nos recortes por detecção.", "",
+        "### T1 (validação do BRACOL) por caminho", "",
+        f"As {metricas['t1']['imagens']} imagens de validação do BRACOL, pela cadeia no modo B: "
+        "a imagem inteira, se a regra 1 ou a 2 valeu, ou o recorte da maior folha (detecção). "
+        "Cobertura: imagens com a folha principal mantida no corte; a imagem sem folha (regra 3) "
+        "conta como não mantida. \"Chamadas saudáveis\": folha mantida como saudável.", ""]
+    linhas += fmt.tabela(
+        ["caminho", "regra", "imagens", "acurácia sem corte", "cobertura",
+         "acurácia das mantidas (IC 95%)", "doentes chamadas saudáveis (IC 95%)",
+         "saudáveis chamadas saudáveis (IC 95%)"],
+        [[CAMINHOS[caminho], NOME_REGRA[regra], str(r["imagens"]), _pct(r["acuracia_sem_corte"]),
+          _pct(r["cobertura"]["p"]), _prop(r["acuracia_das_mantidas"]),
+          _prop(r["saudavel_dado_d"]), _prop(r["saudavel_dado_s"])]
+         for caminho in CAMINHOS for regra, por_caminho in pc["t1"].items()
+         for r in (por_caminho[caminho],)], "llrrrlll")
+    t2r = pc["t2"]
+    exemplo = next(iter(t2r.values()))
+    linhas += ["", "### T2 (validação do BRACOT, sem rótulo) por regra, no modo B", "",
+               f"As {exemplo['folhas']} folhas classificadas das {exemplo['fotos']['total']} "
+               "fotos de validação do detector. Sem rótulo de classe: as contagens descrevem o "
+               "que a cadeia responde, não se ela acerta.", ""]
+    linhas += fmt.tabela(
+        ["regra", "folhas saudáveis", "folhas doentes", "folhas descartadas",
+         "doenças na resposta", "fotos com resposta", "fotos com alguma doença",
+         "fotos em baixa_confianca (corte)", "fotos em baixa_confianca (fragmentos)",
+         "planta_nao_identificada"],
+        [[NOME_REGRA[regra], str(r["desfechos"]["saudavel"]), str(r["desfechos"]["doenca"]),
+          str(r["desfechos"]["descartada"]),
+          ", ".join(f"{cl} {r['classes_mantidas'][cl]}" for cl in bracol.CLASSES
+                    if cl != "saudavel" and r["classes_mantidas"][cl]) or "-",
+          str(r["fotos"]["com_resposta"]), str(r["fotos"]["com_doenca"]),
+          str(r["fotos"]["baixa_confianca_corte"]), str(r["fotos"]["baixa_confianca_fragmentos"]),
+          str(r["fotos"]["planta_nao_identificada"])]
+         for regra, r in t2r.items()], "lrrrlrrrrr")
+    linhas += _comparacao_com_runs(pc["runs"], metricas)
+    return linhas + [""]
+
+
+def _comparacao_com_runs(runs: dict, metricas: dict) -> list[str]:
+    cadeia = metricas["t1"]["variantes"]["cadeia_B"]
+    t2m, t3m = metricas["t2"], metricas["t3"]
+    este = {"t1_acuracia_sem_corte": cadeia["metricas"]["acuracia"],
+            "t1_mantidas": cadeia["mantidas"],
+            "t1_acuracia_das_mantidas": cadeia["acuracia_no_limiar"],
+            "t2_folhas": t2m["folhas"],
+            "t2_fotos_baixa_confianca": t2m["fotos_baixa_confianca_na_regra"]["B"],
+            "t3_mediana_s": t3m["mediana"]["total_s"], "t3_maximo_s": t3m["maximo"]["total_s"]}
+    colunas = {**{nome: (r["gravado"] if r else None) for nome, r in runs.items()},
+               NOMES["por_caminho"]: este}
+    nomes = (("t1_acuracia_sem_corte", "T1, cadeia B: acurácia sem corte", _pct),
+             ("t1_mantidas", f"T1, cadeia B: imagens mantidas no corte (de "
+                             f"{metricas['t1']['imagens']})", str),
+             ("t1_acuracia_das_mantidas", "T1, cadeia B: acurácia das mantidas", _pct),
+             ("t2_folhas", "T2: folhas classificadas", str),
+             ("t2_fotos_baixa_confianca", f"T2, modo B: fotos em baixa_confianca pelo corte (de "
+                                          f"{t2m['fotos']})", str),
+             ("t3_mediana_s", "T3: total mediano (s)", lambda v: fmt.decimal(v, 2)),
+             ("t3_maximo_s", "T3: total máximo (s)", lambda v: fmt.decimal(v, 2)))
+    linhas = ["", "### Comparação com os runs gravados", "",
+              "Os números gravados nos runs anteriores, com os mesmos modelos e a mesma cadeia "
+              "(recorte B e filtro de fragmentos); só a regra de decisão muda. O T3 é tempo de "
+              "máquina e varia de uma rodada para outra.", ""]
+    linhas += fmt.tabela(
+        ["", *(f"`{n}` ({'gravado' if n != NOMES['por_caminho'] else 'este run'})"
+               for n in colunas)],
+        [[rotulo, *("-" if col is None or col.get(chave) is None else formato(col[chave])
+                    for col in colunas.values())]
+         for chave, rotulo, formato in nomes], "l" + "r" * len(colunas))
+    conferencias = [f"`{nome}` ({NOME_REGRA[r['regra']]}): "
+                    + ("os mesmos números" if r["confere"] else "**números diferentes**: "
+                       + ", ".join(f"{k} {r['recalculado'][k]} x {r['gravado'][k]}"
+                                   for k in r["recalculado"]
+                                   if not math.isclose(r["recalculado"][k], r["gravado"][k],
+                                                       abs_tol=1e-6)))
+                    for nome, r in runs.items() if r]
+    linhas += ["", "**Conferência.** A mesma regra aplicada às probabilidades deste run (T1 e T2) "
+               "contra o gravado: " + "; ".join(conferencias) + "."]
+    return linhas
 
 
 def _prop(p: dict | None) -> str:
@@ -1158,6 +1514,9 @@ def _secao_t2(t2m: dict, c: dict, observacoes: str | None) -> list[str]:
            "(baixa_confianca)",
            *(f"{t2m['fotos_baixa_confianca'][m][t]} de {t2m['fotos']}" for m in MODOS)]
           for t in t2m["fotos_baixa_confianca"]["A"]),
+        *([["**fotos em baixa_confianca na regra do run**",
+            *(f"{t2m['fotos_baixa_confianca_na_regra'][m]} de {t2m['fotos']}" for m in MODOS)]]
+          if "fotos_baixa_confianca_na_regra" in t2m else []),
     ], "lrr")
     linhas += ["", "Arquivo: `t2_folhas.csv` (uma linha por folha) e `t2_fotos.csv`.", "",
                "### Observações escritas à mão (sem imagens no repositório)", "",
@@ -1215,11 +1574,11 @@ def conferir_inteira(tabela: pd.DataFrame, pasta_classificador: Path) -> str:
             f"(o treino usou AMP), classe prevista igual em {iguais} de {len(tabela)}")
 
 
-def resumir_t1(tabela: pd.DataFrame, config, pasta_classificador) -> dict:
+def resumir_t1(tabela: pd.DataFrame, pasta_classificador) -> dict:
     regras = tabela["regra"].fillna(0).astype(int)
     contagem = tabela["deteccoes"].value_counts().sort_index()
     return {"imagens": len(tabela),
-            "variantes": metricas_t1(tabela, inf.limiar_de_corte(config)),
+            "variantes": metricas_t1(tabela),
             "regras": {"regra_1": int((regras == 1).sum()), "regra_2": int((regras == 2).sum()),
                        "regra_3": int((regras == 3).sum()),
                        "deteccao": int((tabela["plano"] == "deteccao").sum()),
@@ -1277,11 +1636,15 @@ def curva_em_tabela(calibracao: dict) -> pd.DataFrame:
 
 
 def configurar(args) -> tuple[inf.Configuracao, dict | None]:
-    """A configuração do run: a padrão ou, com --decisao duas_etapas, a regra em duas etapas com
-    o limiar de doença de --limiar-doenca ou, sem ele, o proposto pela curva das doenças fora da
-    dobra (a proposta não muda o padrão da cadeia)."""
+    """A configuração do run: a padrão com a regra de --decisao (por caminho, a cadeia final; ou
+    argmax) e o limiar de doença de --limiar-doenca, se vier; ou, com --decisao duas_etapas, a
+    regra em duas etapas com o limiar de doença de --limiar-doenca ou, sem ele, o proposto pela
+    curva das doenças fora da dobra (a proposta não muda o padrão da cadeia)."""
     if args.decisao != "duas_etapas":
-        return inf.Configuracao(), None
+        config = inf.Configuracao(decisao=args.decisao)
+        if args.limiar_doenca is not None:
+            config = replace(config, limiar_doenca=args.limiar_doenca)
+        return config, None
     calibracao = calibrar_doencas(args.fora_da_dobra)
     limiar = args.limiar_doenca if args.limiar_doenca is not None else calibracao["proposta"]
     if limiar is None:
@@ -1321,9 +1684,10 @@ def executar(args) -> int:
                                    args.recortes)
     fmt.dizer("T3: tempo em CPU...")
     tabela_t3, resumo_t3 = t3(args.classificador, args.detector, config)
-    metricas = {"calibracao": calibracao, "t1": resumir_t1(tabela_t1, config, args.classificador),
-                "t2": resumo_t2(folhas_t2, fotos_t2, inf.limiar_de_corte(config)),
-                "t3": resumo_t3}
+    metricas = {"calibracao": calibracao, "t1": resumir_t1(tabela_t1, args.classificador),
+                "t2": resumo_t2(folhas_t2, fotos_t2, config), "t3": resumo_t3}
+    if config.decisao == "por_caminho":
+        metricas["por_caminho"] = analisar_por_caminho(tabela_t1, folhas_t2, fotos_t2, config)
     gravar_csv(curva_em_tabela(calibracao), pasta / "risco_cobertura.csv")
     metrics.salvar_figura(figura_risco_cobertura(calibracao, config.limiar_confianca),
                           pasta / "risco_cobertura.png")
@@ -1361,14 +1725,16 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
         description="Avaliacao ponta a ponta da inferencia (detector + recorte + classificador). "
                     "Detalhes no docstring de model/avaliar_pipeline.py.")
-    ap.add_argument("--nome", help=f"pasta em model/runs (padrao: {NOME_PADRAO}; com "
-                                   f"--decisao duas_etapas, {NOME_DUAS_ETAPAS})")
-    ap.add_argument("--decisao", choices=inf.DECISOES, default="argmax",
-                    help="regra de decisao do run (o padrao da cadeia e argmax; duas_etapas e a "
-                         "proposta do passo 5b, que nao muda o padrao)")
+    padrao = inf.Configuracao().decisao
+    ap.add_argument("--nome", help="pasta em model/runs (padrao: o run da regra de decisao: "
+                                   + ", ".join(f"{d}: {n}" for d, n in NOMES.items()) + ")")
+    ap.add_argument("--decisao", choices=inf.DECISOES, default=padrao,
+                    help=f"regra de decisao do run (padrao: {padrao}, a da cadeia final; argmax "
+                         "e duas_etapas valem em todo caminho)")
     ap.add_argument("--limiar-doenca", type=float,
-                    help="com --decisao duas_etapas: o limiar de doenca (sem ele, o proposto "
-                         "pela curva das doencas fora da dobra)")
+                    help="com --decisao duas_etapas ou por_caminho: o limiar de doenca (sem ele, "
+                         "o da Configuracao em por_caminho e o proposto pela curva das doencas "
+                         "fora da dobra em duas_etapas)")
     ap.add_argument("--classificador", type=Path, default=inf.PASTA_CLASSIFICADOR,
                     help="pasta do run do classificador (com o melhor.pt)")
     ap.add_argument("--detector", type=Path, default=detector.PESOS_PADRAO,
@@ -1383,10 +1749,10 @@ def main(argv=None) -> int:
                     help="so refaz o relatorio.md do run (--nome) a partir do config.json e do "
                          "metricas.json, com o observacoes.md")
     args = ap.parse_args(argv)
-    if args.limiar_doenca is not None and args.decisao != "duas_etapas":
-        ap.error("--limiar-doenca so vale com --decisao duas_etapas")
+    if args.limiar_doenca is not None and args.decisao == "argmax":
+        ap.error("--limiar-doenca nao vale com --decisao argmax")
     if args.nome is None:
-        args.nome = NOME_DUAS_ETAPAS if args.decisao == "duas_etapas" else NOME_PADRAO
+        args.nome = NOMES[args.decisao]
     if args.recortes and args.recortes.resolve().is_relative_to(RAIZ_REPO):
         ap.error("--recortes precisa ficar fora do repositorio (imagens do dataset)")
     try:

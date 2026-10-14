@@ -94,7 +94,9 @@ def test_contrato_com_varias_folhas_filtros_e_coerencia(detectar_com):
                   deteccao(450, 20, 550, 90, 0.2)])  # abaixo do limiar do detector
     modelos = modelos_falsos([probs("saudavel", 0.9), probs("ferrugem", 0.8),
                               probs("phoma", 0.4)], [3, 0, 2])
-    resposta = inf.diagnosticar(imagem, inf.Configuracao(limiar_confianca=0.61), modelos)
+    # o argmax em todo caminho (o padrão até o passo 5b); a regra por caminho: test_regra_*
+    resposta = inf.diagnosticar(imagem, inf.Configuracao(decisao="argmax", limiar_confianca=0.61),
+                                modelos)
     assert resposta["status"] == "sucesso"
     assert modelos.classificador.lotes == [(3, 3, 32, 64)]  # um lote com as 3 utilizáveis
     primeira, segunda = resposta["folhas"]  # a phoma (0,4) ficou abaixo do limiar
@@ -176,7 +178,8 @@ def test_regra_3_sem_folha_utilizavel_e_planta_nao_identificada(detectar_com, de
 def test_todas_abaixo_do_limiar_de_confianca_e_baixa_confianca(detectar_com):
     folhas = [(20, 20, 140, 80), (200, 30, 330, 100)]
     detectar_com([deteccao(*f, 0.9) for f in folhas])
-    resposta = inf.diagnosticar(foto(*folhas), inf.Configuracao(limiar_confianca=0.61),
+    resposta = inf.diagnosticar(foto(*folhas),
+                                inf.Configuracao(decisao="argmax", limiar_confianca=0.61),
                                 modelos_falsos([probs("phoma", 0.5), probs("ferrugem", 0.6)],
                                                [1, 1]))
     assert (resposta["status"], resposta["tipo"]) == ("erro", "baixa_confianca")

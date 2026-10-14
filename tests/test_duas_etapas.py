@@ -18,6 +18,7 @@ import inferencia as inf
 from test_inferencia import deteccao, detectar_com, foto, modelos_falsos  # noqa: F401
 
 DUAS = inf.Configuracao(decisao="duas_etapas", limiar_doenca=0.65)
+ARGMAX = inf.Configuracao(decisao="argmax")  # o padrão até o passo 5b (pipeline_padrao_b)
 
 
 def p(saudavel, ferrugem, bicho, phoma, cerco):
@@ -26,13 +27,16 @@ def p(saudavel, ferrugem, bicho, phoma, cerco):
 
 # ------------------------------------------------------------------ configuração
 def test_padroes_da_regra_e_validacao():
-    config = inf.Configuracao()
-    assert (config.decisao, config.limiar_saudavel, config.limiar_doenca) == ("argmax", 0.083,
-                                                                               None)
-    assert inf.limiar_de_corte(config) == config.limiar_confianca
+    config = inf.Configuracao()  # a cadeia final (passo 6)
+    assert (config.decisao, config.limiar_saudavel, config.limiar_doenca,
+            config.limiar_confianca) == ("por_caminho", 0.083, 0.65, 0.61)
+    assert inf.limiar_de_corte(ARGMAX) == config.limiar_confianca
     assert inf.limiar_de_corte(DUAS) == 0.65
     with pytest.raises(ValueError):
-        inf.Configuracao(decisao="duas_etapas")  # sem limiar de doença
+        inf.limiar_de_corte(config)  # por caminho: precisa do plano
+    for decisao in ("duas_etapas", "por_caminho"):
+        with pytest.raises(ValueError):
+            inf.Configuracao(decisao=decisao, limiar_doenca=None)
     with pytest.raises(ValueError):
         inf.Configuracao(decisao="outra", limiar_doenca=0.5)
 
@@ -40,7 +44,9 @@ def test_padroes_da_regra_e_validacao():
 # ------------------------------------------------------------------- aplicar_decisao
 def test_argmax_igual_ao_de_antes():
     probs = p(0.1, 0.6, 0.1, 0.1, 0.1)
-    assert inf.aplicar_decisao(probs, inf.Configuracao()) == (1, 0.6, 0.6)
+    assert inf.aplicar_decisao(probs, ARGMAX) == (1, 0.6, 0.6)
+    with pytest.raises(ValueError):
+        inf.aplicar_decisao(probs, inf.Configuracao())  # por caminho: precisa do plano
 
 
 def test_primeira_etapa_saudavel_sem_corte_com_maior_ou_igual():
@@ -87,13 +93,14 @@ def test_contrato_na_regra_em_duas_etapas(detectar_com):  # noqa: F811
     assert "limiar_confianca" not in detalhes
 
 
-def test_contrato_padrao_continua_no_argmax(detectar_com):  # noqa: F811
+def test_contrato_no_argmax_antigo_continua_como_opcao(detectar_com):  # noqa: F811
     folha = (200, 30, 330, 100)
     detectar_com([deteccao(*folha, 0.9), deteccao(20, 200, 140, 260, 0.8)])
     modelos = modelos_falsos([[0.10, 0.60, 0.10, 0.10, 0.10]] * 2, [3, 3])
-    resposta = inf.diagnosticar(foto(folha, (20, 200, 140, 260)), inf.Configuracao(), modelos)
+    resposta = inf.diagnosticar(foto(folha, (20, 200, 140, 260)), ARGMAX, modelos)
     assert resposta["status"] == "erro" and resposta["tipo"] == "baixa_confianca"
-    assert resposta["detalhes"]["decisao"] == "argmax"
+    assert resposta["detalhes"]["decisao"] == resposta["detalhes"]["decisao_configurada"] == (
+        "argmax")
 
 
 # --------------------------------------------------------------- calibração (BRACOL)
@@ -140,22 +147,28 @@ def test_sensibilidade_sem_as_3_s_nao_muda_o_limiar(tmp_path):
     assert ap.sensibilidade_campo(0.083, tmp_path / "nao_existe.csv") is None
 
 
-def test_metricas_t1_aplicam_o_corte_pelo_valor_de_corte():
+def test_metricas_t1_aplicam_o_corte_de_cada_previsao():
     tabela = pd.DataFrame({"classe": [0, 1, 1], "severidade": [0, 2, 2]})
     for v in ap.VARIANTES_T1:
         tabela[f"{v}_classe"] = [0, 1, 2]
         tabela[f"{v}_nivel"] = [0, 2, 2]
         tabela[f"{v}_confianca"] = [0.1, 0.9, 0.5]
         tabela[f"{v}_corte"] = [math.inf, 0.9, 0.5]
-    r = ap.metricas_t1(tabela, 0.65)["cadeia_B"]
-    assert (r["mantidas"], r["acuracia_no_limiar"]) == (2, 1.0)  # a saudável fica sem corte
+        tabela[f"{v}_mantida"] = [True, True, False]  # a saudável fica sem corte
+        tabela[f"{v}_decisao"] = "duas_etapas"
+    r = ap.metricas_t1(tabela)["cadeia_B"]
+    assert (r["mantidas"], r["acuracia_no_limiar"]) == (2, 1.0)
     assert r["saudavel_dado_d"]["sucessos"] == 0 and r["recall_saudavel"]["sucessos"] == 1
+    assert r["decisoes"] == ["duas_etapas"]
 
 
-def test_duas_etapas_tem_nome_proprio_e_limiar_de_doenca_so_com_ela():
-    with pytest.raises(SystemExit):
-        ap.main(["--limiar-doenca", "0.5", "--so-constantes"])
-    assert ap.NOME_DUAS_ETAPAS != ap.NOME_PADRAO
+def test_cada_regra_tem_run_proprio_e_limiar_de_doenca_nao_vale_no_argmax():
+    with pytest.raises(SystemExit):  # sai na validação dos argumentos, sem carregar modelos
+        ap.main(["--decisao", "argmax", "--limiar-doenca", "0.5", "--so-constantes"])
+    assert set(ap.NOMES) == set(inf.DECISOES) and len(set(ap.NOMES.values())) == 3
+    assert ap.NOMES[inf.Configuracao().decisao] == "pipeline_final"
+    assert (ap.NOMES["argmax"], ap.NOMES["duas_etapas"]) == ("pipeline_padrao_b",
+                                                              "pipeline_duas_etapas")
 
 
 # ------------------------------------------------------------- rotulagem de validação

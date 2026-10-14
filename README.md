@@ -83,12 +83,16 @@ galho ou de uma folha) e devolve o diagnóstico no contrato dos frontends (coffe
 3. as regras de folha única decidem se a foto inteira vira uma folha;
 4. cada folha é recortada deitada, com margem, como nas fotos do BRACOL;
 5. o classificador avalia todas as folhas num lote só;
-6. a regra de decisão dá a classe, e as folhas abaixo do corte saem. O padrão é o argmax com o
-   limiar de confiança; a regra em duas etapas é uma opção desligada (ver abaixo).
+6. a regra de decisão do caminho dá a classe, e as folhas abaixo do corte saem: na foto inteira,
+   o argmax com o limiar de confiança; nos recortes por detecção, a regra em duas etapas (ver
+   "Regra de decisão por caminho", abaixo).
 
-A avaliação completa com os padrões atuais (recorte B e filtro de fragmentos), com o tempo em
-CPU, está em `model/runs/pipeline_padrao_b/relatorio.md`. A do passo 3 (recorte A, sem filtro)
-fica em `model/runs/pipeline_base/`.
+A cadeia está congelada desde o passo 6 (decisões do gestor, 11/10/2026). A avaliação completa
+dela, com o tempo em CPU e a comparação com os padrões anteriores, está em
+`model/runs/pipeline_final/relatorio.md`. Os runs anteriores ficam como registro:
+- `pipeline_padrao_b`: argmax em todo caminho;
+- `pipeline_duas_etapas`: duas etapas em todo caminho;
+- `pipeline_base`: o passo 3, com recorte A e sem filtro.
 
 ```python
 import sys
@@ -99,12 +103,32 @@ inferencia.carregar_modelos()                        # uma vez, ao subir o backe
 resposta = inferencia.diagnosticar_arquivo(conteudo)  # bytes do upload ou caminho da foto
 ```
 
-**Pesos.** Ficam fora do git e são lidos de arquivos locais, sem rede:
+**Pesos.** Ficam fora do git e são lidos de arquivos locais, sem rede. Os nomes, tamanhos e
+SHA-256 estão em [`model/pesos/MANIFESTO.md`](model/pesos/MANIFESTO.md):
 - o `melhor.pt` do classificador, em `model/runs/base_resnet50_bracol/`;
 - o `last.pt` do detector, em `model/runs/detector_base/weights/`.
 
-Para usar outros: `carregar_modelos(pasta_do_classificador=..., pesos_do_detector=...,
-dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
+Para carregar:
+- **Nos caminhos padrão:** `carregar_modelos()`.
+- **Em outro lugar:** `carregar_modelos(pasta_do_classificador=PASTA_DO_melhor.pt,
+  pesos_do_detector=CAMINHO_DO_last.pt, dispositivo="cpu")`.
+- **Cache:** os modelos ficam em cache por caminho e dispositivo.
+- **Antes de subir o backend:** confira o SHA-256 dos dois arquivos com o manifesto, que traz o
+  comando.
+
+**Versões das dependências.** As do `requirements.txt`, mais o ultralytics sem dependências (seção
+"Ambiente"). Os pesos foram gerados com estas versões, e a cadeia final foi avaliada com elas:
+
+| pacote | versão |
+|---|---|
+| Python | 3.12 ou mais novo (avaliado no 3.13.14) |
+| torch / torchvision | 2.13.0 / 0.28.0 (no CPU, o build do PyPI serve) |
+| timm | 1.0.28 |
+| albumentations | 2.0.8 |
+| numpy / pandas | 2.5.2 / 3.0.5 |
+| pillow | 12.3.0 |
+| opencv-python-headless | 5.0.0.93 |
+| ultralytics | 8.4.175 (`pip install --no-deps`; AGPL-3.0) |
 
 **Sucesso** (exemplo do formato):
 
@@ -118,17 +142,21 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
      "cortadaNaBorda": false},
     {"id": "folha-2", "categoria": "saudavel", "severidade": "saudavel",
      "regiao": {"x": 0.731, "y": 0.664, "raio": 0.118},
-     "confianca": 0.74, "scoreDeteccao": 0.88, "caixa": [0.63, 0.52, 0.86, 0.81],
+     "confianca": 0.21, "scoreDeteccao": 0.88, "caixa": [0.63, 0.52, 0.86, 0.81],
      "cortadaNaBorda": true}
   ],
   "detalhes": {"plano": "deteccao", "regra": null, "deteccoes": 7, "abaixo_do_limiar": 4,
                "cortadas_por_area": 0, "cortadas_por_cor": 0, "cortadas_por_fragmento": 0,
                "cortadas_por_limite": 0,
-               "abaixo_da_confianca": 5, "recorte": "B", "decisao": "argmax",
-               "limiar_confianca": 0.61,
+               "abaixo_da_confianca": 5, "recorte": "B", "decisao": "duas_etapas",
+               "decisao_configurada": "por_caminho",
+               "limiar_saudavel": 0.083, "limiar_doenca": 0.65,
                "classificador": "base_resnet50_bracol", "detector": "detector_base"}
 }
 ```
+
+Na foto inteira (`plano` "foto_inteira"), `detalhes` traz `decisao` "argmax" e
+`limiar_confianca` 0,61 no lugar de `limiar_saudavel` e `limiar_doenca`.
 
 - **Categoria e severidade:**
   - `categoria` vem de `CLASSES` (saudavel, ferrugem, bicho_mineiro, phoma, cercosporiose).
@@ -140,10 +168,14 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
   - O raio é o do círculo de mesma área, relativo à menor dimensão, limitado a [0,01; 0,5].
   - Quando a foto inteira vira uma folha, a região é a da detecção na regra 1 e o meio da foto, com
     raio 0,5, na regra 2.
-- **Extras:** `confianca` (probabilidade da classe prevista; na regra em duas etapas, ver os
-  parâmetros), `scoreDeteccao` (nulo sem detecção),
-  `caixa` (relativa, [x0, y0, x1, y1]), `cortadaNaBorda` e `detalhes`. São campos extras, e o
-  normalizador do frontend os ignora.
+- **Extras:** `confianca`, `scoreDeteccao` (nulo sem detecção), `caixa` (relativa, [x0, y0, x1,
+  y1]), `cortadaNaBorda` e `detalhes`. São campos extras, e o normalizador do frontend os ignora.
+- **`confianca`:** depende da regra do caminho.
+  - Na foto inteira, é a probabilidade da classe prevista.
+  - Nos recortes por detecção, a folha saudável traz P(saudável), que pode ser baixa (0,1, por
+    exemplo), e a doente traz a probabilidade renormalizada entre as 4 doenças.
+  - Como o frontend mostra a confiança das folhas saudáveis ainda está pendente: P(saudável) não
+    é a chance de o diagnóstico estar certo.
 - **imagemUrl:** fica com o backend, que guarda a foto. Sem ela, o frontend usa a foto local.
 
 **Erros** (`{"status": "erro", "tipo": ..., "mensagem": ...}`, às vezes com `detalhes`):
@@ -151,7 +183,7 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
 | tipo | quando | mensagem |
 |---|---|---|
 | `planta_nao_identificada` | nenhuma folha utilizável, e nenhuma detecção com cor de folha e score >= 0,05 | "Não encontramos folhas de café na foto. Fotografe a planta ou a folha mais de perto, com boa luz." |
-| `baixa_confianca` | todas as folhas abaixo do limiar de confiança (RF07) | "Encontramos folhas, mas o diagnóstico não ficou confiável. Tente outra foto, mais nítida e com boa luz." |
+| `baixa_confianca` | todas as folhas abaixo do corte da regra do caminho (RF07): na foto inteira, confiança < 0,61; nos recortes por detecção, doença com probabilidade renormalizada < 0,65 (as saudáveis não têm corte) | "Encontramos folhas, mas o diagnóstico não ficou confiável. Tente outra foto, mais nítida e com boa luz." |
 | `baixa_confianca` | o filtro de fragmentos tirou todas as folhas (`detalhes.plano` = "fragmentos") | "Só aparecem pedaços de folha na foto. Enquadre a folha inteira e tente de novo." |
 | `formato_invalido` | o arquivo não decodifica (JPG ou PNG) | "Não foi possível ler a imagem. Envie uma foto em JPG ou PNG." |
 | `arquivo_muito_grande` | mais de 64 megapixels, lidos do cabeçalho com Pillow, sem decodificar | "A imagem tem 9000 x 8000 pixels (72,0 megapixels); o limite é 64,0 megapixels." |
@@ -160,7 +192,9 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
   então uma foto de outra planta pode sair como folha de café.
 - **Limite de 10 MB:** o limite de tamanho do arquivo é do backend.
 
-**Parâmetros** (`inferencia.Configuracao`, uma dataclass congelada; `diagnosticar(imagem, config)`):
+**Parâmetros congelados** (`inferencia.Configuracao`, uma dataclass congelada; `diagnosticar(imagem,
+config)`). Os padrões são os da cadeia final, e nenhum limiar se reajusta com dados de campo
+(decisão do gestor, 11/10/2026):
 
 | parâmetro | padrão | o que faz |
 |---|---|---|
@@ -168,7 +202,7 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
 | `max_folhas` | 15 | folhas classificadas por foto, as de maior score (RNF02) |
 | `area_minima` | 0,5% | área mínima da máscara, em fração da foto |
 | `saturacao_minima`, `fracao_colorida_minima` | 30, 25% | filtro de cor: tira os pedaços de fundo liso |
-| `limiar_confianca` | 0,61 | RF07; **proposta, aguarda a decisão do gestor** |
+| `limiar_confianca` | 0,61 | RF07: corte do argmax, na foto inteira e no modo A (decisão do gestor, 11/10/2026) |
 | `recorte` | "B" | "B": fundo fora da máscara em cinza; "A": a foto em volta da folha. B por padrão (decisão do gestor, 11/10/2026) |
 | `margem`, `cinza_fundo` | 0,17, 197 | medidos no treino do BRACOL |
 | `cobertura_folha_unica` | 30% | regra 1: uma folha cuja caixa cobre isso da foto → a foto inteira |
@@ -176,20 +210,25 @@ dispositivo="cpu")`. Os modelos ficam em cache por caminho e dispositivo.
 | `max_megapixels` | 64 | acima disso, `arquivo_muito_grande` |
 | `fracao_visivel_minima` | 0,5 | filtro de fragmentos: sai a folha com área menor que metade da mediana das folhas inteiras da foto (decisão do gestor, 11/10/2026) |
 | `preenchimento_minimo` | 0 | filtro de fragmentos pela área sobre o retângulo mínimo; desligado (não discriminou no campo) |
-| `decisao` | "argmax" | regra de decisão; "duas_etapas" é a proposta do passo 5b, desligada até a validação no campo |
+| `decisao` | "por_caminho" | regra de decisão (abaixo); "argmax" e "duas_etapas" aplicam uma regra só em todo caminho |
 | `limiar_saudavel` | 0,083 | 1ª etapa da regra em duas etapas; fixado pelo gestor em 11/10/2026, sem reajuste |
-| `limiar_doenca` | sem padrão | 2ª etapa; a proposta está no run `pipeline_duas_etapas` e aguarda a decisão do gestor |
+| `limiar_doenca` | 0,65 | 2ª etapa; **provisório** (decisão do gestor, 11/10/2026), calibrado só no BRACOL (`pipeline_duas_etapas`) |
 
-**Regra em duas etapas** (`Configuracao(decisao="duas_etapas", limiar_doenca=...)`, desligada
-por padrão):
-- **1ª etapa:** com P(saudável) >= `limiar_saudavel`, a folha é "saudavel", e o corte de
-  confiança não se aplica a ela. A `confianca` dela é P(saudável), que pode ser baixa (0,1, por
-  exemplo).
-- **2ª etapa:** senão, a classe é a doença de maior probabilidade, com o softmax renormalizado
-  entre as 4 doenças. Abaixo de `limiar_doenca` (sobre a probabilidade renormalizada), a folha
-  sai, como hoje. A `confianca` é a probabilidade renormalizada.
-- **`detalhes`:** traz `decisao`, `limiar_saudavel` e `limiar_doenca` no lugar de
+**Regra de decisão por caminho** (`decisao="por_caminho"`, o padrão desde o passo 6):
+- **Foto inteira** (regras de folha única 1 e 2, como as fotos do BRACOL): argmax, com corte em
   `limiar_confianca`.
+- **Recortes por detecção, no modo B:** a regra em duas etapas.
+  - **1ª etapa:** com P(saudável) >= `limiar_saudavel`, a folha é "saudavel", e o corte de
+    confiança não se aplica a ela.
+  - **2ª etapa:** senão, a classe é a doença de maior probabilidade, com o softmax renormalizado
+    entre as 4 doenças. Abaixo de `limiar_doenca` (sobre a probabilidade renormalizada), a
+    folha sai.
+- **Modo A:** fica no argmax, porque o limiar de saudável só foi fixado e validado no modo B.
+- **Padrões anteriores, como opção:**
+  - `Configuracao(decisao="argmax")` é a cadeia do `pipeline_padrao_b`;
+  - `Configuracao(decisao="duas_etapas")` é a do `pipeline_duas_etapas`.
+- **`detalhes`:** `decisao` é a regra aplicada às folhas da foto, e `decisao_configurada`, a da
+  configuração.
 
 **Filtro de fragmentos.** A fração visível é a área da folha sobre a mediana da área das folhas
 inteiras da mesma foto (ou de todas, se nenhuma for inteira). Por isso:
@@ -204,15 +243,39 @@ observações do relatório):
 - **T2 (campo):** as folhas classificadas caem de 318 para 239 (79 fragmentos). As fotos em
   `baixa_confianca` no limiar de 0,61 sobem de 20 para 25 de 46.
 
-**Limite atual:**
-- O classificador foi treinado só com folhas do BRACOL (fundo claro). No BRACOL, a cadeia acerta
-  quase tanto quanto a imagem inteira: 94,0% (B) e 94,4% (A), contra 94,8%.
-- No campo, ele ainda puxa a maioria das folhas para doença. No modo B, 69% das folhas S dos
-  rótulos de campo saem como doença.
-- O diagnóstico do passo 5a (seção seguinte) mostra que P(saudável) ordena bem S acima de D. O que
-  falha é a regra de decisão, e não falta sinal.
-- Antes de usar em campo, falta validar uma correção (limiar de saudável recalibrado ou
-  classificador S x D) em folhas de campo rotuladas novas.
+**Efeito da cadeia final** (`pipeline_final` contra `pipeline_padrao_b` e `pipeline_duas_etapas`).
+São os mesmos modelos e as mesmas probabilidades; só a regra muda. Recalculadas aqui, as regras
+dos runs anteriores dão os números gravados neles.
+- **T1, foto inteira (203 das 252 imagens):** igual ao argmax. Das mantidas, 95,3% estão certas,
+  e nenhuma das 166 doentes é chamada saudável.
+- **T1, recortes por detecção (48):** igual às duas etapas.
+  - Das mantidas, 90,2% (77,5% a 96,1%) estão certas, contra 95,1% (83,9% a 98,7%) do argmax.
+  - 3 das 44 doentes viram saudáveis.
+  - Os intervalos se sobrepõem.
+- **T1, todas:** das mantidas, 94,4% estão certas, contra 95,2% do argmax e 93,9% das duas etapas
+  em todo caminho. A cobertura é a mesma nas três (231 de 252), e nenhuma diferença é sustentada.
+- **T2 (campo, sem rótulo):** 122 das 239 folhas saem saudáveis, contra 0 no argmax com 0,61. As
+  fotos em `baixa_confianca` caem de 25 para 1 de 46.
+- **T3:** mediana de 0,80 s, pior caso estimado de 2,15 s.
+
+**Limitações** (decisão do gestor, 11/10/2026; números em `model/runs/pipeline_final/relatorio.md`):
+- **Treino:** o classificador foi treinado só com folhas do BRACOL (fundo claro). No campo, a regra
+  por caminho corrige a decisão saudável x doente, não o classificador.
+- **Rótulos de campo:** feitos por Claude por leitura visual e aceitos pelo gestor, sem
+  especialista.
+- **Amostra:** 183 folhas evidentes (77 S e 106 D), de 1 lavoura e 2 sessões.
+- **Falso saudável nas D evidentes:** 5,7% (2,6% a 11,8%) nas 106 D. Nas 60 D novas, 6,7%, com IC
+  até 15,9%. Os dados não mostram que a regra respeita o teto de 5%.
+- **Folhas ambíguas ("?"):** a regra chama saudável 54% das "?" novas (32 de 59) e 62% das duas
+  rotulagens juntas (60 de 97). Se elas forem doentes, o falso saudável sobe; nas novas, com os
+  "?" como D, vai a 30%.
+- **Recall das saudáveis:** a regra chama saudável 81,8% das S (71,8% a 88,8%), contra 0% do argmax
+  com 0,61.
+- **Classe da doença no campo:** não foi verificada, porque os rótulos de campo só dizem S ou D.
+  O limiar de doença (0,65, provisório) só foi calibrado no BRACOL.
+- **Severidade:** não é informativa no campo.
+- **Teste:** os testes fechados (BRACOL e BRACOT) ainda não mediram a cadeia final; medem uma vez
+  só, no fim.
 
 ## Classificador para o campo
 
@@ -237,7 +300,8 @@ gestor em 11/10/2026; não são de especialista (120 folhas, 2 sessões, 1 lavou
 `data/README.md`).
 
 **Decisões do gestor (11/10/2026).** Não há validação cruzada das variantes do passo 4, e o
-modelo oficial segue o `base_resnet50_bracol`. O limiar de confiança segue pendente.
+modelo oficial segue o `base_resnet50_bracol`. O limiar de confiança ficou em 0,61 na foto
+inteira da cadeia final (passo 6).
 
 **Diagnóstico sem treino (passo 5a).** `evaluation/campo_diagnostico.py` usa só os checkpoints
 existentes, nas 82 folhas S ou D do campo rotulado (sem os "?"):
@@ -256,10 +320,11 @@ O relatório, com a leitura, fica em `model/runs/campo_diagnostico/relatorio.md`
 **Regra saudável x doente (passo 5b; decisões do gestor, 11/10/2026).**
 - **Modelos finais:** o `base_resnet50_bracol` e o `detector_base` ficam congelados, sem retreino
   final. Os testes fechados medem estes modelos uma única vez, no fim.
-- **Regra em duas etapas:** opção desligada por padrão (ver os parâmetros). O limiar de saudável,
-  0,083, foi fixado antes de dados novos e não se reajusta.
-- **Limiar de doença:** proposto em 0,65, só no BRACOL. É o menor limiar com 95% de acerto nas
-  doentes fora da dobra. Não foi adotado.
+- **Regra em duas etapas:** desde o passo 6, ligada nos recortes por detecção (ver "Regra de
+  decisão por caminho"). O limiar de saudável, 0,083, foi fixado antes de dados novos e não se
+  reajusta.
+- **Limiar de doença:** 0,65, calibrado só no BRACOL. É o menor limiar com 95% de acerto nas
+  doentes fora da dobra. Na cadeia final, é provisório.
 - **Rótulos:** os das 82 folhas ficam congelados.
 - **Run `model/runs/pipeline_duas_etapas`:** roda T1 a T3 com a regra ligada.
 - **Resultado no BRACOL:** fora da dobra, a regra completa fica abaixo do argmax com 0,61 (91,7%
@@ -273,5 +338,6 @@ O relatório, com a leitura, fica em `model/runs/campo_diagnostico/relatorio.md`
   - **Saudável dado D:** 6,7% (2,6% a 15,9%), contra 0%; os intervalos se tocam.
   - **Novas contra as 82 antigas:** as novas saem um pouco piores, sem diferença sustentada.
   - **"?":** são 37% das folhas e a maior incerteza.
-  - **Recomendação:** ligar a regra junto com a decisão do limiar de doença. **A decisão é do
-    gestor.**
+  - **Decisão do gestor (11/10/2026, passo 6):** a regra fica ligada só nos recortes por
+    detecção, com o limiar de doença de 0,65 provisório; a foto inteira fica no argmax com 0,61.
+    A cadeia final está em `model/runs/pipeline_final`.

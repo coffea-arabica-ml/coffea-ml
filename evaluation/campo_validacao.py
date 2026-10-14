@@ -83,8 +83,8 @@ def limiar_doenca_proposto(run: Path = RUN_DUAS_ETAPAS) -> float:
 def regras(limiar_doenca: float) -> dict:
     """As regras comparadas, com os limiares fixados (nada se ajusta aqui)."""
     return {"duas_etapas": inf.Configuracao(decisao="duas_etapas", limiar_doenca=limiar_doenca),
-            "argmax_061": inf.Configuracao(),
-            "argmax_sem_corte": inf.Configuracao(limiar_confianca=0.0)}
+            "argmax_061": inf.Configuracao(decisao="argmax"),
+            "argmax_sem_corte": inf.Configuracao(decisao="argmax", limiar_confianca=0.0)}
 
 
 def desfecho(probs, config) -> str:

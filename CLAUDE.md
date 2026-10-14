@@ -109,10 +109,10 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   o campo. No campo, só os rótulos decidem, com diferença sustentada pelo Wilson; concordância e
   estabilidade só detectam comportamento degenerado e desempatam. Sem diferença sustentada, fica
   o v0. O modelo oficial do pipeline só muda por decisão do gestor.
-- Campo rotulado (`data/manifests/campo_rotulado.csv`): rótulos S, D e ? em 120 folhas das fotos
-  de validação do BRACOT, feitos por Claude por leitura visual das pranchas e aceitos pelo gestor
-  em 11/10/2026 (não são de especialista); fonte nova, só de avaliação, nunca de treino
-  (data/README.md).
+- Campo rotulado (`data/manifests/campo_rotulado.csv`): 120 folhas das fotos de validação do
+  BRACOT, rotuladas por Claude por leitura visual das pranchas cegas (só S e D evidentes; sem
+  especialista; uma fazenda), aceitas pelo gestor em 11/10/2026; fonte nova, só de avaliação,
+  nunca de treino (data/README.md).
 - Fundos de augmentation: só as 194 fotos de treino do BRACOT (nunca validação nem teste), trechos
   borrados fora dos polígonos anotados, sorteio independente da classe; derivados em
   `data/processed/`.
@@ -143,7 +143,9 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 - **Rotulagem de validação:** `data/manifests/campo_rotulado_treino.csv`, com 160 folhas das 194
   fotos de treino do detector. É só avaliação. O detector treinou nessas fotos, então as máscaras
   saem mais limpas.
-  - Rótulos: 41 S, 60 D e 59 "?", feitos por Claude e aceitos pelo gestor em 11/10/2026.
+  - Rótulos: 41 S, 60 D e 59 "?". As folhas foram rotuladas por Claude por leitura visual das
+    pranchas cegas (só S e D evidentes; sem especialista; uma fazenda), aceitas pelo gestor em
+    11/10/2026.
   - Avaliação: `evaluation/campo_validacao.py`, em `model/runs/campo_validacao_duas_etapas`,
     sem reajustar t_s nem t_d.
 
@@ -160,7 +162,7 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
 - **Pesos finais:** nome, tamanho e SHA-256 em `model/pesos/MANIFESTO.md`, o único arquivo de
   `model/pesos/` no git.
 - **Limitações registradas no relatório e nos READMEs:**
-  - rótulos de Claude, sem especialista;
+  - rótulos de campo feitos por IA (leitura visual), não por especialista nem pelo gestor;
   - 183 folhas evidentes, 1 lavoura e 2 sessões;
   - falso saudável de cerca de 6% nas D evidentes (IC até 16%);
   - a regra chama saudável 54% das "?" novas (62% nas duas rotulagens);
@@ -184,9 +186,14 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   - 2: a detecção no teste do BRACOT, em `teste_bracot_deteccao`;
   - 3A e 3B: as folhas de campo das 58 fotos de teste, em `teste_bracot_folhas/parte_a` e
     `parte_b`.
-- **Rótulos de teste:** `data/manifests/campo_rotulado_teste.csv` traz 37 S, 46 D e 32 "?",
-  rotuladas pelo gestor a partir das pranchas cegas, antes de qualquer predição. Fonte só de
-  avaliação final.
+- **Rótulos de teste:** `data/manifests/campo_rotulado_teste.csv` traz 37 S, 46 D e 32 "?".
+  - As folhas foram rotuladas por Claude por leitura visual das pranchas cegas (só S e D
+    evidentes; sem especialista; uma fazenda), aceitas pelo gestor em 14/10/2026, sem ver
+    nenhuma predição. É uma fonte só de avaliação final.
+  - O commit `1c59792` diz "rotuladas pelo gestor" por engano. O histórico não foi reescrito, e
+    a errata está no log.
+- **Limitação dos três conjuntos de campo:** rótulos feitos por IA (leitura visual), não por
+  especialista nem pelo gestor.
 - **Daqui em diante:** nenhum número do teste escolhe ou ajusta nada. Rodar um uso de novo, ou
   `train.py --avaliar-teste` e `treinar_detector.py --avaliar-teste`, só por decisão do gestor,
   registrada no log.

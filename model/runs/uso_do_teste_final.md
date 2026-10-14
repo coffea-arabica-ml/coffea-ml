@@ -120,3 +120,10 @@
 | 14/10/2026 12:27:11 | 3b | arquivo | model/runs/teste_bracot_folhas/parte_b/resultado.json, SHA-256 bf2a44033971c248440e75f7461c098e817e6c5345b615992b041134a59a8410 |
 | 14/10/2026 12:28:01 | 3b | relatório refeito | model/runs/teste_bracot_folhas/parte_b/relatorio.md, SHA-256 22fea50791545f5cf51235b1f060fbc282c92afa0d65b914b0aa05c148bea589 |
 | 14/10/2026 12:28:17 | 3b | relatório refeito | model/runs/teste_bracot_folhas/parte_b/relatorio.md, SHA-256 2779715ac8e3e8907af66a1f5af19e65ddce2df8d4d44ca5cd6de48b366b2164 |
+| 14/10/2026 12:37:37 | 3b | relatório refeito | model/runs/teste_bracot_folhas/parte_b/relatorio.md, SHA-256 f2b19d30440581c8d6438b27ee8a3db6c4b7b09e88f451b0e30887a1895ecb67 |
+| 14/10/2026 12:38:02 | 3b | errata, 14/10/2026 | Erro de registro: os rótulos de campo das folhas de teste do BRACOT (campo_rotulado_teste.csv) NÃO foram feitos pelo gestor. Foram feitos por Claude (assistente de IA do gestor), por leitura visual das pranchas cegas, sem ver nenhuma predição e sem especialista, e aceitos pelo gestor em 14/10/2026 (commit 1c59792). A mensagem desse commit diz "rotulados pelo gestor" por engano. O histórico já foi enviado e não será reescrito. Arquivos alterados: README.md, CLAUDE.md, data/README.md, model/teste_final.py, model/runs/teste_bracot_folhas/parte_b/relatorio.md. Entradas antigas do log não foram editadas; nenhum teste foi lido. |
+| 14/10/2026 12:38:02 | 3b | arquivo da errata | README.md, SHA-256 b92ceff54f6bd68eba2a9399c46e003e4a65ed6ecddfcd82efa86fc82630b510 |
+| 14/10/2026 12:38:02 | 3b | arquivo da errata | CLAUDE.md, SHA-256 6b3d943f17f608b99dcb5e3bb939612434acf25bbf316e4fa1abf4fdc6196957 |
+| 14/10/2026 12:38:02 | 3b | arquivo da errata | data/README.md, SHA-256 390fdbc2840caa4ae62f181bbe22515d88876b3ed1a16e764306cce98bacaa17 |
+| 14/10/2026 12:38:02 | 3b | arquivo da errata | model/teste_final.py, SHA-256 9f8293de1c75645c897112a4884c574a8770a58990546c09c168c1b16db249a6 |
+| 14/10/2026 12:38:02 | 3b | arquivo da errata | model/runs/teste_bracot_folhas/parte_b/relatorio.md, SHA-256 f2b19d30440581c8d6438b27ee8a3db6c4b7b09e88f451b0e30887a1895ecb67 |

@@ -69,9 +69,12 @@ relatórios e as figuras, sim.
 | BRACOL, cópia parcial (`data/raw/bracol/bracol_recuperado/`) | nenhum | obsoleta: mantida, sem uso |
 | JMuBEN e JMuBEN2 (`data/raw/jmuben/`) | só treino auxiliar de classificação, nunca validação nem teste | em uso desde 09/10/2026 |
 | BRACOT (`data/raw/bracot/bracot-data/`) | detecção e segmentação de folhas (RF09), com a divisão dos autores; as fotos de treino também dão fundos borrados à augmentation do classificador | em uso desde 09/10/2026 (fundos: 10/10/2026) |
-| Campo rotulado (`data/manifests/campo_rotulado.csv`) | só avaliação de campo do classificador, nunca treino | desde 10/10/2026; rótulos feitos por Claude e aceitos pelo gestor em 11/10/2026 |
-| Campo rotulado de validação (`data/manifests/campo_rotulado_treino.csv`) | só avaliação da regra saudável x doente, nunca treino nem ajuste de limiar | desde 11/10/2026; 41 S, 60 D e 59 "?", rótulos feitos por Claude e aceitos pelo gestor em 11/10/2026 |
-| Campo rotulado de teste (`data/manifests/campo_rotulado_teste.csv`) | só a avaliação final da cadeia congelada (passo 7, uso 3B), nunca treino nem ajuste | desde 14/10/2026; 37 S, 46 D e 32 "?", rotuladas pelo gestor a partir das pranchas cegas, antes de qualquer predição |
+| Campo rotulado (`data/manifests/campo_rotulado.csv`) | só avaliação de campo do classificador, nunca treino | desde 10/10/2026; 120 folhas rotuladas por Claude por leitura visual das pranchas cegas (só S e D evidentes; sem especialista; uma fazenda), aceitas pelo gestor em 11/10/2026 |
+| Campo rotulado de validação (`data/manifests/campo_rotulado_treino.csv`) | só avaliação da regra saudável x doente, nunca treino nem ajuste de limiar | desde 11/10/2026; 160 folhas (41 S, 60 D e 59 "?") rotuladas por Claude por leitura visual das pranchas cegas (só S e D evidentes; sem especialista; uma fazenda), aceitas pelo gestor em 11/10/2026 |
+| Campo rotulado de teste (`data/manifests/campo_rotulado_teste.csv`) | só a avaliação final da cadeia congelada (passo 7, uso 3B), nunca treino nem ajuste | desde 14/10/2026; 115 folhas (37 S, 46 D e 32 "?") rotuladas por Claude por leitura visual das pranchas cegas (só S e D evidentes; sem especialista; uma fazenda), aceitas pelo gestor em 14/10/2026 |
+
+**Limitação dos três campos rotulados:** os rótulos foram feitos por IA (Claude, leitura visual das
+pranchas), não por especialista nem pelo gestor, que só os aceitou.
 
 ## Procedência do BRACOL
 
@@ -453,7 +456,9 @@ folhas não mudam. Usado por `evaluation/campo.py --avaliar` e pelo diagnóstico
 
 **Rotulagem cega.** As pranchas (`data/processed/campo_rotulagem/prancha_<n>.jpg`, fora do git)
 mostram o recorte B (folha isolada) grande e o A (foto em volta) pequeno, sem a previsão do
-modelo. Os rótulos de `data/manifests/campo_rotulado.csv` foram feitos por Claude por leitura visual das pranchas e aceitos pelo gestor em 11/10/2026:
+modelo. As folhas de `data/manifests/campo_rotulado.csv` foram rotuladas por Claude por leitura
+visual das pranchas cegas (só S e D evidentes; sem especialista; uma fazenda), aceitas pelo
+gestor em 11/10/2026:
 
 | coluna | conteúdo |
 |---|---|
@@ -467,7 +472,9 @@ modelo. Os rótulos de `data/manifests/campo_rotulado.csv` foram feitos por Clau
 O leitor (`campo.ler_rotulos`) aceita o CSV salvo pelo Excel (ponto e vírgula, cp1252).
 
 **Limites.**
-- Os rótulos foram feitos por Claude por leitura visual das pranchas e aceitos pelo gestor em 11/10/2026. Não são de especialista em fitopatologia.
+- As folhas foram rotuladas por Claude por leitura visual das pranchas cegas (só S e D
+  evidentes; sem especialista; uma fazenda), aceitas pelo gestor em 11/10/2026. Os rótulos são
+  de IA, não de especialista em fitopatologia nem do gestor.
 - Nenhuma folha D recebeu classe, então a acurácia de classe no campo não é medida.
 - São 120 folhas, de 46 fotos de 2 sessões, numa lavoura só.
 - As mesmas folhas escolhem as variantes finalistas e medem o resultado, então a medida sai
@@ -498,8 +505,9 @@ teste, e o código confere que nenhuma cena aparece nos dois lados.
 - As mesmas fotos deram os fundos borrados da augmentation das variantes v2, v3 e v3s do passo 4.
   O modelo congelado (`base_resnet50_bracol`) não usou esses fundos.
 - É a mesma lavoura e as mesmas 2 sessões do campo rotulado, mas em fotos e cenas diferentes.
-- Os rótulos (41 S, 60 D e 59 "?") foram feitos por Claude por leitura visual das pranchas e
-  aceitos pelo gestor em 11/10/2026. Não são de especialista. Nenhuma D recebeu classe.
+- As folhas (41 S, 60 D e 59 "?") foram rotuladas por Claude por leitura visual das pranchas
+  cegas (só S e D evidentes; sem especialista; uma fazenda), aceitas pelo gestor em 11/10/2026.
+  Os rótulos são de IA, não de especialista nem do gestor. Nenhuma D recebeu classe.
 - A avaliação com eles está em `model/runs/campo_validacao_duas_etapas/`
   (`evaluation/campo_validacao.py`).
 - Fonte só de avaliação: nunca entra em treino nem em ajuste de limiar.
@@ -507,7 +515,9 @@ teste, e o código confere que nenhuma cena aparece nos dois lados.
 **O que os rótulos de campo sustentam na cadeia final (passo 6; decisão do gestor,
 11/10/2026).** A regra em duas etapas ficou ligada nos recortes por detecção com base nestes
 rótulos e nos 82 do campo rotulado, sem reajustar nenhum limiar. As limitações:
-- **Rótulos:** feitos por Claude por leitura visual, aceitos pelo gestor, sem especialista.
+- **Rótulos:** folhas rotuladas por Claude por leitura visual das pranchas cegas (só S e D
+  evidentes; sem especialista; uma fazenda), aceitas pelo gestor em 11/10/2026. São rótulos de
+  IA, não de especialista nem do gestor.
 - **Amostra:** 183 folhas evidentes (77 S e 106 D), de 1 lavoura e 2 sessões.
 - **Falso saudável nas D evidentes:** 5,7% (2,6% a 11,8%) nas 106 D. Nas 60 D novas, 6,7%, com
   IC até 15,9%.
@@ -533,10 +543,14 @@ os rótulos foram assim:
   anteriores.
 - **Geração:** `python model/teste_final.py --uso 3a`, uma vez, registrada em
   `model/runs/uso_do_teste_final.md`.
-- **Rótulos:** 37 S, 46 D e 32 "?", rotuladas pelo gestor a partir das pranchas cegas, antes de
-  qualquer predição (commit `1c59792`). Nenhuma D tem classe.
+- **Rótulos:** 37 S, 46 D e 32 "?". As folhas foram rotuladas por Claude por leitura visual das
+  pranchas cegas (só S e D evidentes; sem especialista; uma fazenda), aceitas pelo gestor em
+  14/10/2026, sem ver nenhuma predição. Nenhuma D tem classe.
+- **Errata:** a mensagem do commit `1c59792`, que trouxe os rótulos, diz "rotuladas pelo gestor"
+  por engano. O histórico não foi reescrito; a errata está em `model/runs/uso_do_teste_final.md`.
 
 **Limites.**
+- Os rótulos são de IA (leitura visual), não de especialista nem do gestor.
 - É a mesma lavoura das outras rotulagens, em fotos e cenas do teste.
 - A avaliação está em `model/runs/teste_bracot_folhas/parte_b/` e não ajustou nada.
 

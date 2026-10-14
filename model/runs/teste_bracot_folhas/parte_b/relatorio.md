@@ -98,7 +98,7 @@ congelados.
 
 ## Limites
 
-- Folhas (S, D ou "?") rotuladas pelo gestor a partir das pranchas cegas, antes de qualquer predição (commit `1c59792`); nenhuma D tem classe.
+- Folhas (S, D ou "?") rotuladas por Claude por leitura visual das pranchas cegas (só S e D evidentes; sem especialista; uma fazenda), aceitas pelo gestor em 14/10/2026; nenhuma D tem classe.
 - Mesma lavoura das outras rotulagens, em fotos e cenas do teste dos autores.
 - As folhas de teste foram sorteadas já com o filtro de fragmentos ligado; as antigas do passo 6b, sem ele (por isso o filtro tira folhas só nas antigas).
 

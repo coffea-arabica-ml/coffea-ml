@@ -262,8 +262,10 @@ dos runs anteriores dão os números gravados neles.
 **Limitações** (decisão do gestor, 11/10/2026; números em `model/runs/pipeline_final/relatorio.md`):
 - **Treino:** o classificador foi treinado só com folhas do BRACOL (fundo claro). No campo, a regra
   por caminho corrige a decisão saudável x doente, não o classificador.
-- **Rótulos de campo:** feitos por Claude por leitura visual e aceitos pelo gestor, sem
-  especialista.
+- **Rótulos de campo:** as 120 folhas antigas e as 160 novas foram rotuladas por Claude por
+  leitura visual das pranchas cegas (só S e D evidentes; sem especialista; uma fazenda), aceitas
+  pelo gestor em 11/10/2026. As 115 do teste também, aceitas pelo gestor em 14/10/2026. São
+  rótulos feitos por IA (leitura visual), não por especialista nem pelo gestor.
 - **Amostra:** 183 folhas evidentes (77 S e 106 D), de 1 lavoura e 2 sessões.
 - **Falso saudável nas D evidentes:** 5,7% (2,6% a 11,8%) nas 106 D. Nas 60 D novas, 6,7%, com IC
   até 15,9%. Os dados não mostram que a regra respeita o teto de 5%.
@@ -283,8 +285,9 @@ dos runs anteriores dão os números gravados neles.
     subiriam de 3,9% para 18,2%.
   - Das 42 doentes mantidas, 81% saem como ferrugem; a classe não foi verificada.
 - **Severidade:** não é informativa no campo.
-- **Teste de campo** (passo 7, 115 folhas das fotos de teste, rotuladas pelo gestor; seção "Testes
-  fechados"):
+- **Teste de campo** (passo 7; seção "Testes fechados"): 115 folhas das fotos de teste,
+  rotuladas por Claude por leitura visual das pranchas cegas (só S e D evidentes; sem
+  especialista; uma fazenda), aceitas pelo gestor em 14/10/2026.
   - D chamadas saudáveis: 10,9% (4,7% a 23,0%; 5 de 46), o maior dos conjuntos rotulados, sem
     diferença sustentada;
   - D que chegam como doente: 26,1%, e 63,0% somem pelo t_d.
@@ -307,9 +310,9 @@ cegas de rotulagem e mede o campo:
 
 O relatório comparativo, com a regra de adoção aplicada, fica em
 `model/runs/campo_comparacao/relatorio.md`. O modelo oficial do pipeline só muda por decisão do
-gestor. Os rótulos de campo foram feitos por Claude por leitura visual das pranchas e aceitos pelo
-gestor em 11/10/2026; não são de especialista (120 folhas, 2 sessões, 1 lavoura; ver
-`data/README.md`).
+gestor. As 120 folhas do campo rotulado foram rotuladas por Claude por leitura visual das
+pranchas cegas (só S e D evidentes; sem especialista; uma fazenda), aceitas pelo gestor em
+11/10/2026 (2 sessões; ver `data/README.md`).
 
 **Decisões do gestor (11/10/2026).** Não há validação cruzada das variantes do passo 4, e o
 modelo oficial segue o `base_resnet50_bracol`. O limiar de confiança ficou em 0,61 na foto
@@ -386,5 +389,11 @@ O log único, `model/runs/uso_do_teste_final.md`, registra:
   - `model/runs/teste_bracol/`;
   - `model/runs/teste_bracot_deteccao/`;
   - `model/runs/teste_bracot_folhas/parte_a/` e `parte_b/`.
-- **Rótulos de campo do teste:** `data/manifests/campo_rotulado_teste.csv`, rotuladas pelo gestor
-  a partir das pranchas cegas, antes de qualquer predição. Ver `data/README.md`.
+- **Rótulos de campo do teste:** as folhas de `data/manifests/campo_rotulado_teste.csv` foram
+  rotuladas por Claude por leitura visual das pranchas cegas (só S e D evidentes; sem
+  especialista; uma fazenda), aceitas pelo gestor em 14/10/2026, sem ver nenhuma predição. Ver
+  `data/README.md`.
+  - **Errata:** a mensagem do commit `1c59792` diz "rotuladas pelo gestor" por engano. O
+    histórico não foi reescrito, e a errata está no log.
+- **Limitação:** os rótulos de campo dos três conjuntos são de IA (leitura visual), não de
+  especialista nem do gestor.

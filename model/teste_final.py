@@ -82,9 +82,11 @@ MANIFEST_CAMPO_TESTE = RAIZ_REPO / "data" / "manifests" / "campo_rotulado_teste.
 CONFIG_ROTULAGEM_TESTE = inf.Configuracao(recorte="B", fracao_visivel_minima=0.5)
 MAX_POR_FOTO = 2
 SEED = campo.SEED
-# Quem rotulou as folhas de teste: o registro do commit que trouxe os rótulos.
-ORIGEM_ROTULOS_TESTE = ("rotuladas pelo gestor a partir das pranchas cegas, antes de qualquer "
-                        "predição (commit `1c59792`)")
+# Quem rotulou as folhas de teste (errata de 14/10/2026 no log: o commit 1c59792 diz "pelo
+# gestor" por engano).
+ORIGEM_ROTULOS_TESTE = ("rotuladas por Claude por leitura visual das pranchas cegas (só S e D "
+                        "evidentes; sem especialista; uma fazenda), aceitas pelo gestor em "
+                        "14/10/2026")
 # Os pesos finais (os caminhos são os da tabela do MANIFESTO.md) e a cadeia congelada como o
 # gestor a declarou no passo 7: conferidos com o código antes de cada leitura do teste.
 PESOS = {"classificador": ("model/runs/base_resnet50_bracol/melhor.pt",

@@ -493,13 +493,14 @@ def figura_risco_cobertura(calibracao: dict, limiar_em_uso: float,
 
 
 # --------------------------------------------------------------------------- T1
-def t1(modelos, config) -> pd.DataFrame:
-    """Cada imagem de validação do BRACOL pela imagem inteira, pela cadeia (regras completas) e
-    só pelo recorte da maior folha (sem a regra 1), nos modos A e B, pela regra de decisão do
-    caminho de cada previsão (a imagem inteira é o caminho da foto inteira; o recorte, o da
-    detecção). A classe é a da regra sem o corte; o valor de corte e se a folha fica no corte
-    ficam registrados, e o corte entra nas métricas."""
-    val = dados.montar_val()
+def t1(modelos, config, imagens: pd.DataFrame | None = None, modos=MODOS) -> pd.DataFrame:
+    """Cada imagem de validação do BRACOL (ou de `imagens`, com as colunas de dados.montar_val)
+    pela imagem inteira, pela cadeia (regras completas) e só pelo recorte da maior folha (sem a
+    regra 1), nos `modos` de recorte, pela regra de decisão do caminho de cada previsão (a imagem
+    inteira é o caminho da foto inteira; o recorte, o da detecção). A classe é a da regra sem o
+    corte; o valor de corte e se a folha fica no corte ficam registrados, e o corte entra nas
+    métricas."""
+    val = dados.montar_val() if imagens is None else imagens
     cadeia = replace(config, limiar_confianca=0.0)
     so_recorte = replace(cadeia, cobertura_folha_unica=math.inf)
     linhas = []
@@ -522,7 +523,7 @@ def t1(modelos, config) -> pd.DataFrame:
         inteira = _prever([inf.recorte_da_foto_inteira(imagem, config.cinza_fundo)], modelos,
                           config, "foto_inteira")[0]
         _registrar(registro, "inteira", inteira)
-        for modo in MODOS:
+        for modo in modos:
             recorte = _folha_principal(imagem, preparo_recorte, config, modo, modelos, inteira)
             _registrar(registro, f"recorte_{modo}", recorte)
             principal = {"foto_inteira": inteira, "deteccao": recorte}.get(preparo["plano"])
@@ -565,11 +566,11 @@ def _registrar(registro: dict, prefixo: str, previsao) -> None:
 
 
 def metricas_t1(tabela: pd.DataFrame) -> dict:
-    """Por variante: as métricas sem corte, as doentes marcadas saudáveis e o recall das
-    saudáveis, e a cobertura e a acurácia com o corte da regra de cada previsão (coluna
-    <variante>_mantida)."""
+    """Por variante presente na tabela: as métricas sem corte, as doentes marcadas saudáveis e o
+    recall das saudáveis, e a cobertura e a acurácia com o corte da regra de cada previsão
+    (coluna <variante>_mantida)."""
     resultado = {}
-    for variante in VARIANTES_T1:
+    for variante in (v for v in VARIANTES_T1 if f"{v}_classe" in tabela):
         com = tabela[tabela[f"{variante}_classe"].notna()]
         previstas = com[f"{variante}_classe"].astype(int).to_numpy()
         m = metrics.calcular_metricas(com["classe"].to_numpy(), previstas)
@@ -758,9 +759,12 @@ def resumo_t2(folhas: pd.DataFrame, fotos: pd.DataFrame, config) -> dict:
 
 
 # --------------------------------------------------- regra por caminho (passo 6, cadeia final)
-def regras_comparadas(config) -> dict:
-    """As três regras de decisão, com os limiares da configuração do run."""
-    return {d: replace(config, decisao=d) for d in ("argmax", "duas_etapas", "por_caminho")}
+REGRAS_DE_DECISAO = ("argmax", "duas_etapas", "por_caminho")
+
+
+def regras_comparadas(config, decisoes=REGRAS_DE_DECISAO) -> dict:
+    """As regras de decisão pedidas (por padrão, as três), com os limiares da configuração."""
+    return {d: replace(config, decisao=d) for d in decisoes}
 
 
 def desfecho(probs, regra) -> tuple[int, str]:
@@ -792,13 +796,13 @@ def _resumo_desfechos(t: pd.DataFrame) -> dict:
             "saudavel_dado_s": _proporcao(int((saudavel & ~doente).sum()), int((~doente).sum()))}
 
 
-def t1_por_caminho(tabela: pd.DataFrame, config) -> dict:
+def t1_por_caminho(tabela: pd.DataFrame, config, decisoes=REGRAS_DE_DECISAO) -> dict:
     """O T1 da cadeia no modo B (a folha principal: a imagem inteira na foto inteira, o
-    recorte B na detecção) separado pelo caminho da imagem, nas três regras, com as mesmas
-    probabilidades (coluna cadeia_B_probs). A imagem sem folha (regra 3) conta como não
-    mantida."""
+    recorte B na detecção) separado pelo caminho da imagem, nas regras pedidas (por padrão, as
+    três), com as mesmas probabilidades (coluna cadeia_B_probs). A imagem sem folha (regra 3)
+    conta como não mantida."""
     resultado = {}
-    for nome, cfg in regras_comparadas(config).items():
+    for nome, cfg in regras_comparadas(config, decisoes).items():
         linhas = []
         for plano, classe, probs in zip(tabela["plano"], tabela["classe"],
                                         tabela["cadeia_B_probs"]):
@@ -1560,11 +1564,12 @@ def _origem(config: dict) -> str:
 
 
 # ------------------------------------------------------------------------- execução
-def conferir_inteira(tabela: pd.DataFrame, pasta_classificador: Path) -> str:
-    """A imagem inteira da cadeia contra as predições gravadas pelo treino do run."""
-    arquivo = Path(pasta_classificador) / "predicoes_val.csv"
+def conferir_inteira(tabela: pd.DataFrame, arquivo: Path) -> str:
+    """A imagem inteira da cadeia contra as predições gravadas pelo caminho do treino
+    (train.avaliar, com AMP): o predicoes_val.csv do run ou outro arquivo no mesmo formato."""
+    arquivo = Path(arquivo)
     if not arquivo.is_file():
-        return "sem predicoes_val.csv no run"
+        return f"sem {arquivo.name} no run"
     gravado = pd.read_csv(arquivo).set_index("id")
     colunas = [f"prob_{c}" for c in bracol.CLASSES]
     probs = np.stack(tabela["inteira_probs"])
@@ -1574,7 +1579,9 @@ def conferir_inteira(tabela: pd.DataFrame, pasta_classificador: Path) -> str:
             f"(o treino usou AMP), classe prevista igual em {iguais} de {len(tabela)}")
 
 
-def resumir_t1(tabela: pd.DataFrame, pasta_classificador) -> dict:
+def resumir_t1(tabela: pd.DataFrame, referencia: Path) -> dict:
+    """O resumo do T1; referencia: as predições da imagem inteira pelo caminho do treino
+    (conferir_inteira)."""
     regras = tabela["regra"].fillna(0).astype(int)
     contagem = tabela["deteccoes"].value_counts().sort_index()
     return {"imagens": len(tabela),
@@ -1586,7 +1593,7 @@ def resumir_t1(tabela: pd.DataFrame, pasta_classificador) -> dict:
                                            & (tabela["folhas"] > 1)).sum())},
             "deteccoes_por_imagem": ", ".join(f"{k}: {v}" for k, v in contagem.items()),
             "cortadas_por_cor": int(tabela["cortadas_por_cor"].sum()),
-            "conferencia": conferir_inteira(tabela, pasta_classificador)}
+            "conferencia": conferir_inteira(tabela, referencia)}
 
 
 def nativo(objeto):
@@ -1684,7 +1691,8 @@ def executar(args) -> int:
                                    args.recortes)
     fmt.dizer("T3: tempo em CPU...")
     tabela_t3, resumo_t3 = t3(args.classificador, args.detector, config)
-    metricas = {"calibracao": calibracao, "t1": resumir_t1(tabela_t1, args.classificador),
+    metricas = {"calibracao": calibracao,
+                "t1": resumir_t1(tabela_t1, Path(args.classificador) / "predicoes_val.csv"),
                 "t2": resumo_t2(folhas_t2, fotos_t2, config), "t3": resumo_t3}
     if config.decisao == "por_caminho":
         metricas["por_caminho"] = analisar_por_caminho(tabela_t1, folhas_t2, fotos_t2, config)

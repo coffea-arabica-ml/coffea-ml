@@ -422,23 +422,36 @@ def registrar_uso_do_teste(run: str) -> None:
         f.write(f"| {datetime.now():%d/%m/%Y %H:%M} | {run} |\n")
 
 
-def avaliar_teste(run: str) -> int:
+def avaliar_teste(run: str, saida: Path | None = None, registrar=None) -> int:
     """Só no fim, por ordem do gestor: avalia o last.pt do run no teste dos autores, com o limiar
-    escolhido na validação, com e sem TESTE_SOBREPOSTO, e registra o uso."""
+    escolhido na validação, com e sem TESTE_SOBREPOSTO, e registra o uso.
+
+    Sem argumentos, grava o metricas_teste.json na pasta do run e registra em
+    USO_DO_TESTE. Com saida (uma pasta nova, passo 7), grava nela o metricas_teste.json e o
+    contagens_teste.csv (por foto, no limiar: anotadas, previstas, acertos e fora da região), e
+    o uso vai para registrar(run) no lugar de registrar_uso_do_teste."""
     pasta = train.PASTA_RUNS / run
     arquivo_val = pasta / "metricas_val.json"
     if not arquivo_val.is_file():
         raise train.ErroFatal("avalie na validação antes (o limiar sai dela)")
+    destino = pasta if saida is None else Path(saida)
+    if saida is not None and (destino / "metricas_teste.json").exists():
+        raise train.ErroFatal(f"{train._exibir(destino)} já tem o teste: não sobrescrevo")
     limiar = json.loads(arquivo_val.read_text(encoding="utf-8"))["limiar_escolhido"]
     modelo = detector.carregar_detector(pasta / "weights" / "last.pt")
     manifest = bracot.ler_manifest(split="teste")
     poligonos = ler_poligonos("teste")  # o único lugar que lê as anotações de teste
     ids = list(manifest["id"])
     resumos, _ = resumir_fotos(modelo, ids, manifest.set_index("id")["caminho"], poligonos)
-    resultado = resumo_do_teste(dict(zip(ids, resumos)), limiar,
-                                [teste for teste, _ in bracot.TESTE_SOBREPOSTO])
-    registrar_uso_do_teste(run)
-    train.gravar_json({"limiar": limiar, **resultado}, pasta / "metricas_teste.json")
+    sobrepostas = [teste for teste, _ in bracot.TESTE_SOBREPOSTO]
+    resultado = resumo_do_teste(dict(zip(ids, resumos)), limiar, sobrepostas)
+    (registrar or registrar_uso_do_teste)(run)
+    destino.mkdir(parents=True, exist_ok=True)
+    train.gravar_json({"limiar": limiar, **resultado}, destino / "metricas_teste.json")
+    if saida is not None:
+        pd.DataFrame([{"id": i, "sobreposta": i in sobrepostas, **c}
+                      for i, c in zip(ids, md.contagens(resumos, limiar))]
+                     ).to_csv(destino / "contagens_teste.csv", index=False, lineterminator="\n")
     fmt.dizer(f"Teste: {json.dumps(resultado['todas']['metricas'], ensure_ascii=True)}")
     return 0
 

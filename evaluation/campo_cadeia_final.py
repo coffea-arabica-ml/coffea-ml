@@ -122,11 +122,14 @@ def fontes(nome: str):
     return campo.MANIFEST_CAMPO_TREINO, campo.CONFIG_ROTULAGEM_TREINO, campo.fotos_de_treino()
 
 
-def folhas_do_conjunto(nome: str, modelos, configs: dict) -> tuple[pd.DataFrame, int, dict]:
+def folhas_do_conjunto(nome: str, modelos, configs: dict,
+                       fontes_do_conjunto=None) -> tuple[pd.DataFrame, int, dict]:
     """As folhas rotuladas de um conjunto pela cadeia final: uma linha por folha casada, com o
     plano da foto, as probabilidades (se classificada) e o desfecho em cada cenário. Devolve
-    também quantos rótulos não casaram e o plano final de cada foto."""
-    manifest, config_rotulagem, (ids, caminhos) = fontes(nome)
+    também quantos rótulos não casaram e o plano final de cada foto. fontes_do_conjunto: (CSV
+    dos rótulos, configuração da rotulagem, (ids, caminhos) das fotos) de outro conjunto; sem
+    ela, as do conjunto pelo nome (fontes)."""
+    manifest, config_rotulagem, (ids, caminhos) = fontes_do_conjunto or fontes(nome)
     rotulos = campo.ler_rotulos(manifest)
     if rotulos is None:
         raise train.ErroFatal(f"{train._exibir(manifest)} não tem rótulos")

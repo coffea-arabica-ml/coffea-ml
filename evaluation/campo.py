@@ -107,16 +107,21 @@ def fotos_de_treino() -> tuple[list[str], pd.Series]:
     return sorted(treino["id"]), manifest.set_index("id")["caminho"]
 
 
-def percorrer_folhas(modelos, config=None, fotos=None):
+def percorrer_folhas(modelos, config=None, fotos=None, contagens: dict | None = None):
     """Para cada foto (as de validação, ou fotos = (ids, caminhos)): (foto, imagem reduzida,
     escala, folhas). As folhas são as da cadeia (inferencia.decidir), numeradas de 1 em ordem de
-    score, com a fração visível e o preenchimento. Uma foto por vez (as fotos têm 4032x3024)."""
+    score, com a fração visível e o preenchimento. Uma foto por vez (as fotos têm 4032x3024).
+    Com contagens (um dict), guarda nele, por foto, o plano, a regra, as folhas que ficam e as
+    contagens de inferencia.decidir (inclusive das fotos que não vão pela detecção)."""
     config = config or CONFIG_ROTULAGEM
     ids, caminhos = fotos or fotos_de_validacao()
     for foto in ids:
         imagem = dados.ler_imagem(RAIZ_REPO / caminhos[foto])
         altura, largura = imagem.shape[:2]
         preparo = inf.decidir(inf.detectar(imagem, config, modelos), altura, largura, config)
+        if contagens is not None:
+            contagens[foto] = {"plano": preparo["plano"], "regra": preparo["regra"],
+                               "folhas": len(preparo["folhas"]), **preparo["contagens"]}
         if preparo["plano"] != "deteccao":
             continue
         reduzida, escala = inf.reduzir(imagem, inf.LADO_TRABALHO)
@@ -138,16 +143,17 @@ def recorte(reduzida, escala, folha, modo, config, deslocamento=(0.0, 0.0)):
 
 # ------------------------------------------------------------------------ rotulagem
 def sortear_rotulagem(folhas_por_foto: dict[str, int], n: int = N_ROTULAGEM,
-                      seed: int = SEED) -> list[tuple[str, int]]:
+                      seed: int = SEED, max_por_foto: int | None = None) -> list[tuple[str, int]]:
     """n folhas (foto, índice), espalhadas: as fotos em ordem sorteada e, em cada uma, as folhas
-    em ordem sorteada; pega-se uma folha de cada foto por rodada, até n. Determinístico."""
+    em ordem sorteada; pega-se uma folha de cada foto por rodada, até n. Com max_por_foto, cada
+    foto dá no máximo esse número de folhas (o sorteio das outras não muda). Determinístico."""
     gerador = np.random.default_rng(seed)
     fotos = sorted(folhas_por_foto)
     ordem_fotos = [fotos[i] for i in gerador.permutation(len(fotos))]
-    filas = {f: [int(k) + 1 for k in gerador.permutation(folhas_por_foto[f])]
+    filas = {f: [int(k) + 1 for k in gerador.permutation(folhas_por_foto[f])][:max_por_foto]
              for f in ordem_fotos}
-    escolhidas = []
-    while len(escolhidas) < min(n, sum(folhas_por_foto.values())):
+    escolhidas, total = [], sum(len(fila) for fila in filas.values())
+    while len(escolhidas) < min(n, total):
         for foto in ordem_fotos:
             if filas[foto] and len(escolhidas) < n:
                 escolhidas.append((foto, filas[foto].pop(0)))
@@ -155,16 +161,21 @@ def sortear_rotulagem(folhas_por_foto: dict[str, int], n: int = N_ROTULAGEM,
 
 
 def gerar_rotulagem(modelos, pasta: Path = PASTA_ROTULAGEM, manifest: Path = MANIFEST_CAMPO,
-                    config=None, fotos=None, n: int = N_ROTULAGEM) -> dict:
+                    config=None, fotos=None, n: int = N_ROTULAGEM, max_por_foto: int | None = None,
+                    contagens: dict | None = None) -> dict:
     """Pranchas cegas e CSV-modelo (ver o docstring do módulo). Por padrão, a rotulagem do passo
     4 (fotos de validação); a de validação do passo 5b passa as fotos de treino, a pasta, o CSV,
-    a configuração e o n dela."""
+    a configuração e o n dela. max_por_foto limita as folhas sorteadas de cada foto, e contagens
+    recebe as contagens da cadeia por foto (percorrer_folhas). Só o detector é usado: nada aqui
+    chama o classificador."""
     if manifest.is_file() and ler_rotulos(manifest) is not None:
         raise train.ErroFatal(f"{train._exibir(manifest)} já tem rótulos: não sobrescrevo")
     config = config or CONFIG_ROTULAGEM
     todas = {foto: (reduzida, escala, folhas)
-             for foto, reduzida, escala, folhas in percorrer_folhas(modelos, config, fotos)}
-    escolhidas = sortear_rotulagem({f: len(v[2]) for f, v in todas.items()}, n=n)
+             for foto, reduzida, escala, folhas in percorrer_folhas(modelos, config, fotos,
+                                                                    contagens)}
+    escolhidas = sortear_rotulagem({f: len(v[2]) for f, v in todas.items()}, n=n,
+                                   max_por_foto=max_por_foto)
     pasta.mkdir(parents=True, exist_ok=True)
     linhas, cartoes = [], []
     for posicao, (foto, k) in enumerate(escolhidas):

@@ -109,6 +109,12 @@ SHA-256 estão em [`model/pesos/MANIFESTO.md`](model/pesos/MANIFESTO.md):
 - o `melhor.pt` do classificador, em `model/runs/base_resnet50_bracol/`;
 - o `last.pt` do detector, em `model/runs/detector_base/weights/`.
 
+Quem não tem os arquivos pode baixá-los na
+[Release `pesos-v1`](https://github.com/coffea-arabica-ml/coffea-ml/releases/tag/pesos-v1), que
+traz o destino de cada um. Renomeie para o caminho indicado acima e confira o SHA-256 com o
+manifesto antes de usar (`Get-FileHash -Algorithm SHA256 <arquivo>` no PowerShell,
+`sha256sum <arquivo>` no Linux).
+
 Para carregar:
 - **Nos caminhos padrão:** `carregar_modelos()`.
 - **Em outro lugar:** `carregar_modelos(pasta_do_classificador=PASTA_DO_melhor.pt,

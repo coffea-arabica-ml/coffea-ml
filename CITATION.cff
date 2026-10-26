@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "Se você usar este software, cite-o com os dados abaixo."
+title: "Estimativa de Severidade e Classificação de Estresses Bióticos em Folhas de Coffea arabica via Aprendizado por Transferência"
+authors:
+  - name: "Projeto Cafélens (UNIFRAN)"
+abstract: >-
+  O Cafélens recebe a foto de um cafeeiro (planta inteira, galho ou folha), acha cada folha com um
+  detector e classifica cada uma como saudável ou com ferrugem, bicho-mineiro, cercosporiose ou
+  phoma, com a severidade estimada, por aprendizado por transferência. Projeto acadêmico da
+  UNIFRAN, disciplina Tendências em Ciência da Computação, 2026.
+url: "https://coffea-web.vercel.app"
+repository-code: "https://github.com/coffea-arabica-ml/coffea-ml"
+license: AGPL-3.0-only
+keywords:
+  - Coffea arabica
+  - café
+  - estresse biótico
+  - doenças de plantas
+  - severidade
+  - detecção de folhas
+  - aprendizado por transferência
+  - visão computacional

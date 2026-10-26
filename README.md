@@ -403,3 +403,13 @@ O log único, `model/runs/uso_do_teste_final.md`, registra:
     histórico não foi reescrito, e a errata está no log.
 - **Limitação:** os rótulos de campo dos três conjuntos são de IA (leitura visual), não de
   especialista nem do gestor.
+
+## Contribuindo
+
+O time trabalha direto na `main` (decisão do gestor, 16/10/2026). Quem é de fora contribui com fork e
+pull request. Antes, leia o
+[guia de contribuição](https://github.com/coffea-arabica-ml/.github/blob/main/CONTRIBUTING.md), o
+[código de conduta](https://github.com/coffea-arabica-ml/.github/blob/main/CODE_OF_CONDUCT.md) e a
+[política de segurança](https://github.com/coffea-arabica-ml/.github/blob/main/SECURITY.md).
+
+Como citar: veja o [`CITATION.cff`](CITATION.cff).

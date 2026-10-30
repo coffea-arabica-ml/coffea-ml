@@ -285,6 +285,41 @@ def test_regiao_da_folha_e_filtro_de_cor():
         0.5, abs=0.01)
 
 
+LARANJA = (200, 110, 40)  # como madeira: matiz 13 no HSV do OpenCV, fora da faixa de folha
+
+
+def test_fracao_cor_de_folha():
+    faixa = inf.Configuracao().faixa_matiz_folha
+    verde = cv2.cvtColor(foto((0, 0, 300, 300)), cv2.COLOR_RGB2HSV)
+    assert inf.fracao_cor_de_folha(verde, retangulo(0, 0, 299, 299), 30, faixa) == 1.0
+    assert inf.fracao_cor_de_folha(verde, retangulo(150, 0, 449, 299), 30, faixa) == (
+        pytest.approx(0.5, abs=0.01))  # metade no cinza: sem saturação
+    laranja = cv2.cvtColor(np.full((50, 50, 3), LARANJA, dtype=np.uint8), cv2.COLOR_RGB2HSV)
+    assert inf.fracao_cor_de_folha(laranja, retangulo(0, 0, 49, 49), 30, faixa) == 0.0
+    assert inf.fracao_cor_de_folha(laranja, retangulo(0, 0, 49, 49), 30, (170, 20)) == 1.0
+    assert inf.fracao_cor_de_folha(laranja, retangulo(200, 200, 210, 210), 30, faixa) == 0.0
+
+
+def test_filtro_de_matiz_tira_objeto_laranja_e_nao_abre_a_regra_2(detectar_com):
+    caixa = (100, 50, 400, 250)
+    imagem = foto()
+    imagem[50:250, 100:400] = LARANJA
+    modelos = modelos_falsos([probs("saudavel", 0.9)], [0])
+    config = inf.Configuracao()
+    for score in (0.9, 0.1):  # utilizável pelo score; abaixo do limiar, candidata à regra 2
+        detectar_com([deteccao(*caixa, score)])
+        preparo = inf.decidir(inf.detectar(imagem, config, modelos), 300, 600, config)
+        assert (preparo["plano"], preparo["regra"]) == ("nenhuma", 3)
+    detectar_com([deteccao(*caixa, 0.9)])
+    preparo = inf.decidir(inf.detectar(imagem, config, modelos), 300, 600, config)
+    assert preparo["contagens"]["cortadas_por_cor"] == 1
+    desligado = inf.Configuracao(fracao_cor_de_folha_minima=0.0)
+    preparo = inf.decidir(inf.detectar(imagem, desligado, modelos), 300, 600, desligado)
+    assert preparo["plano"] == "foto_inteira" and len(preparo["folhas"]) == 1
+    resposta = inf.diagnosticar(imagem, config, modelos)
+    assert (resposta["status"], resposta["tipo"]) == ("erro", "planta_nao_identificada")
+
+
 def test_configuracao_recusa_modo_de_recorte_desconhecido():
     with pytest.raises(ValueError):
         inf.Configuracao(recorte="C")

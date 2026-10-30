@@ -172,6 +172,24 @@ a severidade, por aprendizado por transferência. Pastas: `data/` (Frente 8), `m
   rotuladas passam pela cadeia final inteira. Das 106 D evidentes, 29% chegam como doente, 5%
   como saudável e 66% somem (58% pelo t_d). O cenário sem t_d é só informação.
 
+## Filtro de cor de folha (passo 8; decisão do gestor, 30/10/2026)
+
+- **Motivo:** objeto que não é planta volta como folha (README do coffea-backend, "Limitações
+  conhecidas"). O filtro de cor atual só mede saturação, e qualquer objeto colorido passa.
+- **Escopo:** o congelamento foi aberto só para a cadeia: um filtro de matiz nas máscaras do
+  detector (caminho A). Os pesos continuam os do MANIFESTO, sem retreino.
+- **Dados:** a faixa de matiz e o corte saem só das folhas anotadas do treino do BRACOT. As fotos
+  sem planta (`data/negativas/`, fora do git; créditos em `data/manifests/negativas_creditos.csv`)
+  servem só para avaliação, nunca para escolher o corte. Os testes fechados não são reabertos.
+- **Adotado (30/10/2026):** `faixa_matiz_folha` = (24, 110) e `fracao_cor_de_folha_minima` = 0,33
+  em `inferencia.Configuracao`, também na regra 2. Brilho mínimo testado e não adotado: a cauda
+  azul da faixa é reflexo do céu na folha, não sombra. Run: `model/runs/cor_de_folha`
+  (`evaluation/cor_de_folha.py`). Nas 38 fotos sem planta, o sucesso cai de 23 para 9. Elas viraram
+  conjunto de desenvolvimento ao motivar o brilho mínimo: o número sai otimista.
+- **Cadeias de rotulagem** (`campo.CONFIG_ROTULAGEM`, `CONFIG_ROTULAGEM_TREINO` e
+  `teste_final.CONFIG_ROTULAGEM_TESTE`): filtro de matiz desligado, para os ids não mudarem.
+- **Testes fechados:** os números do passo 7 são da cadeia sem o filtro de matiz.
+
 ## Testes fechados (passo 7; abertos uma vez em 14/10/2026)
 
 - **Autorização:** "pode" do gestor em 14/10/2026 (11:39), com o t_d de 0,65 mantido. Esta foi

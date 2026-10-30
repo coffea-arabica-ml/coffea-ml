@@ -77,14 +77,16 @@ LOTE = 32
 ORIGEM_ROTULOS = ("feitos por Claude por leitura visual das pranchas e aceitos pelo gestor em "
                   "11/10/2026; não são de especialista")
 # A cadeia da rotulagem (passo 4): o filtro de fragmentos desligado, para que a numeração das
-# 318 folhas, que casa com os rótulos, não mude quando os padrões da cadeia mudarem.
-CONFIG_ROTULAGEM = inf.Configuracao(fracao_visivel_minima=0.0)
+# 318 folhas, que casa com os rótulos, não mude quando os padrões da cadeia mudarem. O filtro de
+# cor de folha (passo 8) fica desligado nas três cadeias de rotulagem pelo mesmo motivo.
+CONFIG_ROTULAGEM = inf.Configuracao(fracao_visivel_minima=0.0, fracao_cor_de_folha_minima=0.0)
 # A rotulagem de validação (passo 5b, decisão do gestor de 11/10/2026): fotos de treino do
 # detector, na cadeia padrão de 11/10/2026, fixada aqui para que os ids não mudem com os padrões.
 PASTA_ROTULAGEM_TREINO = RAIZ_REPO / "data" / "processed" / "campo_rotulagem_treino"  # fora do git
 MANIFEST_CAMPO_TREINO = RAIZ_REPO / "data" / "manifests" / "campo_rotulado_treino.csv"
 N_ROTULAGEM_TREINO = 160
-CONFIG_ROTULAGEM_TREINO = inf.Configuracao(recorte="B", fracao_visivel_minima=0.5)
+CONFIG_ROTULAGEM_TREINO = inf.Configuracao(recorte="B", fracao_visivel_minima=0.5,
+                                           fracao_cor_de_folha_minima=0.0)
 CREDITO_BRACOT = ("Fotos: BRACOT (Krohling, Tozzi de Souza e Tassis, 2021), CC BY 4.0, "
                   "DOI 10.17632/pmkbyjpf6k.1")
 

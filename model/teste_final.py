@@ -78,8 +78,10 @@ NOME_USO = {"1": "teste do BRACOL", "2": "detecção no teste do BRACOT",
 # Uso 3: as pranchas ficam fora do git; o CSV, com as colunas dos outros dois, é versionado.
 PASTA_ROTULAGEM_TESTE = RAIZ_REPO / "data" / "processed" / "campo_rotulagem_teste"
 MANIFEST_CAMPO_TESTE = RAIZ_REPO / "data" / "manifests" / "campo_rotulado_teste.csv"
-# A cadeia da rotulagem de teste: a final, fixada aqui para que os ids não mudem.
-CONFIG_ROTULAGEM_TESTE = inf.Configuracao(recorte="B", fracao_visivel_minima=0.5)
+# A cadeia da rotulagem de teste: a final do passo 6, fixada aqui para que os ids não mudem (sem
+# o filtro de cor de folha do passo 8).
+CONFIG_ROTULAGEM_TESTE = inf.Configuracao(recorte="B", fracao_visivel_minima=0.5,
+                                          fracao_cor_de_folha_minima=0.0)
 MAX_POR_FOTO = 2
 SEED = campo.SEED
 # Quem rotulou as folhas de teste (errata de 14/10/2026 no log: o commit 1c59792 diz "pelo

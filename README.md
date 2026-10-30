@@ -79,8 +79,8 @@ galho ou de uma folha) e devolve o diagnóstico no contrato dos frontends (coffe
 `docs/frontend-reference/03-contrato-api-mock.md` e `src/api/types.ts`). A cadeia é:
 
 1. o detector acha as folhas;
-2. saem as detecções pequenas, os pedaços de fundo liso (filtro de cor) e os pedaços de folha
-   cortados pela borda (filtro de fragmentos);
+2. saem as detecções pequenas, os pedaços de fundo liso e os objetos sem cor de folha (filtros
+   de cor: saturação e matiz) e os pedaços de folha cortados pela borda (filtro de fragmentos);
 3. as regras de folha única decidem se a foto inteira vira uma folha;
 4. cada folha é recortada deitada, com margem, como nas fotos do BRACOL;
 5. o classificador avalia todas as folhas num lote só;
@@ -209,6 +209,7 @@ config)`). Os padrões são os da cadeia final, e nenhum limiar se reajusta com 
 | `max_folhas` | 15 | folhas classificadas por foto, as de maior score (RNF02) |
 | `area_minima` | 0,5% | área mínima da máscara, em fração da foto |
 | `saturacao_minima`, `fracao_colorida_minima` | 30, 25% | filtro de cor: tira os pedaços de fundo liso |
+| `faixa_matiz_folha`, `fracao_cor_de_folha_minima` | (24, 110), 33% | filtro de matiz: tira objetos coloridos que não são folha; 0 desliga (passo 8, decisão do gestor, 30/10/2026) |
 | `limiar_confianca` | 0,61 | RF07: corte do argmax, na foto inteira e no modo A (decisão do gestor, 11/10/2026) |
 | `recorte` | "B" | "B": fundo fora da máscara em cinza; "A": a foto em volta da folha. B por padrão (decisão do gestor, 11/10/2026) |
 | `margem`, `cinza_fundo` | 0,17, 197 | medidos no treino do BRACOL |
@@ -297,6 +298,29 @@ dos runs anteriores dão os números gravados neles.
   - D chamadas saudáveis: 10,9% (4,7% a 23,0%; 5 de 46), o maior dos conjuntos rotulados, sem
     diferença sustentada;
   - D que chegam como doente: 26,1%, e 63,0% somem pelo t_d.
+
+### Filtro de cor de folha (passo 8; decisão do gestor, 30/10/2026)
+
+O filtro de saturação deixava passar qualquer objeto colorido: a `teste-sem-planta.jpg` do
+coffea-web voltava com folhas. O filtro de matiz exige que pelo menos 33% da máscara tenha cor de
+folha (matiz de 24 a 110 no HSV do OpenCV, do amarelo ao azul claro). Os pesos não mudam.
+Números em `model/runs/cor_de_folha/relatorio.md` (`python evaluation/cor_de_folha.py`).
+
+- **Calibração:** só nas 1.318 folhas anotadas do treino do BRACOT. A faixa é o menor arco com 99%
+  dos pixels coloridos, e o corte é o p1, pelo mesmo método do filtro de saturação.
+- **Custo:** 0 das S e 0 das D do campo rotulado de treino são cortadas. Na cadeia inteira, 28
+  de 30 fotos de treino do BRACOT dão sucesso, com e sem o filtro.
+- **Efeito:** em 38 fotos sem planta (37 do Wikimedia Commons, com licença livre, e a fixture do
+  coffea-web; créditos em `data/manifests/negativas_creditos.csv`), o diagnóstico com sucesso cai
+  de 23 para 9. Essas fotos são conjunto de desenvolvimento: elas motivaram um teste de brilho
+  mínimo, não adotado. O número sai otimista.
+- **Limitações:**
+  - objeto verde, amarelo ou azul pode passar, porque a folha de café reflete o céu e cerca de
+    1% das folhas anotadas é azulada;
+  - a `teste-sem-planta.jpg` continua voltando com folhas, pelo notebook azul-marinho;
+  - a folha de BRACOL (foto inteira) não foi medida;
+  - os testes fechados (passo 7) mediram a cadeia **sem** este filtro e não são reabertos;
+  - as cadeias de rotulagem mantêm o filtro desligado, para os ids não mudarem.
 
 ## Classificador para o campo
 

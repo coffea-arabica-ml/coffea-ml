@@ -13,7 +13,7 @@ def folha(x0, y0, x1, y1, score=0.9, borda=False):
     """Detecção já medida (como a de inferencia.detectar), numa foto de 300 x 600."""
     return {"poligono": [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], "caixa": [x0, y0, x1, y1],
             "score": score, "area": (x1 - x0) * (y1 - y0) / (300 * 600), "borda": borda,
-            "colorida": 1.0}
+            "colorida": 1.0, "cor_de_folha": 1.0}
 
 
 def test_configuracoes_nao_mudam_a_cadeia_final():

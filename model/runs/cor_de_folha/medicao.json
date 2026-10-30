@@ -1,0 +1,1860 @@
+{
+  "fracao_pixels": 0.99,
+  "saturacao_minima": 30,
+  "variantes": [
+    {
+      "brilho_minimo": 0,
+      "faixa_matiz": [
+        24,
+        110
+      ],
+      "faixa_graus": [
+        48,
+        220
+      ],
+      "corte": 0.33,
+      "anotadas": {
+        "colorida": {
+          "n": 1318,
+          "min": 0.14852886207080684,
+          "p1": 0.34031153123591035,
+          "p5": 0.6008495976326728,
+          "mediana": 0.9904795243280056
+        },
+        "cor_de_folha": {
+          "n": 1318,
+          "min": 0.14767448069632083,
+          "p1": 0.336947308233202,
+          "p5": 0.584012369332687,
+          "mediana": 0.9798012447235629
+        },
+        "abaixo_do_corte": 12
+      },
+      "detectadas": {
+        "total": 2218,
+        "utilizaveis": 1727,
+        "cortadas": 11,
+        "fotos_que_perdem_todas": 0,
+        "por_rotulo": {
+          "S": {
+            "utilizaveis": 42,
+            "cortadas": 0
+          },
+          "D": {
+            "utilizaveis": 61,
+            "cortadas": 0
+          },
+          "?": {
+            "utilizaveis": 59,
+            "cortadas": 1
+          },
+          "sem_rotulo": {
+            "utilizaveis": 1565,
+            "cortadas": 10
+          }
+        }
+      },
+      "negativas": {
+        "fotos": 38,
+        "com_folha_hoje": 32,
+        "com_folha_com_corte": 13,
+        "por_foto": {
+          "commons_backpacks_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.029254899061356313
+          },
+          "commons_blue-objects_1.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.967694912066209
+          },
+          "commons_blue-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 4,
+            "maior_cor_de_folha": 0.9843314707161146
+          },
+          "commons_cardboard-boxes_1.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.005483898522251644
+          },
+          "commons_cardboard-boxes_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.045291487166046945
+          },
+          "commons_cats_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0826765462248617
+          },
+          "commons_coffee-mugs_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.19635519208440608
+          },
+          "commons_coffee-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.5886297388891816
+          },
+          "commons_coffee-mugs_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.22211325840137422
+          },
+          "commons_dogs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.04667914468833305
+          },
+          "commons_green-bags_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9845170257123002
+          },
+          "commons_green-bags_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.16523956405511
+          },
+          "commons_green-bags_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9908321396015106
+          },
+          "commons_green-balloons_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.008843876401215697
+          },
+          "commons_green-balloons_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.1861007865848388
+          },
+          "commons_green-bottles_1.jpg": {
+            "utilizaveis_hoje": 8,
+            "com_corte": 2,
+            "maior_cor_de_folha": 1.0
+          },
+          "commons_green-bottles_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.9995647127103888
+          },
+          "commons_green-bottles_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.7162110270163139
+          },
+          "commons_green-cups_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.6795995263214555
+          },
+          "commons_green-cups_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.07226828032948578
+          },
+          "commons_green-cups_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.3056546850011523
+          },
+          "commons_green-mugs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.8206740739491831
+          },
+          "commons_green-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.8518849172284602
+          },
+          "commons_green-mugs_3.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.901290643627778
+          },
+          "commons_green-t-shirts_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9346618126077793
+          },
+          "commons_green-t-shirts_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.45865716895944497
+          },
+          "commons_human-hands_3.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.028752827847916513
+          },
+          "commons_kitchen-counters_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.494659839063643
+          },
+          "commons_laptops_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.5860186059053526
+          },
+          "commons_laptops_2.jpg": {
+            "utilizaveis_hoje": 6,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.2009024070179223
+          },
+          "commons_red-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.22933660578935972
+          },
+          "commons_shoes_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.23973565270234343
+          },
+          "commons_shoes_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.02327002517660287
+          },
+          "commons_tennis-balls_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.8417693981145757
+          },
+          "commons_wooden-tables_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.6499616466376885
+          },
+          "commons_yellow-objects_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0
+          },
+          "commons_yellow-objects_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.23591831040241606
+          },
+          "teste-sem-planta.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.9494440256313608
+          }
+        }
+      }
+    },
+    {
+      "brilho_minimo": 32,
+      "faixa_matiz": [
+        24,
+        110
+      ],
+      "faixa_graus": [
+        48,
+        220
+      ],
+      "corte": 0.33,
+      "anotadas": {
+        "colorida": {
+          "n": 1318,
+          "min": 0.14852886207080684,
+          "p1": 0.34031153123591035,
+          "p5": 0.6008495976326728,
+          "mediana": 0.9904795243280056
+        },
+        "cor_de_folha": {
+          "n": 1318,
+          "min": 0.14767448069632083,
+          "p1": 0.336947308233202,
+          "p5": 0.584012369332687,
+          "mediana": 0.9790676620836349
+        },
+        "abaixo_do_corte": 12
+      },
+      "detectadas": {
+        "total": 2218,
+        "utilizaveis": 1727,
+        "cortadas": 11,
+        "fotos_que_perdem_todas": 0,
+        "por_rotulo": {
+          "S": {
+            "utilizaveis": 42,
+            "cortadas": 0
+          },
+          "D": {
+            "utilizaveis": 61,
+            "cortadas": 0
+          },
+          "?": {
+            "utilizaveis": 59,
+            "cortadas": 1
+          },
+          "sem_rotulo": {
+            "utilizaveis": 1565,
+            "cortadas": 10
+          }
+        }
+      },
+      "negativas": {
+        "fotos": 38,
+        "com_folha_hoje": 32,
+        "com_folha_com_corte": 13,
+        "por_foto": {
+          "commons_backpacks_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.024459179249689975
+          },
+          "commons_blue-objects_1.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.9605097338474561
+          },
+          "commons_blue-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 4,
+            "maior_cor_de_folha": 0.9530990837211549
+          },
+          "commons_cardboard-boxes_1.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.00534722815409584
+          },
+          "commons_cardboard-boxes_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.045242346311978904
+          },
+          "commons_cats_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.027774694270226268
+          },
+          "commons_coffee-mugs_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.19635519208440608
+          },
+          "commons_coffee-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.5884717027515848
+          },
+          "commons_coffee-mugs_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.22211325840137422
+          },
+          "commons_dogs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.04643809199705065
+          },
+          "commons_green-bags_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9836831132731063
+          },
+          "commons_green-bags_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.08325950743359696
+          },
+          "commons_green-bags_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9908321396015106
+          },
+          "commons_green-balloons_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.003250236809380794
+          },
+          "commons_green-balloons_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.10572614107883817
+          },
+          "commons_green-bottles_1.jpg": {
+            "utilizaveis_hoje": 8,
+            "com_corte": 2,
+            "maior_cor_de_folha": 1.0
+          },
+          "commons_green-bottles_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.9992745211839814
+          },
+          "commons_green-bottles_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.7048024873341674
+          },
+          "commons_green-cups_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.6790397244052104
+          },
+          "commons_green-cups_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.07226828032948578
+          },
+          "commons_green-cups_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.3056546850011523
+          },
+          "commons_green-mugs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.8206740739491831
+          },
+          "commons_green-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.8518849172284602
+          },
+          "commons_green-mugs_3.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9011530032080806
+          },
+          "commons_green-t-shirts_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9344063358242319
+          },
+          "commons_green-t-shirts_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.45865716895944497
+          },
+          "commons_human-hands_3.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.028752827847916513
+          },
+          "commons_kitchen-counters_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.48324798829553767
+          },
+          "commons_laptops_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.584760235495034
+          },
+          "commons_laptops_2.jpg": {
+            "utilizaveis_hoje": 6,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.1836092685469809
+          },
+          "commons_red-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.22150436728506462
+          },
+          "commons_shoes_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.19719700710243457
+          },
+          "commons_shoes_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.005931279399395657
+          },
+          "commons_tennis-balls_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.8401015228426396
+          },
+          "commons_wooden-tables_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.6497059575556123
+          },
+          "commons_yellow-objects_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0
+          },
+          "commons_yellow-objects_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.23578289967706595
+          },
+          "teste-sem-planta.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.9493969091594422
+          }
+        }
+      }
+    },
+    {
+      "brilho_minimo": 48,
+      "faixa_matiz": [
+        24,
+        110
+      ],
+      "faixa_graus": [
+        48,
+        220
+      ],
+      "corte": 0.33,
+      "anotadas": {
+        "colorida": {
+          "n": 1318,
+          "min": 0.14852886207080684,
+          "p1": 0.34031153123591035,
+          "p5": 0.6008495976326728,
+          "mediana": 0.9904795243280056
+        },
+        "cor_de_folha": {
+          "n": 1318,
+          "min": 0.14762108186041545,
+          "p1": 0.3369058456275943,
+          "p5": 0.5756443028964197,
+          "mediana": 0.9762100210500507
+        },
+        "abaixo_do_corte": 12
+      },
+      "detectadas": {
+        "total": 2218,
+        "utilizaveis": 1727,
+        "cortadas": 11,
+        "fotos_que_perdem_todas": 0,
+        "por_rotulo": {
+          "S": {
+            "utilizaveis": 42,
+            "cortadas": 0
+          },
+          "D": {
+            "utilizaveis": 61,
+            "cortadas": 0
+          },
+          "?": {
+            "utilizaveis": 59,
+            "cortadas": 1
+          },
+          "sem_rotulo": {
+            "utilizaveis": 1565,
+            "cortadas": 10
+          }
+        }
+      },
+      "negativas": {
+        "fotos": 38,
+        "com_folha_hoje": 32,
+        "com_folha_com_corte": 13,
+        "por_foto": {
+          "commons_backpacks_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.024257537211357823
+          },
+          "commons_blue-objects_1.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.9015893915169755
+          },
+          "commons_blue-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 4,
+            "maior_cor_de_folha": 0.9077118794183481
+          },
+          "commons_cardboard-boxes_1.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.005090971213803707
+          },
+          "commons_cardboard-boxes_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.043571557273665414
+          },
+          "commons_cats_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0008649238681985532
+          },
+          "commons_coffee-mugs_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.19635519208440608
+          },
+          "commons_coffee-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.577924985513354
+          },
+          "commons_coffee-mugs_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.22211325840137422
+          },
+          "commons_dogs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.04387158981339686
+          },
+          "commons_green-bags_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9802362751911049
+          },
+          "commons_green-bags_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.08325950743359696
+          },
+          "commons_green-bags_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9908321396015106
+          },
+          "commons_green-balloons_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0028955838978599615
+          },
+          "commons_green-balloons_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.10522821576763486
+          },
+          "commons_green-bottles_1.jpg": {
+            "utilizaveis_hoje": 8,
+            "com_corte": 2,
+            "maior_cor_de_folha": 1.0
+          },
+          "commons_green-bottles_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.9833139872315728
+          },
+          "commons_green-bottles_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.6962677600366659
+          },
+          "commons_green-cups_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.6750565184626978
+          },
+          "commons_green-cups_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.07226828032948578
+          },
+          "commons_green-cups_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.3056546850011523
+          },
+          "commons_green-mugs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.8206740739491831
+          },
+          "commons_green-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.8518849172284602
+          },
+          "commons_green-mugs_3.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9006659678768436
+          },
+          "commons_green-t-shirts_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9342785974324583
+          },
+          "commons_green-t-shirts_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.45865716895944497
+          },
+          "commons_human-hands_3.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.027074363278114282
+          },
+          "commons_kitchen-counters_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.46964155084125825
+          },
+          "commons_laptops_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.5825356163767921
+          },
+          "commons_laptops_2.jpg": {
+            "utilizaveis_hoje": 6,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.14968811231551887
+          },
+          "commons_red-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.17346423157438823
+          },
+          "commons_shoes_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.1711557144924241
+          },
+          "commons_shoes_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.005302015513535404
+          },
+          "commons_tennis-balls_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.8380348078317621
+          },
+          "commons_wooden-tables_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.64919457939146
+          },
+          "commons_yellow-objects_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0
+          },
+          "commons_yellow-objects_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.23552438829230662
+          },
+          "teste-sem-planta.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.5448077647945722
+          }
+        }
+      }
+    },
+    {
+      "brilho_minimo": 64,
+      "faixa_matiz": [
+        25,
+        111
+      ],
+      "faixa_graus": [
+        50,
+        222
+      ],
+      "corte": 0.3,
+      "anotadas": {
+        "colorida": {
+          "n": 1318,
+          "min": 0.14852886207080684,
+          "p1": 0.34031153123591035,
+          "p5": 0.6008495976326728,
+          "mediana": 0.9904795243280056
+        },
+        "cor_de_folha": {
+          "n": 1318,
+          "min": 0.1474341859347466,
+          "p1": 0.3049318540315186,
+          "p5": 0.5528331524816925,
+          "mediana": 0.9682210352114002
+        },
+        "abaixo_do_corte": 13
+      },
+      "detectadas": {
+        "total": 2218,
+        "utilizaveis": 1727,
+        "cortadas": 14,
+        "fotos_que_perdem_todas": 0,
+        "por_rotulo": {
+          "S": {
+            "utilizaveis": 42,
+            "cortadas": 0
+          },
+          "D": {
+            "utilizaveis": 61,
+            "cortadas": 0
+          },
+          "?": {
+            "utilizaveis": 59,
+            "cortadas": 1
+          },
+          "sem_rotulo": {
+            "utilizaveis": 1565,
+            "cortadas": 13
+          }
+        }
+      },
+      "negativas": {
+        "fotos": 38,
+        "com_folha_hoje": 32,
+        "com_folha_com_corte": 13,
+        "por_foto": {
+          "commons_backpacks_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.006200492678713658
+          },
+          "commons_blue-objects_1.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.7521066743273006
+          },
+          "commons_blue-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 4,
+            "maior_cor_de_folha": 0.8710920718310032
+          },
+          "commons_cardboard-boxes_1.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0016093159503101097
+          },
+          "commons_cardboard-boxes_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.011564480990679618
+          },
+          "commons_cats_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0006891639377624836
+          },
+          "commons_coffee-mugs_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.1962407659817928
+          },
+          "commons_coffee-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.5609536602925425
+          },
+          "commons_coffee-mugs_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.22180640222201836
+          },
+          "commons_dogs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.09257841302251715
+          },
+          "commons_green-bags_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9745656706045865
+          },
+          "commons_green-bags_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.06425269397419583
+          },
+          "commons_green-bags_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9935668706862872
+          },
+          "commons_green-balloons_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.002491548935367874
+          },
+          "commons_green-balloons_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.10641770401106501
+          },
+          "commons_green-bottles_1.jpg": {
+            "utilizaveis_hoje": 8,
+            "com_corte": 2,
+            "maior_cor_de_folha": 1.0
+          },
+          "commons_green-bottles_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.9406558328496808
+          },
+          "commons_green-bottles_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.6833479914281113
+          },
+          "commons_green-cups_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.8245254529767041
+          },
+          "commons_green-cups_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.09334097512862208
+          },
+          "commons_green-cups_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.3056546850011523
+          },
+          "commons_green-mugs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.8201345450253748
+          },
+          "commons_green-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.8501413544850004
+          },
+          "commons_green-mugs_3.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.8799987294730489
+          },
+          "commons_green-t-shirts_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9338953822571374
+          },
+          "commons_green-t-shirts_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.45758470480755226
+          },
+          "commons_human-hands_3.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.01627380865503904
+          },
+          "commons_kitchen-counters_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.568983174835406
+          },
+          "commons_laptops_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.5475259538897128
+          },
+          "commons_laptops_2.jpg": {
+            "utilizaveis_hoje": 6,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.194988225565802
+          },
+          "commons_red-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.12318631343391323
+          },
+          "commons_shoes_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.1646236848088968
+          },
+          "commons_shoes_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.006249026510077567
+          },
+          "commons_tennis-balls_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.8249818709209572
+          },
+          "commons_wooden-tables_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.658399386346203
+          },
+          "commons_yellow-objects_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0
+          },
+          "commons_yellow-objects_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.140625
+          },
+          "teste-sem-planta.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.36566411965534057
+          }
+        }
+      }
+    },
+    {
+      "brilho_minimo": 80,
+      "faixa_matiz": [
+        24,
+        111
+      ],
+      "faixa_graus": [
+        48,
+        222
+      ],
+      "corte": 0.25,
+      "anotadas": {
+        "colorida": {
+          "n": 1318,
+          "min": 0.14852886207080684,
+          "p1": 0.34031153123591035,
+          "p5": 0.6008495976326728,
+          "mediana": 0.9904795243280056
+        },
+        "cor_de_folha": {
+          "n": 1318,
+          "min": 0.04485938745303427,
+          "p1": 0.2519145481599754,
+          "p5": 0.47569304242937965,
+          "mediana": 0.9507134074174575
+        },
+        "abaixo_do_corte": 14
+      },
+      "detectadas": {
+        "total": 2218,
+        "utilizaveis": 1727,
+        "cortadas": 15,
+        "fotos_que_perdem_todas": 0,
+        "por_rotulo": {
+          "S": {
+            "utilizaveis": 42,
+            "cortadas": 0
+          },
+          "D": {
+            "utilizaveis": 61,
+            "cortadas": 0
+          },
+          "?": {
+            "utilizaveis": 59,
+            "cortadas": 0
+          },
+          "sem_rotulo": {
+            "utilizaveis": 1565,
+            "cortadas": 15
+          }
+        }
+      },
+      "negativas": {
+        "fotos": 38,
+        "com_folha_hoje": 32,
+        "com_folha_com_corte": 13,
+        "por_foto": {
+          "commons_backpacks_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.024119748485164186
+          },
+          "commons_blue-objects_1.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.7523281145264771
+          },
+          "commons_blue-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 4,
+            "maior_cor_de_folha": 0.8375455694804159
+          },
+          "commons_cardboard-boxes_1.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0037926027163235673
+          },
+          "commons_cardboard-boxes_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.029304329309243395
+          },
+          "commons_cats_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0006660376311261587
+          },
+          "commons_coffee-mugs_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.19635519208440608
+          },
+          "commons_coffee-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.559116645837493
+          },
+          "commons_coffee-mugs_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.22216071038787255
+          },
+          "commons_dogs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.08935965061539335
+          },
+          "commons_green-bags_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9646421125781793
+          },
+          "commons_green-bags_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.08325950743359696
+          },
+          "commons_green-bags_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9930980596431827
+          },
+          "commons_green-balloons_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0019258999878789512
+          },
+          "commons_green-balloons_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.1056984785615491
+          },
+          "commons_green-bottles_1.jpg": {
+            "utilizaveis_hoje": 8,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.9857487474485063
+          },
+          "commons_green-bottles_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.7743138210915765
+          },
+          "commons_green-bottles_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.6802388237188619
+          },
+          "commons_green-cups_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.777825711820535
+          },
+          "commons_green-cups_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.09336763255404792
+          },
+          "commons_green-cups_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.3056197666054431
+          },
+          "commons_green-mugs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.8201851258619818
+          },
+          "commons_green-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.6919693102435265
+          },
+          "commons_green-mugs_3.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.7928829315291851
+          },
+          "commons_green-t-shirts_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9331289519064955
+          },
+          "commons_green-t-shirts_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.4585777271704159
+          },
+          "commons_human-hands_3.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.009567223048682289
+          },
+          "commons_kitchen-counters_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.535332845647403
+          },
+          "commons_laptops_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.5634802930205384
+          },
+          "commons_laptops_2.jpg": {
+            "utilizaveis_hoje": 6,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.15114418738427798
+          },
+          "commons_red-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.07218652999350321
+          },
+          "commons_shoes_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.17014283647187714
+          },
+          "commons_shoes_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.006199183826049033
+          },
+          "commons_tennis-balls_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.5865844815083394
+          },
+          "commons_wooden-tables_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.6555868064433649
+          },
+          "commons_yellow-objects_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0
+          },
+          "commons_yellow-objects_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.23535204736913373
+          },
+          "teste-sem-planta.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.3564725027307787
+          }
+        }
+      }
+    },
+    {
+      "brilho_minimo": 96,
+      "faixa_matiz": [
+        24,
+        112
+      ],
+      "faixa_graus": [
+        48,
+        224
+      ],
+      "corte": 0.17,
+      "anotadas": {
+        "colorida": {
+          "n": 1318,
+          "min": 0.14852886207080684,
+          "p1": 0.34031153123591035,
+          "p5": 0.6008495976326728,
+          "mediana": 0.9904795243280056
+        },
+        "cor_de_folha": {
+          "n": 1318,
+          "min": 0.016566093589889558,
+          "p1": 0.1764783691677832,
+          "p5": 0.361059057165021,
+          "mediana": 0.9172136901364805
+        },
+        "abaixo_do_corte": 13
+      },
+      "detectadas": {
+        "total": 2218,
+        "utilizaveis": 1727,
+        "cortadas": 35,
+        "fotos_que_perdem_todas": 0,
+        "por_rotulo": {
+          "S": {
+            "utilizaveis": 42,
+            "cortadas": 2
+          },
+          "D": {
+            "utilizaveis": 61,
+            "cortadas": 0
+          },
+          "?": {
+            "utilizaveis": 59,
+            "cortadas": 0
+          },
+          "sem_rotulo": {
+            "utilizaveis": 1565,
+            "cortadas": 33
+          }
+        }
+      },
+      "negativas": {
+        "fotos": 38,
+        "com_folha_hoje": 32,
+        "com_folha_com_corte": 15,
+        "por_foto": {
+          "commons_backpacks_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.024049173771747933
+          },
+          "commons_blue-objects_1.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.769295221679594
+          },
+          "commons_blue-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 4,
+            "maior_cor_de_folha": 0.7952840957910371
+          },
+          "commons_cardboard-boxes_1.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.003092056488798076
+          },
+          "commons_cardboard-boxes_2.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.022981539419155105
+          },
+          "commons_cats_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0006059092338717137
+          },
+          "commons_coffee-mugs_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.19628115166506807
+          },
+          "commons_coffee-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.5583278487284344
+          },
+          "commons_coffee-mugs_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.21692517454422366
+          },
+          "commons_dogs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.16422778061369178
+          },
+          "commons_green-bags_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9386240444753301
+          },
+          "commons_green-bags_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.08324339996456356
+          },
+          "commons_green-bags_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9931761948170335
+          },
+          "commons_green-balloons_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0013602510403900284
+          },
+          "commons_green-balloons_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.10431535269709544
+          },
+          "commons_green-bottles_1.jpg": {
+            "utilizaveis_hoje": 8,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.9807385414733717
+          },
+          "commons_green-bottles_2.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.7523016032351507
+          },
+          "commons_green-bottles_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.5898128305813276
+          },
+          "commons_green-cups_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 3,
+            "maior_cor_de_folha": 0.7720017256255393
+          },
+          "commons_green-cups_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.11710606989576947
+          },
+          "commons_green-cups_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.3054940603808899
+          },
+          "commons_green-mugs_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.8189206049468059
+          },
+          "commons_green-mugs_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.4036557589076217
+          },
+          "commons_green-mugs_3.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.36559413016548614
+          },
+          "commons_green-t-shirts_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.9315960912052117
+          },
+          "commons_green-t-shirts_3.jpg": {
+            "utilizaveis_hoje": 0,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.4576376660002383
+          },
+          "commons_human-hands_3.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.008898472792782957
+          },
+          "commons_kitchen-counters_1.jpg": {
+            "utilizaveis_hoje": 3,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.39765910753474765
+          },
+          "commons_laptops_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.45132803020088985
+          },
+          "commons_laptops_2.jpg": {
+            "utilizaveis_hoje": 6,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.11066170522569163
+          },
+          "commons_red-objects_2.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.049375586515556194
+          },
+          "commons_shoes_1.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.1698327717717097
+          },
+          "commons_shoes_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.00735802622971247
+          },
+          "commons_tennis-balls_2.jpg": {
+            "utilizaveis_hoje": 1,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.38788977519941986
+          },
+          "commons_wooden-tables_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.6479161339810791
+          },
+          "commons_yellow-objects_1.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 0,
+            "maior_cor_de_folha": 0.0
+          },
+          "commons_yellow-objects_3.jpg": {
+            "utilizaveis_hoje": 2,
+            "com_corte": 1,
+            "maior_cor_de_folha": 0.2352453601309791
+          },
+          "teste-sem-planta.jpg": {
+            "utilizaveis_hoje": 4,
+            "com_corte": 2,
+            "maior_cor_de_folha": 0.35453309257896964
+          }
+        }
+      }
+    }
+  ],
+  "cadeia": {
+    "negativas": {
+      "fotos": 38,
+      "sucesso_sem_filtro": 23,
+      "sucesso_com_filtro": 9,
+      "mudaram": [
+        {
+          "foto": "commons_backpacks_2.jpg",
+          "sem_filtro": {
+            "status": "erro",
+            "tipo": "baixa_confianca",
+            "folhas": 0
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_cardboard-boxes_2.jpg",
+          "sem_filtro": {
+            "status": "erro",
+            "tipo": "baixa_confianca",
+            "folhas": 0
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_cats_1.jpg",
+          "sem_filtro": {
+            "status": "erro",
+            "tipo": "baixa_confianca",
+            "folhas": 0
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_coffee-mugs_1.jpg",
+          "sem_filtro": {
+            "status": "erro",
+            "tipo": "baixa_confianca",
+            "folhas": 0
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_coffee-mugs_3.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 2
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_dogs_1.jpg",
+          "sem_filtro": {
+            "status": "erro",
+            "tipo": "baixa_confianca",
+            "folhas": 0
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_green-bags_2.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 4
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_green-balloons_1.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 1
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_green-balloons_2.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 2
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_green-bottles_1.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 7
+          },
+          "com_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 2
+          }
+        },
+        {
+          "foto": "commons_green-bottles_2.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 1
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "baixa_confianca",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_green-cups_2.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 1
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_green-cups_3.jpg",
+          "sem_filtro": {
+            "status": "erro",
+            "tipo": "baixa_confianca",
+            "folhas": 0
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_green-mugs_3.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 2
+          },
+          "com_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 1
+          }
+        },
+        {
+          "foto": "commons_green-t-shirts_1.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 1
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "baixa_confianca",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_human-hands_3.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 1
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_kitchen-counters_1.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 2
+          },
+          "com_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 1
+          }
+        },
+        {
+          "foto": "commons_laptops_1.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 2
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "baixa_confianca",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_laptops_2.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 3
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_red-objects_2.jpg",
+          "sem_filtro": {
+            "status": "erro",
+            "tipo": "baixa_confianca",
+            "folhas": 0
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_shoes_1.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 1
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_shoes_2.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 1
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_yellow-objects_1.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 2
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        },
+        {
+          "foto": "commons_yellow-objects_3.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 1
+          },
+          "com_filtro": {
+            "status": "erro",
+            "tipo": "planta_nao_identificada",
+            "folhas": 0
+          }
+        }
+      ]
+    },
+    "bracot_treino": {
+      "fotos": 30,
+      "sucesso_sem_filtro": 28,
+      "sucesso_com_filtro": 28,
+      "mudaram": [
+        {
+          "foto": "20190831_163057.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 9
+          },
+          "com_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 8
+          }
+        },
+        {
+          "foto": "20190831_164946.jpg",
+          "sem_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 2
+          },
+          "com_filtro": {
+            "status": "sucesso",
+            "tipo": null,
+            "folhas": 3
+          }
+        }
+      ]
+    }
+  }
+}

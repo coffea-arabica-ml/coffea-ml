@@ -91,6 +91,15 @@ class Configuracao:
     # nas folhas anotadas do BRACOT, a mediana é 99% e o p1, 35%; no fundo do BRACOL, < 10%.
     saturacao_minima: int = 30
     fracao_colorida_minima: float = 0.25
+    # Filtro de cor de folha (passo 8; decisão do gestor, 30/10/2026): o de saturação deixa
+    # passar qualquer objeto colorido. Folha utilizável tem também ao menos
+    # fracao_cor_de_folha_minima da máscara colorida e com matiz (H do HSV do OpenCV, 0 a 179) em
+    # faixa_matiz_folha. Medido nas 1.318 folhas anotadas do treino do BRACOT
+    # (model/runs/cor_de_folha): a faixa é o menor arco com 99% dos pixels coloridos (vai até o
+    # azul claro do reflexo do céu na folha), e o corte, o p1. Corta 0 das S e D do campo
+    # rotulado de treino; objeto verde, amarelo ou azul passa. 0 desliga o filtro.
+    faixa_matiz_folha: tuple[int, int] = (24, 110)
+    fracao_cor_de_folha_minima: float = 0.33
     # RF07: probabilidade mínima da classe prevista no argmax. 0,61 saiu da curva risco-cobertura
     # (model/runs/pipeline_base/relatorio.md); na cadeia final, vale na foto inteira (decisão do
     # gestor, 11/10/2026, passo 6).
@@ -266,19 +275,28 @@ def detectar(imagem, config: Configuracao, modelos: Modelos) -> list[dict]:
                                       dispositivo=dispositivo)
     altura, largura = imagem.shape[:2]
     reduzida, escala = reduzir(imagem, LADO_COR)
-    saturacao = cv2.cvtColor(reduzida, cv2.COLOR_RGB2HSV)[..., 1]
+    hsv = cv2.cvtColor(reduzida, cv2.COLOR_RGB2HSV)
     return [{**folha, "area": area_do_poligono(folha["poligono"]) / (altura * largura),
              "borda": cortada_pela_borda(folha["poligono"], altura, largura),
-             "colorida": fracao_colorida(saturacao, np.asarray(folha["poligono"]) * escala,
-                                         config.saturacao_minima)}
+             "colorida": fracao_colorida(hsv[..., 1], np.asarray(folha["poligono"]) * escala,
+                                         config.saturacao_minima),
+             "cor_de_folha": fracao_cor_de_folha(hsv, np.asarray(folha["poligono"]) * escala,
+                                                 config.saturacao_minima,
+                                                 config.faixa_matiz_folha)}
             for folha in folhas]
 
 
+def com_cor_de_folha(deteccao: dict, config: Configuracao) -> bool:
+    """Os dois filtros de cor: o de saturação tira os pedaços de fundo liso, e o de matiz, os
+    objetos coloridos que não são folha."""
+    return (deteccao["colorida"] >= config.fracao_colorida_minima
+            and deteccao["cor_de_folha"] >= config.fracao_cor_de_folha_minima)
+
+
 def utilizavel(deteccao: dict, config: Configuracao) -> bool:
-    """Folha que entra na cadeia: no limiar do detector, com a área mínima e com cor de folha
-    (o filtro de cor tira os pedaços de fundo liso)."""
+    """Folha que entra na cadeia: no limiar do detector, com a área mínima e com cor de folha."""
     return (deteccao["score"] >= config.limiar_deteccao and deteccao["area"] >= config.area_minima
-            and deteccao["colorida"] >= config.fracao_colorida_minima)
+            and com_cor_de_folha(deteccao, config))
 
 
 def decidir(deteccoes, altura: int, largura: int, config: Configuracao) -> dict:
@@ -313,11 +331,11 @@ def decidir(deteccoes, altura: int, largura: int, config: Configuracao) -> dict:
     if coloridas and not utilizaveis:  # o filtro de fragmentos tirou todas
         return {**base, "plano": "fragmentos", "regra": None, "folhas": []}
     if not utilizaveis and any(d["score"] >= config.score_minimo_folha_unica
-                               and d["colorida"] >= config.fracao_colorida_minima
-                               for d in ordenadas):
+                               and com_cor_de_folha(d, config) for d in ordenadas):
         return {**base, "plano": "foto_inteira", "regra": 2,
                 "folhas": [{"foto_inteira": True, "poligono": None, "caixa": None,
-                            "score": None, "area": 1.0, "borda": False, "colorida": None}]}
+                            "score": None, "area": 1.0, "borda": False, "colorida": None,
+                            "cor_de_folha": None}]}
     return {**base, "plano": "deteccao" if utilizaveis else "nenhuma",
             "regra": None if utilizaveis else 3, "folhas": utilizaveis[:config.max_folhas]}
 
@@ -500,6 +518,22 @@ def fracao_colorida(saturacao, poligono, saturacao_minima: int) -> float:
                            .astype(np.int32)], 1)
     valores = saturacao[mascara.astype(bool)]
     return float((valores >= saturacao_minima).mean()) if valores.size else 0.0
+
+
+def fracao_cor_de_folha(hsv, poligono, saturacao_minima: int, faixa: tuple[int, int]) -> float:
+    """Fração dos pixels da máscara do polígono com saturação >= saturacao_minima e matiz na
+    faixa (início, fim, inclusive; passa do 179 ao 0 se início > fim). hsv: o HSV do OpenCV;
+    poligono na escala dele. Máscara vazia: 0."""
+    mascara = np.zeros(hsv.shape[:2], dtype=np.uint8)
+    cv2.fillPoly(mascara, [np.round(np.asarray(poligono, dtype=np.float64).reshape(-1, 2))
+                           .astype(np.int32)], 1)
+    valores = hsv[mascara.astype(bool)]
+    if not valores.size:
+        return 0.0
+    matiz, (inicio, fim) = valores[:, 0], faixa
+    na_faixa = ((matiz >= inicio) & (matiz <= fim) if inicio <= fim
+                else (matiz >= inicio) | (matiz <= fim))
+    return float(((valores[:, 1] >= saturacao_minima) & na_faixa).mean())
 
 
 def fracao_visivel(folha: dict, folhas) -> float:

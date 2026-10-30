@@ -220,6 +220,8 @@ __marimo__/
 # Dados: nao versionar (ver data/README.md)
 data/raw/
 data/processed/
+# Fotos sem planta do filtro de cor de folha (passo 8): só avaliação, fotos da equipe
+data/negativas/
 *.zip
 # Relatorios das ferramentas de zip: gerados ao lado dos scripts, com caminhos da maquina
 data/tools/relatorio_*.txt
